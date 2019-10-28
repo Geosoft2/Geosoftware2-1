@@ -1,0 +1,16 @@
+version: '3'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - "TZ=Europe/Amsterdam" # offset +01:00 / DST +02:00
+    depends_on:
+      - mongodbservice
+  mongodbservice:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db

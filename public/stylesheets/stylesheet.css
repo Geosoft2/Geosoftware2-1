@@ -1,0 +1,21 @@
+html,body {
+  height: 100%;
+}
+
+.footer {
+  position: relative;
+  width: 100%;
+  height: 24.2px;
+  margin: -24.2px auto 0;
+}
+
+
+th {
+  text-align: left;
+  padding: 8px;
+  font-weight: normal;
+}
+
+a.impressum:link, a.impressum:visited {
+  color: black;
+}
