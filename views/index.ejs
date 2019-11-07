@@ -10,6 +10,7 @@
   <% include partials/stylesheet.ejs %>
   <link rel="stylesheet" href="/leaflet/leaflet.css"/>
 
+  <link rel="stylesheet" href="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien//leaflet_css.css"/>
 </head>
 
 <body onload="map()">
@@ -17,8 +18,17 @@
 
     <% include partials/header.ejs %>
 
+<div class="container" style="height: 70%;">
+  <div class="row" style="height: 100%;" >
+    <div id ="mapdiv" class="col-8" style="height: 100%;" >
+      One of three columns
+    </div>
+    <div class="col-4">
+      One of three columns123
+    </div>
+  </div>
+</div>
 
-   <div id="mapdiv" style="height: 70%;"></div>
 
 
   <% include partials/footer.ejs %>
@@ -38,11 +48,19 @@
 
       <script src="/bootstrap/js/bootstrap.min.js"></script>
 
-      <script src="/javascripts/mousecursor.js"></script>
-
       <script src="/token/token.js"></script>
 
       <script src="/javascripts/map.js"></script>
 
     <script src="/jsnlog/jsnlog.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" crossorigin=""></script>
+
+    <script src="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien/leaflet.js"></script>
+
+    <script src="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien/jquery-3.3.1.min.js"></script>
+
+
+
+
 
