@@ -10,7 +10,33 @@
   <% include partials/stylesheet.ejs %>
   <link rel="stylesheet" href="/leaflet/leaflet.css"/>
 
-  <link rel="stylesheet" href="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien//leaflet_css.css"/>
+    <script src="/leaflet/leaflet.js"></script>
+
+     <link rel="stylesheet" href="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien//leaflet_css.css"/>
+
+       <script src="/turf/turf.min.js"></script>
+
+      <script src="/jquery/jquery.min.js"></script>
+
+      <script src="/bootstrap/js/bootstrap.min.js"></script>
+
+      <script src="/token/token.js"></script>
+
+    <script src="/jsnlog/jsnlog.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" crossorigin=""></script>
+
+    <script src="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien/leaflet.js"></script>
+
+    <script src="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien/jquery-3.3.1.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    <!--js file and css script for the data upload with ajax-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
 </head>
 
 <body onload="map()">
@@ -25,6 +51,7 @@
     </div>
     <div class="col-4">
       One of three columns123
+      <textarea id="polygon_in_geojson" class="output"></textarea>
     </div>
   </div>
 </div>
@@ -36,33 +63,10 @@
       </body>
       </html>
 
-      <script src="/leaflet/leaflet.js"></script>
 
-       <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
-           integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
-           crossorigin=""></script>
+<script src="/javascripts/betterwms.js"></script>
 
-      <script src="/turf/turf.min.js"></script>
-
-      <script src="/jquery/jquery.min.js"></script>
-
-      <script src="/bootstrap/js/bootstrap.min.js"></script>
-
-      <script src="/token/token.js"></script>
-
-      <script src="/javascripts/map.js"></script>
-
-    <script src="/jsnlog/jsnlog.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" crossorigin=""></script>
-
-    <script src="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien/leaflet.js"></script>
-
-    <script src="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien/jquery-3.3.1.min.js"></script>
-
-    <script src="/javascripts/betterwms.js"></script>
-
-
+<script src="/javascripts/map.js"></script>
 
 
 
