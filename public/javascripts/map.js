@@ -15,11 +15,12 @@
 * @desc create map
 */
 function map(){
-    var startpoint = [52.26524,7.72767];
+    var startpoint = [51.26524,9.72767];
 
-    var map = L.map('mapdiv',{
-    attributionControl: true})
-    .setView(startpoint, 13);
+    var map = L.map('mapdiv')
+    .setView(startpoint, 6);
+
+var accessToken = 'pk.eyJ1IjoiY2hyaXNzaTMxNyIsImEiOiJjanZ6MXdha3AwMmQ2NDlwM3c4ZTh2amt1In0.4h6xg5OtZ5TGU6uInpQnjQ';
 
     //OSM
     var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -80,7 +81,49 @@ function map(){
         "Gemeindegrenzen": gemeindelayer,
     };
 
-    L.control.layers(baseMaps, overlayMaps).addTo(map);
+    L.control.layers(baseMaps,overlayMaps).addTo(map);
 
+    var drawnItems = new L.FeatureGroup();
+         map.addLayer(drawnItems);
+         var drawControl = new L.Control.Draw({
+             edit: {
+                 featureGroup: drawnItems
+             }
+         });
+         map.addControl(drawControl);
+
+map.addControl(drawControl);
+
+// create feature collection and showed the geojson in textfield
+map.on(L.Draw.Event.CREATED, function (e) {
+    let layer = e.layer;
+    let geojson = {
+        "type": "FeatureCollection",
+        "features": []
+    }
+    geojson.features.push(layer.toGeoJSON());
+    geojson.features[0].properties["content"] = "Polygon";
+    document.getElementById("polygon_in_geojson").value = JSON.stringify(geojson);
+    layer.bindPopup(JSON.stringify(layer.toGeoJSON()));
+    map.addLayer(layer);
+});
+
+
+
+
+    var geocoder = L.Control.geocoder({
+        defaultMarkGeocode: false
+    })
+  .on('markgeocode', function(e) {
+    var bbox = e.geocode.bbox;
+    var poly = L.polygon([
+      bbox.getSouthEast(),
+      bbox.getNorthEast(),
+      bbox.getNorthWest(),
+      bbox.getSouthWest()
+    ]).addTo(map);
+    map.fitBounds(poly.getBounds());
+  })
+  .addTo(map);
 
 }
