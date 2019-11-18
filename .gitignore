@@ -1,4 +1,4 @@
-.idea/
-.node_modules/
+data
 package-lock.json
-token.js
+config
+node_modules
