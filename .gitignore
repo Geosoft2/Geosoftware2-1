@@ -1,4 +1,4 @@
-data
+/data
 package-lock.json
-config
-node_modules
+/config
+/node_modules
