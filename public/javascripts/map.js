@@ -83,16 +83,55 @@ var accessToken = 'pk.eyJ1IjoiY2hyaXNzaTMxNyIsImEiOiJjanZ6MXdha3AwMmQ2NDlwM3c4ZT
 
     L.control.layers(baseMaps,overlayMaps).addTo(map);
 
-    var drawnItems = new L.FeatureGroup();
-         map.addLayer(drawnItems);
-         var drawControl = new L.Control.Draw({
-             edit: {
-                 featureGroup: drawnItems
-             }
-         });
-         map.addControl(drawControl);
+ // Initialise the FeatureGroup to store editable layers
+ var editableLayers = new L.FeatureGroup();
+ map.addLayer(editableLayers);
 
-map.addControl(drawControl);
+ var drawPluginOptions = {
+   position: 'topleft',
+   draw: {
+     polygon: {
+       allowIntersection: false, // Restricts shapes to simple polygons
+       drawError: {
+         color: '#e1e100', // Color the shape will turn when intersects
+         message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+       },
+       shapeOptions: {
+         color: '#97009c'
+       }
+     },
+     // disable toolbar item by setting it to false
+     polygon: false,
+     polyline: false,
+     circle: false, // Turns off this drawing tool
+     rectangle: true,
+     marker: false,
+     circlemarker: false,
+     },
+   edit: {
+     featureGroup: editableLayers, //REQUIRED!!
+     remove: true,
+     edit: false
+   }
+ };
+
+ // Initialise the draw control and pass it the FeatureGroup of editable layers
+ var drawControl = new L.Control.Draw(drawPluginOptions);
+ map.addControl(drawControl);
+
+ var editableLayers = new L.FeatureGroup();
+ map.addLayer(editableLayers);
+
+ map.on('draw:created', function(e) {
+   var type = e.layerType,
+     layer = e.layer;
+
+   if (type === 'marker') {
+     layer.bindPopup('A popup!');
+   }
+
+   editableLayers.addLayer(layer);
+ });
 
 // create feature collection and showed the geojson in textfield
 map.on(L.Draw.Event.CREATED, function (e) {
@@ -110,7 +149,7 @@ map.on(L.Draw.Event.CREATED, function (e) {
 
 
 
-
+    // Suchfeld für Städte
     var geocoder = L.Control.geocoder({
         defaultMarkGeocode: false
     })
