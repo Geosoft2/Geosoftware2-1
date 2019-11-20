@@ -18,10 +18,9 @@ var session = require('express-session');
 var JL = require('jsnlog').JL;
 var jsnlog_nodejs = require('jsnlog-nodejs').jsnlog_nodejs;
 
+var token = require('./config/token');
 
-var config = require('./config/database');
-
-function connectMongoDB() {
+/* function connectMongoDB() {
   (async () => {
     // set up default ("Docker") mongoose connection
     await mongoose.connect(config.databaseDocker, {
@@ -29,19 +28,19 @@ function connectMongoDB() {
       useCreateIndex: true,
       autoReconnect: true
     }).then(db => {
-      console.log('Connected to MongoDB (databasename: "'+db.connections[0].name+'") on host "'+db.connections[0].host+'" and on port "'+db.connections[0].port+'""');
+      console.log('Connected to MongoDB (databasename: "' + db.connections[0].name + '") on host "' + db.connections[0].host + '" and on port "' + db.connections[0].port + '""');
     }).catch(async err => {
-      console.log('Connection to '+config.databaseDocker+' failed, try to connect to '+config.databaseLocal);
+      console.log('Connection to ' + config.databaseDocker + ' failed, try to connect to ' + config.databaseLocal);
       // set up "local" mongoose connection
       await mongoose.connect(config.databaseLocal, {
         useNewUrlParser: true,
         useCreateIndex: true,
         autoReconnect: true
       }).then(db => {
-        console.log('Connected to MongoDB (databasename: "'+db.connections[0].name+'") on host "'+db.connections[0].host+'" and on port "'+db.connections[0].port+'""');
+        console.log('Connected to MongoDB (databasename: "' + db.connections[0].name + '") on host "' + db.connections[0].host + '" and on port "' + db.connections[0].port + '""');
       }).catch(err2nd => {
-        console.log('Error at MongoDB-connection with Docker: '+err);
-        console.log('Error at MongoDB-connection with Localhost: '+err2nd);
+        console.log('Error at MongoDB-connection with Docker: ' + err);
+        console.log('Error at MongoDB-connection with Localhost: ' + err2nd);
         console.log('Retry to connect in 3 seconds');
         setTimeout(connectMongoDB, 3000); // retry until db-server is up
       });
@@ -49,7 +48,7 @@ function connectMongoDB() {
   })();
 }
 // connect to MongoDB
-connectMongoDB();
+connectMongoDB(); */
 
 var app = express();
 
@@ -91,26 +90,24 @@ app.post('/jsnlog.logger', (req, res) => {
 // Express Validator Middleware
 // @see https://github.com/VojtaStavik/GetBack2Work-Node/blob/master/node_modules/express-validator/README.md
 app.use(validator({
-  errorFormatter: function(param, msg, value) {
+  errorFormatter: function (param, msg, value) {
     var namespace = param.split('.'),
-        root    = namespace.shift(),
-        formParam = root;
+      root = namespace.shift(),
+      formParam = root;
 
-    while(namespace.length) {
+    while (namespace.length) {
       formParam += '[' + namespace.shift() + ']';
     }
     return {
-      param : formParam,
-      msg   : msg,
-      value : value
+      param: formParam,
+      msg: msg,
+      value: value
     };
   }
 }));
 
 app.use(cookieParser());
 app.use(logger('dev'));
-
-var token = require('./config/token').token;
 
 // Express Session Middleware
 // @see https://github.com/expressjs/session
@@ -129,7 +126,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.get('*', function(req, res, next){
+app.get('*', function (req, res, next) {
   res.locals.user = req.user || null;
   //console.log('user', res.locals.user);
   next();
@@ -142,12 +139,12 @@ let impressumRouter = require('./routes/impressum');
 app.use('/impressum', impressumRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
