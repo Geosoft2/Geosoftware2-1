@@ -7,9 +7,9 @@ if (typeof exports == "undefined") {
 }
 
 module.exports = {
-    secretSession: 'EXAMPLESTRING',
-    twitter_consumer_key: 'EXAMPLESTRING',
-    twitter_consumer_secret: 'EXAMPLESTRING',
-    twitter_access_token: 'EXAMPLESTRING',
-    twitter_access_token_secret: 'EXAMPLESTRING',
+    secretSession: 'ExampleString',
+    twitter_consumer_key: 'KIbQWCbiPYbwFvbLshAVTeEmd',
+    twitter_consumer_secret: 'G3CHnto8NhvvKoz285TJ7zNHxN8UQkuXuGnB6WphV4mt9WYc6R',
+    twitter_access_token: '1194921559837827072-IqMc1AqO0CGBNqJB30nAkHwEvG3axe',
+    twitter_access_token_secret: 'u9ZPxYy0FYponsj1j4Le1xH1NCBBNmLa01xaFYJBl5bDN'
 };
