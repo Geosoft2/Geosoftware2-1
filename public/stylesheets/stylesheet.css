@@ -19,3 +19,11 @@ th {
 a.impressum:link, a.impressum:visited {
   color: black;
 }
+
+.tweet {
+  width: 300px;
+}
+
+#tweets {
+  width: 300px;
+}
