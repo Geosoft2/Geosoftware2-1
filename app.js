@@ -51,6 +51,7 @@ app.use('/turf', express.static(__dirname + '/node_modules/@turf/turf'));
 app.use('/config', express.static(__dirname + '/config'));
 app.use('/jsnlog', express.static(__dirname + "/node_modules/jsnlog"));
 app.use('/fontawesome', express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free'));
+app.use("/leaflet-draw", express.static(__dirname + "/node_modules/leaflet-draw/dist"));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
