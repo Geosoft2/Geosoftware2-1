@@ -15,11 +15,12 @@
 * @desc create map
 */
 function map(){
-    var startpoint = [52.26524,7.72767];
+    var startpoint = [51.26524,9.72767];
 
-    var map = L.map('mapdiv',{
-    attributionControl: true})
-    .setView(startpoint, 13);
+    var map = L.map('mapdiv')
+    .setView(startpoint, 6);
+
+var accessToken = 'pk.eyJ1IjoiY2hyaXNzaTMxNyIsImEiOiJjanZ6MXdha3AwMmQ2NDlwM3c4ZTh2amt1In0.4h6xg5OtZ5TGU6uInpQnjQ';
 
     //OSM
     var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -80,7 +81,88 @@ function map(){
         "Gemeindegrenzen": gemeindelayer,
     };
 
-    L.control.layers(baseMaps, overlayMaps).addTo(map);
+    L.control.layers(baseMaps,overlayMaps).addTo(map);
 
+ // Initialise the FeatureGroup to store editable layers
+ var editableLayers = new L.FeatureGroup();
+ map.addLayer(editableLayers);
+
+ var drawPluginOptions = {
+   position: 'topleft',
+   draw: {
+     polygon: {
+       allowIntersection: false, // Restricts shapes to simple polygons
+       drawError: {
+         color: '#e1e100', // Color the shape will turn when intersects
+         message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+       },
+       shapeOptions: {
+         color: '#97009c'
+       }
+     },
+     // disable toolbar item by setting it to false
+     polygon: false,
+     polyline: false,
+     circle: false, // Turns off this drawing tool
+     rectangle: true,
+     marker: false,
+     circlemarker: false,
+     },
+   edit: {
+     featureGroup: editableLayers, //REQUIRED!!
+     remove: true,
+     edit: false
+   }
+ };
+
+ // Initialise the draw control and pass it the FeatureGroup of editable layers
+ var drawControl = new L.Control.Draw(drawPluginOptions);
+ map.addControl(drawControl);
+
+ var editableLayers = new L.FeatureGroup();
+ map.addLayer(editableLayers);
+
+ map.on('draw:created', function(e) {
+   var type = e.layerType,
+     layer = e.layer;
+
+   if (type === 'marker') {
+     layer.bindPopup('A popup!');
+   }
+
+   editableLayers.addLayer(layer);
+ });
+
+// create feature collection and showed the geojson in textfield
+map.on(L.Draw.Event.CREATED, function (e) {
+    let layer = e.layer;
+    let geojson = {
+        "type": "FeatureCollection",
+        "features": []
+    }
+    geojson.features.push(layer.toGeoJSON());
+    geojson.features[0].properties["content"] = "Polygon";
+    document.getElementById("polygon_in_geojson").value = JSON.stringify(geojson);
+    layer.bindPopup(JSON.stringify(layer.toGeoJSON()));
+    map.addLayer(layer);
+});
+
+
+
+    // Suchfeld für Städte
+    var geocoder = L.Control.geocoder({
+        defaultMarkGeocode: false
+    })
+  .on('markgeocode', function(e) {
+    var bbox = e.geocode.bbox;
+    var poly = L.polygon([
+      bbox.getSouthEast(),
+      bbox.getNorthEast(),
+      bbox.getNorthWest(),
+      bbox.getSouthWest()
+    ]).addTo(map);
+    map.fitBounds(poly.getBounds());
+  })
+  .addTo(map);
 
 }
