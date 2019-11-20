@@ -1,4 +1,4 @@
 package-lock.json
 data
 node_modules
-config/token.js
+config
