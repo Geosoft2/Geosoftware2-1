@@ -16,12 +16,21 @@ var flash = require('express-flash');
 var session = require('express-session');
 var JL = require('jsnlog').JL;
 var jsnlog_nodejs = require('jsnlog-nodejs').jsnlog_nodejs;
+var twit = require('twit');
 /* var mongoose = require('mongoose'); */
 
 var token = require('./config/token');
 /* var config = require('./config/database'); */
 
 var app = express();
+
+//create new TwitClient
+var TwitClient = new twit({
+  consumer_key: token.twitter_consumer_key,
+  consumer_secret: token.twitter_consumer_secret,
+  access_token: token.twitter_access_token,
+  access_token_secret: token.twitter_access_token_secret
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -41,16 +50,10 @@ app.use("/leaflet-control-geocoder", express.static(__dirname + "/node_modules/l
 app.use('/turf', express.static(__dirname + '/node_modules/@turf/turf'));
 app.use('/token', express.static(__dirname + '/config'));
 app.use('/jsnlog', express.static(__dirname + "/node_modules/jsnlog"));
+app.use('/fontawesome', express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free'));
 
-
-/*
-* sets the limit to 10MB:
-* now it is possible to load for example tweets, that are huge without any error
-*/
-app.use(express.urlencoded({ extended: false, limit: '10mb' }));
-// parse application/json
-app.use(express.json());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post('/jsnlog.logger', (req, res) => {
   // req.body.lg[0].m to get only the message
@@ -58,6 +61,20 @@ app.post('/jsnlog.logger', (req, res) => {
   // Send empty response. This is ok, because client side jsnlog does not use response from server.
   res.send('');
 });
+
+app.post('/api', (req, res) => {
+  var query = req.body;
+  TwitClient.get('search/tweets', { q: query.keyword, count: 1 }, function (err, data, response) {
+    res.send(data);
+  });
+});
+
+/* function getStream(input) {
+  var TwitStream = TwitClient.stream('statuses/filter', { track: input });
+  TwitStream.on('tweet', (tweet) => {
+    console.log(tweet);
+  });
+}; */
 
 // Express Validator Middleware
 // @see https://github.com/VojtaStavik/GetBack2Work-Node/blob/master/node_modules/express-validator/README.md
@@ -109,8 +126,6 @@ let indexRouter = require('./routes/index');
 app.use('/', indexRouter);
 let impressumRouter = require('./routes/impressum');
 app.use('/impressum', impressumRouter);
-let testpageRouter = require('./routes/testpage');
-app.use('/testpage', testpageRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -127,17 +142,6 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-// Twitter
-var Twit = require('twit');
-var TwitClient = new Twit({
-  consumer_key: token.twitter_consumer_key,
-  consumer_secret: token.twitter_consumer_secret,
-  access_token: token.twitter_access_token,
-  access_token_secret: token.twitter_access_token_secret
-});
-
-//TwitClient.post('statuses/update', { status: "Hello there! We are Salus Solutions." });
 
 /* function connectMongoDB() {
   (async () => {
