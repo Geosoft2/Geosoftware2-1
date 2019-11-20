@@ -1,66 +1,73 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
   <title><%= title %></title>
 
-  <meta name="author" content="Lukas, Christin, Constantin, Max"/>
+  <meta name="author" content="Lukas, Christin, Constantin, Max" />
   <meta charset="UTF-8">
 
   <% include partials/stylesheet.ejs %>
-  <link rel="stylesheet" href="/leaflet/leaflet.css"/>
+  <link rel="stylesheet" href="/leaflet/leaflet.css" />
 
-    <script src="/leaflet/leaflet.js"></script>
+  <script src="/leaflet/leaflet.js"></script>
 
-     <link rel="stylesheet" href="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien//leaflet_css.css"/>
+  <link rel="stylesheet" href="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien//leaflet_css.css" />
 
-       <script src="/turf/turf.min.js"></script>
+  <script src="/turf/turf.min.js"></script>
 
-      <script src="/jquery/jquery.min.js"></script>
+  <script src="/jquery/jquery.min.js"></script>
 
-      <script src="/bootstrap/js/bootstrap.min.js"></script>
+  <script src="/bootstrap/js/bootstrap.min.js"></script>
 
-      <script src="/token/token.js"></script>
+  <script src="/token/token.js"></script>
 
-    <script src="/jsnlog/jsnlog.min.js"></script>
+  <script src="/jsnlog/jsnlog.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" crossorigin=""></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" crossorigin=""></script>
 
-    <script src="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien/leaflet.js"></script>
+  <script src="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien/leaflet.js"></script>
 
-    <script src="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien/jquery-3.3.1.min.js"></script>
+  <script src="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien/jquery-3.3.1.min.js"></script>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
-    <!--js file and css script for the data upload with ajax-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+  <!--js file and css script for the data upload with ajax-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 
+  <link rel="stylesheet" href="/leaflet/leaflet.css" />
+  <link rel="stylesheet" href="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien//leaflet_css.css" />
+  <link rel="stylesheet" href="mdbootstrap/css/mdb.min.css">
+  <link rel="stylesheet" href="fontawesome/css/all.min.css">
 </head>
 
 <body onload="map()">
 
+  <% include partials/header.ejs %>
 
-    <% include partials/header.ejs %>
-
-<div class="container" style="height: 70%;">
-  <div class="row" style="height: 100%;" >
-    <div id ="mapdiv" class="col-8" style="height: 100%;" >
-      One of three columns
-    </div>
-    <div class="col-4">
-      One of three columns123
+  <div class="container" style="height: 70%;">
+    <div class="row" style="height: 100%;">
+      <div id="mapdiv" class="col-8" style="height: 100%;"></div>
+      <div class="col-4">
+        <form class="form-inline" id="twitter_form">
+          <div class="md-form my-3 ml-3">
+            <input class="form-control" type="text" placeholder="Search" id="keyword_input">
+          </div>
+        </form>
+        <div id="tweet_container">
+        </div>
+      </div>
     </div>
   </div>
-</div>
-
-
 
   <% include partials/footer.ejs %>
 
-      </body>
-      </html>
+</body>
+
+</html>
 
 
 <script src="/javascripts/betterwms.js"></script>
@@ -69,3 +76,26 @@
 
 
 
+</body>
+
+</html>
+
+<script src="/leaflet/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+  integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+  crossorigin=""></script>
+<script src="/turf/turf.min.js"></script>
+<script src="/javascripts/map.js"></script>
+<script src="/jsnlog/jsnlog.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" crossorigin=""></script>
+<script src="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien/leaflet.js"></script>
+<script src="https://www.dwd.de/DE/leistungen/webmodul_warnungen/dateien/jquery-3.3.1.min.js"></script>
+<script src="/javascripts/betterwms.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script src="jquery/jquery.min.js"></script>
+<script src="popper/umd/popper.min.js"></script>
+<script src="bootstrap/js/bootstrap.min.js"></script>
+<script src="mdbootstrap/js/mdb.js"></script>
+<script src="fontawesome/js/all.min.js"></script>
+<script src="config/twitter_widget.js"></script>
+<script src="javascripts/index.js"></script>

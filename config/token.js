@@ -7,9 +7,9 @@ if (typeof exports == "undefined") {
 }
 
 module.exports = {
-    secretSession: 'ExampleString',
-    twitter_consumer_key: '',
-    twitter_consumer_secret: '',
-    twitter_access_token: '',
-    twitter_access_token_secret: ''
+    secretSession: 'EXAMPLESTRING',
+    twitter_consumer_key: 'EXAMPLESTRING',
+    twitter_consumer_secret: 'EXAMPLESTRING',
+    twitter_access_token: 'EXAMPLESTRING',
+    twitter_access_token_secret: 'EXAMPLESTRING',
 };
