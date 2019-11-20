@@ -48,7 +48,7 @@ app.use('/open-iconic', express.static(__dirname + '/node_modules/open-iconic/fo
 app.use("/leaflet", express.static(__dirname + "/node_modules/leaflet/dist"));
 app.use("/leaflet-control-geocoder", express.static(__dirname + "/node_modules/leaflet-control-geocoder/dist"));
 app.use('/turf', express.static(__dirname + '/node_modules/@turf/turf'));
-app.use('/token', express.static(__dirname + '/config'));
+app.use('/config', express.static(__dirname + '/config'));
 app.use('/jsnlog', express.static(__dirname + "/node_modules/jsnlog"));
 app.use('/fontawesome', express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free'));
 
@@ -64,7 +64,7 @@ app.post('/jsnlog.logger', (req, res) => {
 
 app.post('/api', (req, res) => {
   var query = req.body;
-  TwitClient.get('search/tweets', { q: query.keyword, count: 1 }, function (err, data, response) {
+  TwitClient.get('search/tweets', { q: query.keyword, count: 3 }, function (err, data, response) {
     res.send(data);
   });
 });

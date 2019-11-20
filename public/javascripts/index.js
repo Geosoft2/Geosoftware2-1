@@ -1,10 +1,3 @@
-const widget_config = {
-    conversation: 'none',    // or all
-    cards: 'hidden',  // or visible
-    linkColor: '#cc0000', // default is blue
-    theme: 'dark'    // or dark
-};
-
 requestTweets();
 
 function requestTweets() {
@@ -33,17 +26,14 @@ function requestTweets() {
 };
 
 function processData(data) {
-    $("twitter-widget").remove();
-    var tweet_id = data.statuses[0].id_str;
+    $(".tweet").remove();
+    var tweets = data.statuses;
 
-    $('.tweet').attr("id", tweet_id);
-
-    var tweets = $(".tweet");
-
-    $(tweets).each(function (index, tweet) {
-
-        var id = $(this).attr('id');
-
-        twttr.widgets.createTweet(id, tweet, widget_config);
+    tweets.forEach((tweet) => {
+        var tweet_id = tweet.id_str;
+        var tweet_html = '<div class="tweet" id="' + tweet_id + '"></div>';
+        $("#tweet_container").append(tweet_html);
+        var tweet_dom = $("#" + tweet_id)[0];
+        twttr.widgets.createTweet(tweet_id, tweet_dom, widget_config);
     });
 };
