@@ -16,16 +16,20 @@
   <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="mdbootstrap/css/mdb.min.css">
   <link rel="stylesheet" href="fontawesome/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="stylesheets/jquery-eu-cookie-law-popup.css"/>
+
+
 
 </head>
 
-<body onload="map()">
+<body class="eupopup eupopup-bottomright" onload="map()">
 
   <% include partials/header.ejs %>
-
+<main role="main" class="container-fluid" id="main" style="height: 100%">
   <div class="container" style="height: 70%;">
     <div class="row" style="height: 100%;">
-      <div id="mapdiv" class="col-8" style="height: 100%;"></div>
+      <div id="mapdiv" class="col-8" style="height: 100%;">
+      </div>
       <div class="col-4">
         <form class="form-inline" id="twitter_form">
           <div class="md-form my-3 ml-3">
@@ -36,13 +40,22 @@
         </div>
       </div>
     </div>
+    <div class="row" >
+      <div id ="button_div" class="col-4" >
+        <button type="button" class="btn btn-warning" onclick="saveCookie();" title="Set your current view as defaultview."><img id="save_icon" class="img-fluid" src="/images/save_icon.png" alt="Set your current view as Defaultview" style="width:20px; height:auto;"></button>
+      </div>
+      <div class="col-8">
+        Column 4
+      </div>
+    </div>
   </div>
-
+</main>
   <% include partials/footer.ejs %>
 
   <script src="leaflet/leaflet.js"></script>
   <script src="turf/turf.min.js"></script>
   <script src="jquery/jquery.min.js"></script>
+  <script src="javascripts/jquery-eu-cookie-law-popup.js"></script>
   <script src="popper/umd/popper.min.js"></script>
   <script src="bootstrap/js/bootstrap.min.js"></script>
   <script src="mdbootstrap/js/mdb.min.js"></script>
@@ -55,6 +68,8 @@
   <script src="javascripts/map.js"></script>
   <script src="javascripts/twitter-widgets.js"></script>
   <script src="javascripts/index.js"></script>
+  <script src="javascripts/cookies.js"></script>
+
 
 </body>
 
