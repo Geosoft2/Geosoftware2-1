@@ -9,16 +9,29 @@
 * apllication for changing the cursor
 */
 
-
+var map;
 
 /**
 * @desc create map
 */
 function map(){
     var startpoint = [51.26524,9.72767];
+    var expansion = 6;
 
-    var map = L.map('mapdiv')
-    .setView(startpoint, 6);
+    if (getCookie("startPoint") != ""){
+        var cookiePointX = getCookie("startPoint").substr(7, 8);
+        var cookiePointY = getCookie("startPoint").substr(17, 7);
+
+        startpoint = [cookiePointX,cookiePointY];
+    }
+
+    var cookieExpansion = getCookie("expansion");
+    if (cookieExpansion != ""){
+        expansion = cookieExpansion;
+    }
+
+    map = L.map('mapdiv')
+    .setView(startpoint, expansion);
 
 var accessToken = 'pk.eyJ1IjoiY2hyaXNzaTMxNyIsImEiOiJjanZ6MXdha3AwMmQ2NDlwM3c4ZTh2amt1In0.4h6xg5OtZ5TGU6uInpQnjQ';
 
