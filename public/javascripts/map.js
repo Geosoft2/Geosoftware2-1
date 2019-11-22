@@ -116,6 +116,15 @@ var accessToken = 'pk.eyJ1IjoiY2hyaXNzaTMxNyIsImEiOiJjanZ6MXdha3AwMmQ2NDlwM3c4ZT
  map.on(L.Draw.Event.CREATED, function (e) {
     var layer = e.layer;
      drawnItems.addLayer(layer);
+         let geojson = {
+             "type": "FeatureCollection",
+             "features": []
+         }
+         geojson.features.push(layer.toGeoJSON());
+         geojson.features[0].properties["content"] = "Polygon";
+         document.getElementById("polygon_in_geojson").value = JSON.stringify(geojson);
+         layer.bindPopup(JSON.stringify(layer.toGeoJSON()));
+         map.addLayer(layer);
  });
 
     var bbox;
