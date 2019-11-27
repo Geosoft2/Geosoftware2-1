@@ -104,8 +104,8 @@ var accessToken = 'pk.eyJ1IjoiY2hyaXNzaTMxNyIsImEiOiJjanZ6MXdha3AwMmQ2NDlwM3c4ZT
          marker: false,
          polyline: false,
          circlemarker: false,
-         rectangle: true,
-         circle: false,
+         rectangle: false,
+         circle: true,
      },
    edit: {
      featureGroup: drawnItems
