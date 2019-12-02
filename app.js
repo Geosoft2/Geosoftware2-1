@@ -52,6 +52,8 @@ app.use('/config', express.static(__dirname + '/config'));
 app.use('/jsnlog', express.static(__dirname + "/node_modules/jsnlog"));
 app.use('/fontawesome', express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free'));
 app.use("/leaflet-draw", express.static(__dirname + "/node_modules/leaflet-draw/dist"));
+app.use("/flag-icon-css", express.static(__dirname + "/node_modules/flag-icon-css"));
+app.use("/bootstrap-select", express.static(__dirname + "/node_modules/bootstrap-select/dist"));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -65,7 +67,7 @@ app.post('/jsnlog.logger', (req, res) => {
 
 app.post('/api', (req, res) => {
   var query = req.body;
-  TwitClient.get('search/tweets', { q: query.keyword, count: 3 }, function (err, data, response) {
+  TwitClient.get('search/tweets', { q: query.keyword, count: query.count, lang: query.language }, function (err, data, response) {
     res.send(data);
   });
 });
