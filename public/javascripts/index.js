@@ -2,7 +2,7 @@ $('select').selectpicker();
 
 requestTweets();
 
-function requestTweets() {
+function requestTweets(geocode) {
     $(document).ready(() => {
         $("#twitter_form").submit((event) => {
             event.preventDefault();
@@ -10,7 +10,8 @@ function requestTweets() {
             var query = {
                 keyword: $("#keyword_input").val(),
                 count: $("#count_select").val(),
-                language: $("#language_select").val()
+                language: $("#language_select").val(),
+                geocode: getCookie("geocode")
             };
 
             $.ajax({
