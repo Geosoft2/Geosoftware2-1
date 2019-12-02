@@ -19,20 +19,20 @@
 
 /** function to get the current expansion of the map and save it as a cookie
 **/
-function saveCookie(){
-    console.log("halloWelt");
-    var currentZoom = map.getZoom();
-    var currentCenter = map.getCenter();
-    console.log(currentCenter);
-    document.cookie = "startPoint=" + currentCenter;
-    document.cookie = "expansion=" + currentZoom ;
+function saveCookie() {
+  console.log("halloWelt");
+  var currentZoom = map.getZoom();
+  var currentCenter = map.getCenter();
+  console.log(currentCenter);
+  document.cookie = "startPoint=" + currentCenter;
+  document.cookie = "expansion=" + currentZoom;
 }
 
 function getCookie(cname) {
   var name = cname + "=";
   var decodedCookie = decodeURIComponent(document.cookie);
   var ca = decodedCookie.split(';');
-  for(var i = 0; i <ca.length; i++) {
+  for (var i = 0; i < ca.length; i++) {
     var c = ca[i];
     while (c.charAt(0) == ' ') {
       c = c.substring(1);
