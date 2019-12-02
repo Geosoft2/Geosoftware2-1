@@ -1,3 +1,5 @@
+$('select').selectpicker();
+
 requestTweets();
 
 function requestTweets() {
@@ -6,7 +8,9 @@ function requestTweets() {
             event.preventDefault();
 
             var query = {
-                keyword: $("#keyword_input").val()
+                keyword: $("#keyword_input").val(),
+                count: $("#count_select").val(),
+                language: $("#language_select").val()
             };
 
             $.ajax({
@@ -31,8 +35,8 @@ function processData(data) {
 
     tweets.forEach((tweet) => {
         var tweet_id = tweet.id_str;
-        var tweet_html = '<div class="tweet" id="' + tweet_id + '"></div>';
-        $("#tweet_container").append(tweet_html);
+        var tweet_html = '<div class="tweet carousel-item" id="' + tweet_id + '"></div>';
+        $("#tweet_carousel_inner").append(tweet_html);
         var tweet_dom = $("#" + tweet_id)[0];
         twttr.widgets.createTweet(tweet_id, tweet_dom, widget_config);
     });
