@@ -16,6 +16,8 @@
   <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="mdbootstrap/css/mdb.min.css">
   <link rel="stylesheet" href="fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="flag-icon-css/css/flag-icon.min.css">
+  <link rel="stylesheet" , href="bootstrap-select/css/bootstrap-select.min.css">
 
 </head>
 
@@ -27,12 +29,39 @@
     <div class="row" style="height: 100%;">
       <div id="mapdiv" class="col-8" style="height: 100%;"></div>
       <div class="col-4">
-        <form class="form-inline" id="twitter_form">
-          <div class="md-form my-3 ml-3">
-            <input class="form-control" type="text" placeholder="Search" id="keyword_input">
+        <form class="md-form form-inline" id="twitter_form">
+          <div class="col-4">
+            <input class="form-control" type="text" placeholder="keyword" id="keyword_input">
+          </div>
+          <div class="col-4">
+            <select class="form-control" id="count_select">
+              <option>5</option>
+              <option>10</option>
+              <option>20</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </div>
+          <div class="col-4">
+            <select class="form-control" data-width="fit" id="language_select">
+              <option data-content="<span class='flag-icon flag-icon-gb'></span>" value="en"></option>
+              <option data-content="<span class='flag-icon flag-icon-de'></span>" value="de"></option>
+            </select>
           </div>
         </form>
-        <div id="tweet_container">
+        <div id="tweet_carousel" class="carousel slide" data-interval="false">
+          <a class="carousel-control-prev" href="#tweet_carousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+          </a>
+          <a class="carousel-control-next" href="#tweet_carousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon"></span>
+          </a>
+          <div class="carousel-inner" id="tweet_carousel_inner">
+            <div class="carousel-item active" id="first_item">
+              <img class="d-block w-100" src="https://mdbootstrap.com/img/Photos/Slides/img%20(35).jpg"
+                id="placeholder">
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -46,6 +75,7 @@
   <script src="popper/umd/popper.min.js"></script>
   <script src="bootstrap/js/bootstrap.min.js"></script>
   <script src="mdbootstrap/js/mdb.min.js"></script>
+  <script src="bootstrap-select/js/bootstrap-select.min.js"></script>
   <script src="jsnlog/jsnlog.min.js"></script>
   <script src="leaflet-control-geocoder/Control.Geocoder.min.js"></script>
   <script src="leaflet-draw/leaflet.draw.js"></script>
