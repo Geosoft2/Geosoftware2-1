@@ -15,24 +15,60 @@ var map;
 * @desc create map
 */
 function map(){
-    var startpoint = [51.26524,9.72767];
-    var expansion = 6;
 
-    if (getCookie("startPoint") != ""){
-        var cookiePointX = getCookie("startPoint").substr(7, 8);
-        var cookiePointY = getCookie("startPoint").substr(17, 7);
+      var startpoint = [51.26524,9.72767];
+      var zoomLevel = 6;
+      var urlParam =  getAllUrlParams();
 
-        startpoint = [cookiePointX,cookiePointY];
-    }
+      if (urlParam.zoomlevel !== undefined && urlParam.zoomlevel !== ""){
+        zoomLevel = urlParam.zoomlevel;
+      }
+      else{
+        var cookieZoomLevel = getCookie("zoomLevel");
+        if (cookieZoomLevel != ""){
+        zoomLevel = cookieZoomLevel;
+        }
+      }
+        if (urlParam.centerpoint !== undefined && urlParam.centerpoint !== ""){
+            try{
+            var parsedcenter = JSON.parse(urlParam.centerpoint);
+            var cookiePointX = parsedcenter[0];
+            var cookiePointY = parsedcenter[1];
 
-    var cookieExpansion = getCookie("expansion");
-    if (cookieExpansion != ""){
-        expansion = cookieExpansion;
-    }
+            startpoint = [cookiePointX,cookiePointY];
+            }
+            catch(err) {
+                $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
+            }
+        }
+        else{
 
-    map = L.map('mapdiv')
-    .setView(startpoint, expansion);
+            if (getCookie("startX") != "" && getCookie("startY") != ""){
+                try{
+                var cookiePointX = getCookie("startX");
+                var cookiePointY = getCookie("startY");
+                startpoint = [cookiePointX,cookiePointY];
+                $("#message").append("<div class='alert alert-secondary col-12' role='alert' style='margin-top:5px'>" + "Your view has set to your saved view saved as a cookie" + "</div>");
+                $("#message").append("<div class='alert alert-secondary col-12' role='alert' style='margin-top:5px'>" + "Your view has set to your saved view saved as a cookie" + "</div>");
+                }
+                catch (err){
+                    $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
 
+                }
+            }
+        }
+
+        if (getCookie("expansionURL") != ""){
+                     expansion = getCookie("expansionURL");
+                 }
+        else{
+
+            }
+
+        map = L.map('mapdiv')
+        .setView(startpoint, zoomLevel);
+
+//TODO what is this token for??
 var accessToken = 'pk.eyJ1IjoiY2hyaXNzaTMxNyIsImEiOiJjanZ6MXdha3AwMmQ2NDlwM3c4ZTh2amt1In0.4h6xg5OtZ5TGU6uInpQnjQ';
 
     //OSM

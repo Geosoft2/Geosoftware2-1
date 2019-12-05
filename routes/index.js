@@ -4,6 +4,8 @@
 
 
 const express = require('express');
+var cookieParser = require('cookie-parser');
+var cookie = require('cookie');
 const router = express.Router();
 
 const IndexController = require('../controllers/index');
