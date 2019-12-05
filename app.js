@@ -67,7 +67,7 @@ app.post('/jsnlog.logger', (req, res) => {
 
 app.post('/api', (req, res) => {
   var query = req.body;
-  TwitClient.get('search/tweets', { q: query.keyword, count: query.count, lang: query.language }, function (err, data, response) {
+  TwitClient.get('search/tweets', { q: query.keyword, count: query.count, lang: query.language, geocode: query.geocode }, function (err, data, response) {
     res.send(data);
   });
 });
