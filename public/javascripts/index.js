@@ -1,8 +1,10 @@
-$('select').selectpicker();
+$(document).ready(() => {
+    document.cookie = "geocode=";
+    $('select').selectpicker();
+    requestTweets();
+});
 
-requestTweets();
-
-function requestTweets(geocode) {
+function requestTweets() {
     $(document).ready(() => {
         $("#twitter_form").submit((event) => {
             event.preventDefault();
