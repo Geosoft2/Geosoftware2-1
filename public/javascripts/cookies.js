@@ -19,29 +19,29 @@
 
 /** function to get the current expansion of the map and save it as a cookie
 **/
-function saveCookie(){
-    var currentZoom = map.getZoom();
-    var currentCenter = map.getCenter();
-    console.log(currentCenter);
-    console.log(currentCenter.lat);
-    console.log(currentZoom);
-    document.cookie = "startX=" + currentCenter.lat;
-    document.cookie = "startY=" + currentCenter.lng;
-    document.cookie = "zoomLevel=" + currentZoom ;
+function saveCookie() {
+  var currentZoom = map.getZoom();
+  var currentCenter = map.getCenter();
+  console.log(currentCenter);
+  console.log(currentCenter.lat);
+  console.log(currentZoom);
+  document.cookie = "startX=" + currentCenter.lat;
+  document.cookie = "startY=" + currentCenter.lng;
+  document.cookie = "zoomLevel=" + currentZoom;
 
-    var newRequest = ["centerpoint=[" + currentCenter.lat + "," + currentCenter.lng + "]", "zoomlevel=" + currentZoom];
+  var newRequest = ["centerpoint=[" + currentCenter.lat + "," + currentCenter.lng + "]", "zoomlevel=" + currentZoom];
 
-    var newURL = buildUrl(newRequest);
-    console.log(newURL);
-    console.log("rthis is new");
-    window.location.href = newURL;
+  var newURL = buildUrl(newRequest);
+  console.log(newURL);
+  console.log("rthis is new");
+  window.location.href = newURL;
 }
 
 function getCookie(cname) {
   var name = cname + "=";
   var decodedCookie = decodeURIComponent(document.cookie);
   var ca = decodedCookie.split(';');
-  for(var i = 0; i <ca.length; i++) {
+  for (var i = 0; i < ca.length; i++) {
     var c = ca[i];
     while (c.charAt(0) == ' ') {
       c = c.substring(1);

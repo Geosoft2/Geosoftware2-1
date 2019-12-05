@@ -1,6 +1,8 @@
-$('select').selectpicker();
-
-requestTweets();
+$(document).ready(() => {
+    document.cookie = "geocode=";
+    $('select').selectpicker();
+    requestTweets();
+});
 
 function requestTweets() {
     $(document).ready(() => {
@@ -10,7 +12,8 @@ function requestTweets() {
             var query = {
                 keyword: $("#keyword_input").val(),
                 count: $("#count_select").val(),
-                language: $("#language_select").val()
+                language: $("#language_select").val(),
+                geocode: getCookie("geocode")
             };
 
             $.ajax({
