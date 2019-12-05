@@ -118,13 +118,6 @@ function map() {
         drawnItems.clearLayers();
         var layer = e.layer;
         drawnItems.addLayer(layer);
-        let geojson = {
-            "type": "FeatureCollection",
-            "features": []
-        }
-        geojson.features.push(layer.toGeoJSON());
-        geojson.features[0].properties["content"] = "Polygon";
-        document.getElementById("polygon_in_geojson").value = JSON.stringify(geojson);
         layer.bindPopup(JSON.stringify(layer.toGeoJSON()));
         map.addLayer(layer);
 
