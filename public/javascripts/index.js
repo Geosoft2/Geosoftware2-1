@@ -1,3 +1,5 @@
+//TEST
+
 $(document).ready(() => {
     document.cookie = "geocode=";
     $('select').selectpicker();
