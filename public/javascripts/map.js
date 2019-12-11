@@ -10,6 +10,18 @@
 */
 
 var map;
+var output;
+var startpoint;
+
+
+// setting the wfs input in var output to work with it locally
+function set_output (x) {
+    output=x;
+};
+
+function get_output () {
+    return output;
+}
 
 /**
 * @desc create map
@@ -65,6 +77,48 @@ function map() {
 
     }
 
+    // setting connection to wfs server with a ajax call
+
+    var owsrootUrl = 'https://maps.dwd.de/geoserver/dwd/ows';
+
+var defaultParameters = {
+    service : 'WFS',
+    version : '2.0',
+    request : 'GetFeature',
+    typeName : 'dwd:Warnungen_Landkreise',
+    outputFormat : 'text/javascript',
+    format_options : 'callback:getJson',
+    SrsName : 'EPSG:4326'
+};
+
+var parameters = L.Util.extend(defaultParameters);
+var URL = owsrootUrl + L.Util.getParamString(parameters);
+
+var WFSLayer = null;
+var ajax = $.ajax({
+    url : URL,
+    dataType : 'jsonp',
+    jsonpCallback : 'getJson',
+    success : function (response) {
+        set_output(response);
+        // muss noch weiter bearbeitet werden. Idee: den Startpunkt der Karte abhängig von dem
+        // wfs output zu machen. zoom() funktion steht in wfs.js
+        if (response != null) {
+            startpoint=zoom();
+        }
+
+        WFSLayer = L.geoJson(response, {
+            style: setStyles, // setStyles function steht unten im Dokument.
+            onEachFeature: function (feature, layer) {
+                //popupOptions = {maxWidth: 200};
+                layer.bindPopup(feature.properties.EVENT+"<br><br>"+"VON: "+feature.properties.EFFECTIVE+"<br>Bis voraussichtlich: "+feature.properties.EXPIRES);
+
+            }
+        }).addTo(map);
+        return response;
+    }
+}).responseText;
+
     map = L.map('mapdiv')
         .setView(startpoint, zoomLevel);
 
@@ -96,23 +150,6 @@ function map() {
     var start = L.marker([52.26524, 7.72767]).bindPopup('This is the Startpoint');
     var excample = L.layerGroup([start]);
 
-    // Warnungs-Layer vom DWD-Geoserver - betterWms fügt Möglichkeiten zur GetFeatureInfo hinzu
-    var warnlayer = L.tileLayer.betterWms("https://maps.dwd.de/geoproxy_warnungen/service/", {
-        layers: 'Warnungen_Landkreise',
-        // eigene Styled Layer Descriptor (SLD) können zur alternativen Anzeige der Warnungen genutzt werden (https://docs.geoserver.org/stable/en/user/styling/sld/reference/)
-        //sld: 'https://eigenerserver/alternativer.sld',
-        format: 'image/png',
-        transparent: true,
-        opacity: 0.8,
-        attribution: 'Warndaten: &copy; <a href="https://www.dwd.de">DWD</a>'
-    });
-
-    // CQL_FILTER können benutzt werden um angezeigte Warnungen zu filtern (https://docs.geoserver.org/stable/en/user/tutorials/cql/cql_tutorial.html)
-    // Filterung kann auf Basis der verschiedenen properties der Warnungen erfolgen (bspw. EC_II, EC_GROUP, DESCRIPTION ... ) siehe https://www.dwd.de/DE/wetter/warnungen_aktuell/objekt_einbindung/einbindung_karten_geowebservice.pdf
-    // warnlayer.setParams({CQL_FILTER:"DESCRIPTION LIKE '%Sturm%'"});
-    // Filter können zur Laufzeit, z.B. über Nutzereingaben angepasst werden
-    //delete warnlayer.wmsParams.CQL_FILTER;
-    //warnlayer.redraw();
 
     // Layer mit neutraler Darstellung der Gemeinde-Warngebiete
     var gemeindelayer = L.tileLayer.wms("https://maps.dwd.de/geoproxy_warnungen/service/", {
@@ -126,7 +163,6 @@ function map() {
 
     var overlayMaps = {
         "Excample": excample,
-        "DWD Warnings": warnlayer,
         "Gemeindegrenzen": gemeindelayer,
     };
 
@@ -184,5 +220,48 @@ function map() {
             map.fitBounds(poly.getBounds());
         })
         .addTo(map);
+
+}
+
+// Funktion um die einzelnen Landkreise farblich korrekt darzustellen. Die Farbe ist anhängig
+// vom Stärkegrad des Unwetters. Gelb steht für minor, orange für moderate, rot für severe
+// und violett für Extreme
+function setStyles (feature) {
+
+    console.log("2  "+ startpoint);
+
+    var test=document.getElementById("Selection_Severity");
+
+    if (document.getElementById("Severity_Minor").checked==true) {
+    if (feature.properties.SEVERITY== "Minor") {
+        return {
+        stroke: true,
+        fillColor: '#F4D03F',
+        fillOpacity: 0.8
+        };
+    };
+    }
+    if (feature.properties.SEVERITY == "Moderate") {
+        return {
+            stroke: true,
+            fillColor: '#D35400',
+            fillOpacity: 0.8
+        };
+    };
+    if (feature.properties.SEVERITY == "Severe") {
+        return {
+            stroke: true,
+            fillColor: '#C0392B',
+            fillOpacity: 0.8
+        };
+    };
+    if (feature.properties.SEVERITY == "Extreme") {
+        return {
+            stroke: true,
+            fillColor: '#7D3C98',
+            fillOpacity: 0.8
+        };
+    };
+
 
 }

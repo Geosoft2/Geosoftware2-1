@@ -73,6 +73,17 @@
               style="width:20px; height:auto;"></button>
         </div>
       </div>
+      <div class="row">
+        <div id ="button_div" class="col-4" >
+            <button type="button" onclick="setStyles2(output)">change Warnings</button>
+            <from id="Selection_Severity">
+              Minor <input type="checkbox" id="Severity_Minor" checked/>
+              Moderate <input type="checkbox" id="Severity_Moderate" checked/>
+              Severe <input type="checkbox" id="Severity_Severe" checked/>
+              Extreme<input type="checkbox" id="Severity_Extreme" checked/>
+            </from>
+          </div>
+    </div>
     </div>
   </main>
   <% include partials/footer.ejs %>
@@ -91,6 +102,7 @@
   <script src="fontawesome/js/all.min.js"></script>
   <script src="config/twitter-widgets-config.js"></script>
   <script src="javascripts/betterwms.js"></script>
+  <script src="javascripts/wfs.js"></script>
   <script src="javascripts/map.js"></script>
   <script src="javascripts/twitter-widgets.js"></script>
   <script src="javascripts/URLparameters.js"></script>
