@@ -132,8 +132,8 @@ function map() {
 
     L.control.layers(baseMaps, overlayMaps).addTo(map);
 
-    var drawnItems = new L.FeatureGroup()
-    map.addLayer(drawnItems)
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
 
     var drawControl = new L.Control.Draw({
         draw: {
@@ -184,5 +184,4 @@ function map() {
             map.fitBounds(poly.getBounds());
         })
         .addTo(map);
-
 }
