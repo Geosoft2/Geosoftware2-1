@@ -154,7 +154,6 @@ function map() {
         drawnItems.clearLayers();
         var layer = e.layer;
         drawnItems.addLayer(layer);
-        layer.bindPopup(JSON.stringify(layer.toGeoJSON()));
         map.addLayer(layer);
 
         let geocode = "" + e.layer._latlng.lat + "," + e.layer._latlng.lng + "," + Math.floor(e.layer._mRadius / 1000) + "km";
