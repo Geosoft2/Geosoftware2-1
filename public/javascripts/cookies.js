@@ -19,29 +19,44 @@
 
 /** function to get the current expansion of the map and save it as a cookie
 **/
-function saveCookie() {
-  var currentZoom = map.getZoom();
-  var currentCenter = map.getCenter();
-  console.log(currentCenter);
-  console.log(currentCenter.lat);
-  console.log(currentZoom);
-  document.cookie = "startX=" + currentCenter.lat;
-  document.cookie = "startY=" + currentCenter.lng;
-  document.cookie = "zoomLevel=" + currentZoom;
+function saveCookie(){
+    var currentZoom = map.getZoom();
+    var currentCenter = map.getCenter();
+    //TODO diese Parameter können noch in der URL gespeichert werden
+    var currentSearch;
+    //is twitter activated or not? Default is true, but the User can set it false so it is deactivated
+    //TODO der default ist hier ja relativ egal weil die Werte aus der aktuellen Anzeige genommen werden
+    //TODO oim Endeffekt können auch alle Werte aus der URL genommen werden da diese sich ja bei jeder Änderung ändern soll
+    var twitter = true;
 
-  var newRequest = ["centerpoint=[" + currentCenter.lat + "," + currentCenter.lng + "]", "zoomlevel=" + currentZoom];
+    //TODO console.log noch entfernen
+    console.log(currentCenter);
+    console.log(currentCenter.lat);
+    console.log(currentZoom);
 
-  var newURL = buildUrl(newRequest);
-  console.log(newURL);
-  console.log("rthis is new");
-  window.location.href = newURL;
+    document.cookie = "startX=" + currentCenter.lat;
+    document.cookie = "startY=" + currentCenter.lng;
+    document.cookie = "zoomLevel=" + currentZoom ;
+    document.cookie = "twitter=" + "test";
+    //TODO hier müssen dann auch noch die anderen Parameter gespeichert werden können und in die URL kommen
+    var newRequest = ["centerpoint=[" + currentCenter.lat + "," + currentCenter.lng + "]", "zoomlevel=" + currentZoom];
+
+    var newURL = buildUrl(newRequest);
+    console.log(newURL);
+    console.log("rthis is new");
+    //window.location.href = newURL;
+    var justReq = newURL.split("?")[1];
+    var stateObj = {foo: justReq};
+    history.pushState(stateObj, "Cookie-Update", "?" + justReq);
+    $("#message").append("<div class='alert alert-secondary col-12' role='alert' style='margin-top:5px'>" + "Your view has set to your saved view saved as a cookie" + "</div>");
+
 }
 
 function getCookie(cname) {
   var name = cname + "=";
   var decodedCookie = decodeURIComponent(document.cookie);
   var ca = decodedCookie.split(';');
-  for (var i = 0; i < ca.length; i++) {
+  for(var i = 0; i <ca.length; i++) {
     var c = ca[i];
     while (c.charAt(0) == ' ') {
       c = c.substring(1);

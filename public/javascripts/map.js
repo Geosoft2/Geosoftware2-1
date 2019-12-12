@@ -28,54 +28,58 @@ function get_output () {
 */
 function map() {
 
-    var startpoint = [51.26524, 9.72767];
-    var zoomLevel = 6;
-    var urlParam = getAllUrlParams();
 
-    if (urlParam.zoomlevel !== undefined && urlParam.zoomlevel !== "") {
-        zoomLevel = urlParam.zoomlevel;
-    }
-    else {
-        var cookieZoomLevel = getCookie("zoomLevel");
-        if (cookieZoomLevel != "") {
-            zoomLevel = cookieZoomLevel;
+      var startpoint = [51.26524,9.72767];
+      var zoomLevel = 6;
+      var urlParam =  getAllUrlParams();
+
+      if (urlParam.zoomlevel !== undefined && urlParam.zoomlevel !== ""){
+        try{
+            if (urlParam.zoomlevel >= 0 && urlParam.zoomlevel <= 18){
+                zoomLevel = urlParam.zoomlevel;
+            }
+            else{
+                //TODO hier muss der Link vervollständigt werden. Dieser führt letztenendlich in das Usermanual, wo der User nachschauen kann welche Werte akzeptiert werden.
+                $("#message").append("<div class='alert alert-danger' role='alert'>invalid zoomlevel. Please check the <a >manual</a></div>");
+            }
         }
-    }
-    if (urlParam.centerpoint !== undefined && urlParam.centerpoint !== "") {
-        try {
+        catch(err) {
+            $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
+        }
+      }
+      else{
+        var cookieZoomLevel = getCookie("zoomlevel");
+        if (cookieZoomLevel != ""){
+        zoomLevel = cookieZoomLevel;
+        }
+      }
+        if (urlParam.centerpoint !== undefined && urlParam.centerpoint !== ""){
+            try{
             var parsedcenter = JSON.parse(urlParam.centerpoint);
             var cookiePointX = parsedcenter[0];
             var cookiePointY = parsedcenter[1];
 
-            startpoint = [cookiePointX, cookiePointY];
+            startpoint = [cookiePointX,cookiePointY];
+            }
+            catch(err) {
+                $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
+            }
         }
-        catch (err) {
-            $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
-        }
-    }
-    else {
+        else{
 
-        if (getCookie("startX") != "" && getCookie("startY") != "") {
-            try {
+            if (getCookie("startX") != "" && getCookie("startY") != ""){
+                try{
                 var cookiePointX = getCookie("startX");
                 var cookiePointY = getCookie("startY");
-                startpoint = [cookiePointX, cookiePointY];
-                $("#message").append("<div class='alert alert-secondary col-12' role='alert' style='margin-top:5px'>" + "Your view has set to your saved view saved as a cookie" + "</div>");
-                $("#message").append("<div class='alert alert-secondary col-12' role='alert' style='margin-top:5px'>" + "Your view has set to your saved view saved as a cookie" + "</div>");
-            }
-            catch (err) {
-                $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
+                startpoint = [cookiePointX,cookiePointY];
+                    }
+                catch (err){
+                    $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
 
+                }
             }
         }
-    }
 
-    if (getCookie("expansionURL") != "") {
-        expansion = getCookie("expansionURL");
-    }
-    else {
-
-    }
 
     // setting connection to wfs server with a ajax call
 
@@ -120,10 +124,22 @@ var ajax = $.ajax({
 }).responseText;
 
     map = L.map('mapdiv')
-        .setView(startpoint, zoomLevel);
-
-    //TODO what is this token for??
-    var accessToken = 'pk.eyJ1IjoiY2hyaXNzaTMxNyIsImEiOiJjanZ6MXdha3AwMmQ2NDlwM3c4ZTh2amt1In0.4h6xg5OtZ5TGU6uInpQnjQ';
+        .setView(startpoint, zoomLevel)
+        .on('zoomend', function() {
+            var newRequest = ["zoomlevel=" + map.getZoom()];
+            var newURL = buildUrl(newRequest);
+            var justReq = newURL.split("?")[1];
+            var stateObj = {foo: justReq};
+            history.pushState(stateObj, "test", "?" + justReq);
+                })
+        .on('moveend', function() {
+            var currentCenter = map.getCenter();
+            var newRequest = ["centerpoint=[" + currentCenter.lat + "," + currentCenter.lng + "]"];
+            var newURL = buildUrl(newRequest);
+            var justReq = newURL.split("?")[1];
+            var stateObj = {foo: justReq};
+            history.pushState(stateObj, "test", "?" + justReq);
+        });
 
     //OSM
     var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

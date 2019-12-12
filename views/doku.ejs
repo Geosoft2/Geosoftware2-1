@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <title><%= title %></title>
+
+    <meta name="author" content="Lukas, Max, Constatin, Christin"/>
+    <meta charset="UTF-8">
+
+    <% include partials/stylesheet.ejs %>
+
+  </head>
+
+  <body>
+
+    <div class="wrapper">
+
+      <% include partials/header.ejs %>
+
+      <main role="main" class="container-fluid">
+        <div class="row">
+           <div class="col-12" style="margin-top: 20px; margin-bottom: 44.2px;"><!--20px(normal margin value) + 24.2px(height of the footer)-->
+            <h3 style="font-family: arial;"><%= title %></h3>
+
+
+          </div>
+        </div>
+      </main>
+    </div>
+
+      <% include partials/footer.ejs %>
+
+  </body>
+</html>
+
+<script src="/jquery/jquery.min.js"></script>
+
+<script src="/bootstrap/js/bootstrap.min.js"></script>

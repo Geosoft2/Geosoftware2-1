@@ -78,3 +78,12 @@ function buildUrl (arr){
     }
     return urlString;
 }
+
+/**
+* function to change one value of the URL and send it to the browsers window
+* @param name is the name of the parameter (e.g. zoomlevel)
+* @param value is the value of the parameter which shold be changed
+*/
+function updateOneParameter (name, value){
+
+}
