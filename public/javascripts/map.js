@@ -17,7 +17,7 @@ var map;
 function map() {
 
     var startpoint = [51.26524, 9.72767];
-    var zoomLevel = 6;
+    var zoomLevel = 5;
     var urlParam = getAllUrlParams();
 
     if (urlParam.zoomlevel !== undefined && urlParam.zoomlevel !== "") {
@@ -68,33 +68,32 @@ function map() {
     map = L.map('mapdiv')
         .setView(startpoint, zoomLevel);
 
-    //TODO what is this token for??
-    var accessToken = 'pk.eyJ1IjoiY2hyaXNzaTMxNyIsImEiOiJjanZ6MXdha3AwMmQ2NDlwM3c4ZTh2amt1In0.4h6xg5OtZ5TGU6uInpQnjQ';
+    var mapbox_accessToken = 'pk.eyJ1IjoibWdhZG8wMSIsImEiOiJjazQxaHZvZTcwMWdqM2RvYmF4eWRzZ2diIn0.z3YweqsFFX-KbTYMRmz_AA';
 
-    //OSM
-    var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    var light = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        accessToken: mapbox_accessToken
     }).addTo(map);
 
-    //OSM
-    var grey = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    var dark = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        accessToken: mapbox_accessToken
+    });
 
-    var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-        attribution: '&copy; <a href="https://www.google.com/intl/de_de/help/terms_maps/">GoogleMaps</a> contributors'
-    }).addTo(map);
+    var satellite = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        accessToken: mapbox_accessToken
+    });
 
     var baseMaps = {
-        "OpenStreesMap": osm,
-        "Grey": grey,
-        "Satellite": googleSat
+        "Light": light,
+        "Dark": dark,
+        "Satellite": satellite
     };
 
     //TODO hier kommen dann die Wetterdaten rein zunöchst ein Platzhalter, als Beispiel ein Punkt
     var start = L.marker([52.26524, 7.72767]).bindPopup('This is the Startpoint');
-    var excample = L.layerGroup([start]);
+    var example = L.layerGroup([start]);
 
     // Warnungs-Layer vom DWD-Geoserver - betterWms fügt Möglichkeiten zur GetFeatureInfo hinzu
     var warnlayer = L.tileLayer.betterWms("https://maps.dwd.de/geoproxy_warnungen/service/", {
@@ -105,7 +104,7 @@ function map() {
         transparent: true,
         opacity: 0.8,
         attribution: 'Warndaten: &copy; <a href="https://www.dwd.de">DWD</a>'
-    });
+    }).addTo(map);
 
     // CQL_FILTER können benutzt werden um angezeigte Warnungen zu filtern (https://docs.geoserver.org/stable/en/user/tutorials/cql/cql_tutorial.html)
     // Filterung kann auf Basis der verschiedenen properties der Warnungen erfolgen (bspw. EC_II, EC_GROUP, DESCRIPTION ... ) siehe https://www.dwd.de/DE/wetter/warnungen_aktuell/objekt_einbindung/einbindung_karten_geowebservice.pdf
@@ -114,20 +113,9 @@ function map() {
     //delete warnlayer.wmsParams.CQL_FILTER;
     //warnlayer.redraw();
 
-    // Layer mit neutraler Darstellung der Gemeinde-Warngebiete
-    var gemeindelayer = L.tileLayer.wms("https://maps.dwd.de/geoproxy_warnungen/service/", {
-        layers: 'Warngebiete_Gemeinden',
-        format: 'image/png',
-        styles: '',
-        transparent: true,
-        opacity: 0.6,
-        attribution: 'Geobasisdaten Gemeinden: &copy; <a href="https://www.bkg.bund.de">BKG</a> 2015 (Daten verändert)'
-    });
-
     var overlayMaps = {
-        "Excample": excample,
+        "Example": example,
         "DWD Warnings": warnlayer,
-        "Gemeindegrenzen": gemeindelayer,
     };
 
     L.control.layers(baseMaps, overlayMaps).addTo(map);
@@ -184,4 +172,9 @@ function map() {
             map.fitBounds(poly.getBounds());
         })
         .addTo(map);
+
+    map.on("moveend", () => {
+        var bounds = map.getBounds();
+        console.log(bounds);
+    });
 }
