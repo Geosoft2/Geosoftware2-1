@@ -1,5 +1,5 @@
 $(document).ready(() => {
-    document.cookie = "geocode=";
+    //document.cookie = "geocode="; 
     $('select').selectpicker();
     requestTweets();
 });
@@ -11,7 +11,7 @@ function requestTweets() {
 
             var query = {
                 keyword: $("#keyword_input").val(),
-                geocode: getCookie("geocode"),
+                geocode: "37.735997,-118.427388,100km",
                 language: "",
                 locale: "ja",
                 result_type: "recent",
@@ -24,12 +24,12 @@ function requestTweets() {
 
             $.ajax({
                 type: 'POST',
-                url: 'http://localhost:3000/api',
+                url: 'http://localhost:3000/twitterapi',
                 data: query,
                 dataType: 'json',
                 encode: true
             }).done(function (data) {
-                processData(data);
+                processTweets(data);
                 console.log('Success: Data from Twitter received');
             }).fail(function (xhr, status, error) {
                 console.log('Error: ' + error);
@@ -38,7 +38,11 @@ function requestTweets() {
     });
 };
 
-function processData(data) {
+function drawTweetsToMap(bounds) {
+
+}
+
+/* function processData(data) {
     $(".tweet").remove();
     var raw = data.statuses;
     var filtered = new Array();
@@ -50,6 +54,7 @@ function processData(data) {
     });
 
     filtered.forEach((tweet) => {
+        console.log(filtered);
         drawTweetToUI(tweet);
         var geo = tweet.geo;
         var place = tweet.place;
@@ -71,7 +76,6 @@ function processData(data) {
             $('.carousel-item').removeClass("active");
             $('#' + id).addClass("active");
         });
-        marker.addTo(map);
     });
     $('.carousel-item').first().addClass("active");
 };
@@ -82,5 +86,4 @@ function drawTweetToUI(tweet) {
     $("#tweet_carousel_inner").append(tweet_html);
     var tweet_dom = $("#" + tweet_id)[0];
     twttr.widgets.createTweet(tweet_id, tweet_dom, widget_config);
-};
-
+}; */
