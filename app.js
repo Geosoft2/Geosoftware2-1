@@ -17,10 +17,11 @@ var session = require('express-session');
 var JL = require('jsnlog').JL;
 var jsnlog_nodejs = require('jsnlog-nodejs').jsnlog_nodejs;
 var twit = require('twit');
-/* var mongoose = require('mongoose'); */
+var mongoose = require('mongoose');
 
 var token = require('./config/token');
 /* var config = require('./config/database'); */
+var tweetModel = require('./models/tweet').tweetModel;
 
 var app = express();
 
@@ -54,9 +55,10 @@ app.use('/fontawesome', express.static(__dirname + '/node_modules/@fortawesome/f
 app.use("/leaflet-draw", express.static(__dirname + "/node_modules/leaflet-draw/dist"));
 app.use("/flag-icon-css", express.static(__dirname + "/node_modules/flag-icon-css"));
 app.use("/bootstrap-select", express.static(__dirname + "/node_modules/bootstrap-select/dist"));
+app.use('/leaflet.awesome-markers', express.static(__dirname + "/node_modules/leaflet.awesome-markers/dist"));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 
 app.post('/jsnlog.logger', (req, res) => {
   // req.body.lg[0].m to get only the message
@@ -65,19 +67,40 @@ app.post('/jsnlog.logger', (req, res) => {
   res.send('');
 });
 
-app.post('/api', (req, res) => {
+app.post('/twitterapi', (req, res) => {
   var query = req.body;
-  TwitClient.get('search/tweets', { q: query.keyword, count: query.count, geocode: query.geocode }, function (err, data, response) {
-    res.send(data);
-  });
+  TwitClient.get('search/tweets', {
+    q: query.keyword,
+    geocode: query.geocode,
+    lang: query.language,
+    locale: query.locale,
+    result_type: query.result_type,
+    count: query.count,
+    until: query.until,
+    since_id: query.since_id,
+    max_id: query.max_id,
+    include_entities: query.include_entities
+  },
+    function (err, data, response) {
+      processTweets(data);
+    });
+  res.send();
 });
 
-/* function getStream(input) {
-  var TwitStream = TwitClient.stream('statuses/filter', { track: input });
-  TwitStream.on('tweet', (tweet) => {
-    console.log(tweet);
+function processTweets(tweets) {
+  var raw = tweets.statuses;
+  tweetModel.collection.drop();
+
+  raw.forEach((tweet) => {
+    if ((tweet.coordinates != null) || (tweet.geo != null) || (tweet.place != null)) {
+      var dbtweet = {
+        tweet: JSON.stringify(tweet)
+      };
+      tweetModel.create(dbtweet)
+        .catch(error => console.log(error));
+    }
   });
-}; */
+}
 
 // Express Validator Middleware
 // @see https://github.com/VojtaStavik/GetBack2Work-Node/blob/master/node_modules/express-validator/README.md
@@ -147,6 +170,29 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+async function connectDatabase() {
+  mongoose.connection.on("connecting", () => {
+    console.log("Connecting MongoDB database ...");
+  });
+
+  mongoose.connection.on("connected", () => {
+    console.log("MongoDB database connected!");
+  });
+
+  mongoose.connection.on("disconnected", () => {
+    console.log("MongoDB database disconnected!");
+  });
+
+  mongoose.connection.on("error", (error) => {
+    console.log("MongoDB connection error!", error);
+  });
+
+  mongoose.connect('mongodb://localhost:27017/tweetdb', { useNewUrlParser: true })
+    .catch(error => console.log(error));
+};
+
+connectDatabase();
 
 /* function connectMongoDB() {
   (async () => {

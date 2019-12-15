@@ -16,15 +16,16 @@
   <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="mdbootstrap/css/mdb.min.css">
   <link rel="stylesheet" href="fontawesome/css/all.min.css">
-  <link rel="stylesheet" type="text/css" href="stylesheets/jquery-eu-cookie-law-popup.css" />
+  <link rel="stylesheet" href="stylesheets/jquery-eu-cookie-law-popup.css">
   <link rel="stylesheet" href="flag-icon-css/css/flag-icon.min.css">
-  <link rel="stylesheet" , href="bootstrap-select/css/bootstrap-select.min.css">
+  <link rel="stylesheet" href="bootstrap-select/css/bootstrap-select.min.css">
+  <link rel="stylesheet" href="leaflet.awesome-markers/leaflet.awesome-markers.css">
 
 </head>
 
 <body class="eupopup eupopup-bottomright" onload="map()">
 
-  <% include partials/header.ejs %>
+  <!-- <% include partials/header.ejs %> -->
   <main role="main" class="container-fluid" id="main" style="height: 100%">
     <div id="message" class="row">
     </div>
@@ -38,9 +39,6 @@
               <input class="form-control" type="text" placeholder="keyword" id="keyword_input">
             </div>
             <div class="col-4">
-              <select class="form-control" id="count_select" disabled>
-                <option>100</option>
-              </select>
             </div>
             <div class="col-4">
               <select class="form-control" data-width="fit" id="language_select" disabled>
@@ -57,10 +55,6 @@
               <span class="carousel-control-next-icon"></span>
             </a>
             <div class="carousel-inner" id="tweet_carousel_inner">
-              <div class="carousel-item active" id="first_item">
-                <img class="d-block w-100" src="https://mdbootstrap.com/img/Photos/Slides/img%20(35).jpg"
-                  id="placeholder">
-              </div>
             </div>
           </div>
         </div>
@@ -100,6 +94,7 @@
   <script src="leaflet-control-geocoder/Control.Geocoder.min.js"></script>
   <script src="leaflet-draw/leaflet.draw.js"></script>
   <script src="fontawesome/js/all.min.js"></script>
+  <script src="leaflet.awesome-markers/leaflet.awesome-markers.min.js"></script>
   <script src="config/twitter-widgets-config.js"></script>
   <script src="javascripts/betterwms.js"></script>
   <script src="javascripts/wfs.js"></script>
