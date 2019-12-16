@@ -2,13 +2,9 @@ html,body {
   height: 100%;
 }
 
-.footer {
-  position: relative;
-  width: 100%;
-  height: 24.2px;
-  margin: -24.2px auto 0;
+main {
+  overflow: auto;
 }
-
 
 th {
   text-align: left;
@@ -28,4 +24,4 @@ a.impressum:link, a.impressum:visited {
 
 .tweet {
   width: 300px;
-}
+} 

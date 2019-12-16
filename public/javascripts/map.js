@@ -29,7 +29,7 @@ function get_output() {
 function map() {
 
     var startpoint = [51.26524, 9.72767];
-    var zoomLevel = 6;
+    var zoomLevel = 5;
     var urlParam = getAllUrlParams();
 
     if (urlParam.zoomlevel !== undefined && urlParam.zoomlevel !== "") {
