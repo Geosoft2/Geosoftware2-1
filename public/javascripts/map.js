@@ -326,45 +326,45 @@ function map() {
 
         map.addControl(new custom());
     }
+}
 
-    // Funktion um die einzelnen Landkreise farblich korrekt darzustellen. Die Farbe ist anhängig
-    // vom Stärkegrad des Unwetters. Gelb steht für minor, orange für moderate, rot für severe
-    // und violett für Extreme
-    function setStyles(feature) {
+// Funktion um die einzelnen Landkreise farblich korrekt darzustellen. Die Farbe ist anhängig
+// vom Stärkegrad des Unwetters. Gelb steht für minor, orange für moderate, rot für severe
+// und violett für Extreme
+function setStyles(feature) {
 
-        console.log("2  " + startpoint);
+    console.log("2  " + startpoint);
 
-        var test = document.getElementById("Selection_Severity");
+    var test = document.getElementById("Selection_Severity");
 
-        if (document.getElementById("Severity_Minor").checked == true) {
-            if (feature.properties.SEVERITY == "Minor") {
-                return {
-                    stroke: true,
-                    fillColor: '#F4D03F',
-                    fillOpacity: 0.8
-                };
-            };
-        }
-        if (feature.properties.SEVERITY == "Moderate") {
+    if (document.getElementById("Severity_Minor").checked == true) {
+        if (feature.properties.SEVERITY == "Minor") {
             return {
                 stroke: true,
-                fillColor: '#D35400',
-                fillOpacity: 0.8
-            };
-        };
-        if (feature.properties.SEVERITY == "Severe") {
-            return {
-                stroke: true,
-                fillColor: '#C0392B',
-                fillOpacity: 0.8
-            };
-        };
-        if (feature.properties.SEVERITY == "Extreme") {
-            return {
-                stroke: true,
-                fillColor: '#7D3C98',
+                fillColor: '#F4D03F',
                 fillOpacity: 0.8
             };
         };
     }
+    if (feature.properties.SEVERITY == "Moderate") {
+        return {
+            stroke: true,
+            fillColor: '#D35400',
+            fillOpacity: 0.8
+        };
+    };
+    if (feature.properties.SEVERITY == "Severe") {
+        return {
+            stroke: true,
+            fillColor: '#C0392B',
+            fillOpacity: 0.8
+        };
+    };
+    if (feature.properties.SEVERITY == "Extreme") {
+        return {
+            stroke: true,
+            fillColor: '#7D3C98',
+            fillOpacity: 0.8
+        };
+    };
 }
