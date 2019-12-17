@@ -1,27 +1,27 @@
-html,body {
-  height: 100%;
+nav {
+  height: 15vh;
+  font-size: large;
+}
+
+#logo {
+  height: 15vh;
 }
 
 main {
+  padding-top: 17vh;
+  padding-left: 1vw;
+  padding-right: 1vw;
   overflow: auto;
 }
 
-th {
-  text-align: left;
-  padding: 8px;
-  font-weight: normal;
+#mapdiv {
+  height: 76vh;
 }
 
-a.impressum:link, a.impressum:visited {
+#footer {
+  height: 5vh;
+}
+
+.footer-elem {
   color: black;
 }
-
-#tweet_container {
-  background-color: red;
-  width: 100%;
-  height: 70%;
-}
-
-.tweet {
-  width: 300px;
-} 
