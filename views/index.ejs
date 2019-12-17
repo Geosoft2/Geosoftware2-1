@@ -13,8 +13,6 @@
   <link rel="stylesheet" href="leaflet/leaflet.css">
   <link rel="stylesheet" href="leaflet-control-geocoder/Control.Geocoder.css">
   <link rel="stylesheet" href="leaflet-draw/leaflet.draw.css">
-  <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-  <link rel="stylesheet" href="mdbootstrap/css/mdb.min.css">
   <link rel="stylesheet" href="fontawesome/css/all.min.css">
   <link rel="stylesheet" href="stylesheets/jquery-eu-cookie-law-popup.css">
   <link rel="stylesheet" href="flag-icon-css/css/flag-icon.min.css">
@@ -25,61 +23,83 @@
 
 <body class="eupopup eupopup-bottomright" onload="map()">
 
-  <!-- <% include partials/header.ejs %> -->
-  <main role="main" class="container-fluid" id="main" style="height: 100%">
-    <div id="message" class="row">
-    </div>
-    <div class="container" style="height: 70%;">
-      <div class="row" style="height: 100%;">
-        <div id="mapdiv" class="col-8" style="height: 100%;">
+  <% include partials/header.ejs %>
+
+  <main>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-6" id="mapdiv"></div>
+        <div class="col-3">
+          <div class="row">
+            <div class="col text-center">
+              <span class="text-info"><i class="fab fa-twitter-square fa-4x"></i></span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <button type="submit" class="btn btn-outline-info">Get Tweets</button>
+            </div>
+            <div class="col">
+              <a data-toggle="collapse" href="#twitter_filter"><span class="text-info"><i
+                    class="fas fa-sliders-h fa-2x"></i></span></a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <div class="collapse" id="twitter_filter">
+                <div>
+                  <form class="md-form form-inline" id="twitter_form">
+                    <input class="form-control" type="text" placeholder="keyword" id="keyword_input">
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <div id="tweet_carousel" class="carousel slide" data-interval="false">
+                <a class="carousel-control-prev" href="#tweet_carousel" role="button" data-slide="prev">
+                  <span class="carousel-control-prev-icon"></span>
+                </a>
+                <a class="carousel-control-next" href="#tweet_carousel" role="button" data-slide="next">
+                  <span class="carousel-control-next-icon"></span>
+                </a>
+                <div class="carousel-inner" id="tweet_carousel_inner">
+                  <div class="carousel-item active">
+                    <img class="d-block w-100" src="https://mdbootstrap.com/img/Photos/Slides/img%20(35).jpg">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="col-4">
-          <form class="md-form form-inline" id="twitter_form">
-            <div class="col-4">
-              <input class="form-control" type="text" placeholder="keyword" id="keyword_input">
+        <div class="col-3">
+          <div class="row">
+            <div class="col text-center">
+              <span class="text-danger"><i class="fab fa-instagram fa-4x"></i></span>
             </div>
-            <div class="col-4">
+          </div>
+          <div class="row">
+            <div class="col">
+              <button type="submit" class="btn btn-outline-danger">Get Posts</button>
             </div>
-            <div class="col-4">
-              <select class="form-control" data-width="fit" id="language_select" disabled>
-                <option data-content="<span class='flag-icon flag-icon-gb'></span>" value="en"></option>
-                <option data-content="<span class='flag-icon flag-icon-de'></span>" value="de"></option>
-              </select>
+            <div class="col">
+              <a data-toggle="collapse" href="#instagram_filter"><span class="text-danger"><i
+                    class="fas fa-sliders-h fa-2x"></i></span></a>
             </div>
-          </form>
-          <div id="tweet_carousel" class="carousel slide" data-interval="false">
-            <a class="carousel-control-prev" href="#tweet_carousel" role="button" data-slide="prev">
-              <span class="carousel-control-prev-icon"></span>
-            </a>
-            <a class="carousel-control-next" href="#tweet_carousel" role="button" data-slide="next">
-              <span class="carousel-control-next-icon"></span>
-            </a>
-            <div class="carousel-inner" id="tweet_carousel_inner">
+          </div>
+          <div class="row">
+            <div class="col">
+              <div class="collapse" id="instagram_filter">
+                <div>EXAMPLETEXT
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="row">
-        <div id="button_div" class="col-4">
-          <button type="button" class="btn btn-warning" onclick="saveCookie();"
-            title="Set your current view as defaultview."><img id="save_icon" class="img-fluid"
-              src="/images/save_icon.png" alt="Set your current view as Defaultview"
-              style="width:20px; height:auto;"></button>
-        </div>
-      </div>
-      <div class="row">
-        <div id ="button_div" class="col-4" >
-            <button type="button" onclick="setStyles2(output)">change Warnings</button>
-            <from id="Selection_Severity">
-              Minor <input type="checkbox" id="Severity_Minor" checked/>
-              Moderate <input type="checkbox" id="Severity_Moderate" checked/>
-              Severe <input type="checkbox" id="Severity_Severe" checked/>
-              Extreme<input type="checkbox" id="Severity_Extreme" checked/>
-            </from>
-          </div>
-    </div>
-    </div>
   </main>
+
   <% include partials/footer.ejs %>
 
   <script src="leaflet/leaflet.js"></script>
