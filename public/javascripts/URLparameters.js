@@ -63,12 +63,8 @@ function buildUrl (arr){
     var urlString= url + "?"
     for (var i = 0; i<arr.length;i++){
         var name = arr[i].split("=")[0];
-        console.log(name);
         var value = arr[i].split("=")[1];
-        console.log(value);
         request[name] = value;
-        console.log(request);
-
     }
     if (request.centerpoint){
         urlString = urlString + "centerpoint=" + request.centerpoint + "&";

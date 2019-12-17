@@ -27,20 +27,45 @@ function get_output () {
 * @desc create map
 */
 function map() {
-
+//TODO die URL muss direkt beim Laden der Seite die richtigen Requestes haben
 
       var startpoint = [51.26524,9.72767];
       var zoomLevel = 6;
       var urlParam =  getAllUrlParams();
+      var bbox = [];
+      var twittersearch = "";
 
+      //BBox
+      if (urlParam.bbox !== undefined && urlParam.bbox !== ""){
+            try{
+            //TODO Bedingung für bbox checken und hier ergänzen
+                //if (urlParam.bbox){
+                    bbox = urlParam.bbox;
+                //}
+                /**
+                else{
+
+                    $("#message").append("<div class='alert alert-danger' role='alert'>invalid BBox - please check the <a href='/doku'>documentation</a></div>");
+                }
+                */
+            }
+            catch(err) {
+                $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
+            }
+      }
+      else{
+        var cookieZoomLevel = getCookie("zoomlevel");
+        if (cookieZoomLevel != ""){
+        zoomLevel = cookieZoomLevel;
+        }
+      }
       if (urlParam.zoomlevel !== undefined && urlParam.zoomlevel !== ""){
         try{
             if (urlParam.zoomlevel >= 0 && urlParam.zoomlevel <= 18){
                 zoomLevel = urlParam.zoomlevel;
             }
             else{
-                //TODO hier muss der Link vervollständigt werden. Dieser führt letztenendlich in das Usermanual, wo der User nachschauen kann welche Werte akzeptiert werden.
-                $("#message").append("<div class='alert alert-danger' role='alert'>invalid zoomlevel. Please check the <a >manual</a></div>");
+                $("#message").append("<div class='alert alert-danger' role='alert'>invalid zoomlevel - please check the <a href='/doku'>documentation</a></div>");
             }
         }
         catch(err) {
@@ -53,13 +78,9 @@ function map() {
         zoomLevel = cookieZoomLevel;
         }
       }
-        if (urlParam.centerpoint !== undefined && urlParam.centerpoint !== ""){
+      if (urlParam.centerpoint !== undefined && urlParam.centerpoint !== ""){
             try{
-            var parsedcenter = JSON.parse(urlParam.centerpoint);
-            var cookiePointX = parsedcenter[0];
-            var cookiePointY = parsedcenter[1];
-
-            startpoint = [cookiePointX,cookiePointY];
+            startpoint = JSON.parse(urlParam.centerpoint);
             }
             catch(err) {
                 $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
@@ -69,9 +90,7 @@ function map() {
 
             if (getCookie("startX") != "" && getCookie("startY") != ""){
                 try{
-                var cookiePointX = getCookie("startX");
-                var cookiePointY = getCookie("startY");
-                startpoint = [cookiePointX,cookiePointY];
+                startpoint = [getCookie("startX"),getCookie("startY")];
                     }
                 catch (err){
                     $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
@@ -79,12 +98,22 @@ function map() {
                 }
             }
         }
+        //twittersearch
+          if (urlParam.twittersearch !== undefined && urlParam.twittersearch !== ""){
+                    try{
+                    twittersearch = urlParam.twittersearch;
+                    }
+                    catch(err) {
+                        $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
+                    }
+          }
 
+    //TODO es mnüssen noch der Searchbegriff und die BBox an die entsprechenden Stellen weitergeleitet werden
+    //TODO twittersearch als Cookie speichern
+    //TODO Bbox entweder in die Datenbank oder auch als Cookie
 
-    // setting connection to wfs server with a ajax call
-
-    var owsrootUrl = 'https://maps.dwd.de/geoserver/dwd/ows';
-
+// setting connection to wfs server with a ajax call
+var owsrootUrl = 'https://maps.dwd.de/geoserver/dwd/ows';
 var defaultParameters = {
     service : 'WFS',
     version : '2.0',
@@ -123,14 +152,35 @@ var ajax = $.ajax({
     }
 }).responseText;
 
-    map = L.map('mapdiv')
-        .setView(startpoint, zoomLevel)
+    map = L.map('mapdiv');
+    map.on('load', function() {
+                           //TODO if (wenn keine Bbox im Bbox Layer eingezeichnet wurde, dann soll der neue Ausschnitt hier als Bbox für Twitter dienen){
+                               var bbox = map.getBounds();
+                               document.cookie = "bboxsouthWest_lat=" + bbox._southWest.lat;
+                               document.cookie = "bboxsouthWest_lng=" + bbox._southWest.lng;
+                               document.cookie = "bboxnothEast_lat=" + bbox._northEast.lat;
+                               document.cookie = "bboxnothEast_lng=" + bbox._northEast.lng;
+                           // }
+                       });
+
+        map.setView(startpoint, zoomLevel)
         .on('zoomend', function() {
             var newRequest = ["zoomlevel=" + map.getZoom()];
             var newURL = buildUrl(newRequest);
             var justReq = newURL.split("?")[1];
             var stateObj = {foo: justReq};
             history.pushState(stateObj, "test", "?" + justReq);
+
+            //TODO if (wenn keine Bbox im Bbox Layer eingezeichnet wurde, dann soll der neue Ausschnitt hier als Bbox für Twitter dienen){
+                                    var bbox = map.getBounds();
+                                    document.cookie = "bboxsouthWest_lat=" + bbox._southWest.lat;
+                                    document.cookie = "bboxsouthWest_lng=" + bbox._southWest.lng;
+                                    document.cookie = "bboxnothEast_lat=" + bbox._northEast.lat;
+                                    document.cookie = "bboxnothEast_lng=" + bbox._northEast.lng;
+                                    console.log(bbox);
+                                // }
+
+
                 })
         .on('moveend', function() {
             var currentCenter = map.getCenter();
@@ -140,6 +190,7 @@ var ajax = $.ajax({
             var stateObj = {foo: justReq};
             history.pushState(stateObj, "test", "?" + justReq);
         });
+
 
     //OSM
     var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -162,11 +213,7 @@ var ajax = $.ajax({
         "Satellite": googleSat
     };
 
-    //TODO hier kommen dann die Wetterdaten rein zunöchst ein Platzhalter, als Beispiel ein Punkt
-    var start = L.marker([52.26524, 7.72767]).bindPopup('This is the Startpoint');
-    var excample = L.layerGroup([start]);
-
-
+    /**
     // Layer mit neutraler Darstellung der Gemeinde-Warngebiete
     var gemeindelayer = L.tileLayer.wms("https://maps.dwd.de/geoproxy_warnungen/service/", {
         layers: 'Warngebiete_Gemeinden',
@@ -176,11 +223,12 @@ var ajax = $.ajax({
         opacity: 0.6,
         attribution: 'Geobasisdaten Gemeinden: &copy; <a href="https://www.bkg.bund.de">BKG</a> 2015 (Daten verändert)'
     });
+    */
 
     var overlayMaps = {
-        "Excample": excample,
-        "Gemeindegrenzen": gemeindelayer,
+        //"Rechteck": gemeindelayer,
     };
+
 
     L.control.layers(baseMaps, overlayMaps).addTo(map);
 
@@ -193,8 +241,8 @@ var ajax = $.ajax({
             marker: false,
             polyline: false,
             circlemarker: false,
-            rectangle: false,
-            circle: true,
+            rectangle: true,
+            circle: false,
         },
         edit: {
             featureGroup: drawnItems
@@ -207,6 +255,13 @@ var ajax = $.ajax({
         var layer = e.layer;
         drawnItems.addLayer(layer);
         map.addLayer(layer);
+        console.log("eeeee");
+        console.log(e);
+
+        document.cookie = "bboxsouthWest_lat=" + e.layer._latlngs[0][0].lat;
+        document.cookie = "bboxsouthWest_lng=" + e.layer._latlngs[0][0].lng;
+        document.cookie = "bboxnothEast_lat=" + e.layer._latlngs[0][2].lat;
+        document.cookie = "bboxnothEast_lng=" + e.layer._latlngs[0][2].lng;
 
         let geocode = "" + e.layer._latlng.lat + "," + e.layer._latlng.lng + "," + Math.floor(e.layer._mRadius / 1000) + "km";
 
