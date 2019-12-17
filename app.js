@@ -131,7 +131,7 @@ let impressumRouter = require('./routes/impressum');
 app.use('/impressum', impressumRouter);
 let dokuRouter = require('./routes/doku');
 app.use('/doku', dokuRouter);
-7
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
