@@ -1,38 +1,39 @@
 <!DOCTYPE html>
 <html>
-  <head>
 
-    <title><%= title %></title>
+<head>
 
-    <meta name="author" content="Lukas, Max, Constatin, Christin"/>
-    <meta charset="UTF-8">
+  <title><%= title %></title>
 
-    <% include partials/stylesheet.ejs %>
+  <meta name="author" content="Lukas, Max, Constatin, Christin" />
+  <meta charset="UTF-8">
 
-  </head>
+  <% include partials/stylesheet.ejs %>
 
-  <body>
+</head>
 
-    <div class="wrapper">
+<body>
 
-      <% include partials/header.ejs %>
+  <% include partials/header.ejs %>
 
-      <main role="main" class="container-fluid">
-        <div class="row">
-           <div class="col-12" style="margin-top: 20px; margin-bottom: 44.2px;"><!--20px(normal margin value) + 24.2px(height of the footer)-->
-            <h3 style="font-family: arial;"><%= title %></h3>
+  <main role="main" class="container-fluid">
+    <div class="row">
+      <div class="col-12" style="margin-top: 20px; margin-bottom: 44.2px;">
+        <!--20px(normal margin value) + 24.2px(height of the footer)-->
+        <h3 style="font-family: arial;"><%= title %></h3>
 
 
-          </div>
-        </div>
-      </main>
+      </div>
     </div>
+  </main>
 
-      <% include partials/footer.ejs %>
+  <% include partials/footer.ejs %>
 
-  </body>
+  <script src="jquery/jquery.min.js"></script>
+  <script src="popper/umd/popper.min.js"></script>
+  <script src="bootstrap/js/bootstrap.min.js"></script>
+  <script src="mdbootstrap/js/mdb.min.js"></script>
+
+</body>
+
 </html>
-
-<script src="/jquery/jquery.min.js"></script>
-
-<script src="/bootstrap/js/bootstrap.min.js"></script>
