@@ -50,33 +50,29 @@ function getAllUrlParams() {
 
     }
   }
-  //console.log(obj);
+
   return obj;
 }
 
 /**
 function to update the current url with the new given parameters
 */
-function buildUrl(arr) {
-  var url = window.location.href.split("?")[0];
-  var request = getAllUrlParams();
-  var urlString = url + "?"
-  for (var i = 0; i < arr.length; i++) {
-    var name = arr[i].split("=")[0];
-    console.log(name);
-    var value = arr[i].split("=")[1];
-    console.log(value);
-    request[name] = value;
-    console.log(request);
-
-  }
-  if (request.centerpoint) {
-    urlString = urlString + "centerpoint=" + request.centerpoint + "&";
-  }
-  if (request.zoomlevel) {
-    urlString = urlString + "zoomlevel=" + request.zoomlevel + "&";
-  }
-  return urlString;
+function buildUrl (arr){
+    var url = window.location.href.split("?")[0];
+    var request = getAllUrlParams();
+    var urlString= url + "?"
+    for (var i = 0; i<arr.length;i++){
+        var name = arr[i].split("=")[0];
+        var value = arr[i].split("=")[1];
+        request[name] = value;
+    }
+    if (request.centerpoint){
+        urlString = urlString + "centerpoint=" + request.centerpoint + "&";
+    }
+    if (request.zoomlevel){
+        urlString = urlString + "zoomlevel=" + request.zoomlevel + "&";
+    }
+    return urlString;
 }
 
 /**
