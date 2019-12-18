@@ -21,7 +21,7 @@
 
 </head>
 
-<body class="eupopup eupopup-bottomright" onload="map()">
+<body class="eupopup eupopup-bottomright">
 
   <% include partials/header.ejs %>
 
@@ -37,7 +37,7 @@
           </div>
           <div class="row">
             <div class="col">
-              <button type="submit" class="btn btn-outline-info">Get Tweets</button>
+              <button class="btn btn-outline-info" id="btn_tweetrequest">Get Tweets</button>
             </div>
             <div class="col">
               <a data-toggle="collapse" href="#twitter_filter"><span class="text-info"><i
@@ -48,9 +48,7 @@
             <div class="col">
               <div class="collapse" id="twitter_filter">
                 <div>
-                  <form class="md-form form-inline" id="twitter_form">
-                    <input class="form-control" type="text" placeholder="keyword" id="keyword_input">
-                  </form>
+                  <input class="form-control" type="text" placeholder="keyword" id="keyword_input">
                 </div>
               </div>
             </div>
@@ -81,7 +79,7 @@
           </div>
           <div class="row">
             <div class="col">
-              <button type="submit" class="btn btn-outline-danger">Get Posts</button>
+              <button class="btn btn-outline-danger">Get Posts</button>
             </div>
             <div class="col">
               <a data-toggle="collapse" href="#instagram_filter"><span class="text-danger"><i
@@ -129,12 +127,11 @@
   <script src="config/twitter-widgets-config.js"></script>
   <script src="javascripts/betterwms.js"></script>
   <script src="javascripts/wfs.js"></script>
-  <script src="javascripts/map.js"></script>
   <script src="javascripts/twitter-widgets.js"></script>
   <script src="javascripts/URLparameters.js"></script>
-  <script src="javascripts/index.js"></script>
   <script src="javascripts/cookies.js"></script>
-
+  <script src="javascripts/map.js"></script>
+  <script src="javascripts/index.js"></script>
 
 </body>
 

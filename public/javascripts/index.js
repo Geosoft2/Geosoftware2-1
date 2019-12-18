@@ -1,45 +1,112 @@
 $(document).ready(() => {
-    //document.cookie = "geocode="; 
-    $('select').selectpicker();
     requestTweets();
 });
 
 function requestTweets() {
-    $(document).ready(() => {
-        $("#twitter_form").submit((event) => {
-            event.preventDefault();
+    $("#btn_tweetrequest").on("click", async () => {
+        var query = {
+            keyword: $("#keyword_input").val(),
+            geocode: "37.735997,-118.427388,100km",
+            language: "",
+            locale: "ja",
+            result_type: "recent",
+            count: "100",
+            until: "",
+            since_id: "",
+            max_id: "",
+            include_entities: false
+        };
 
-            var query = {
-                keyword: $("#keyword_input").val(),
-                geocode: "37.735997,-118.427388,100km",
-                language: "",
-                locale: "ja",
-                result_type: "recent",
-                count: "100",
-                until: "",
-                since_id: "",
-                max_id: "",
-                include_entities: false
-            };
+        await $.ajax({
+            type: 'POST',
+            url: 'http://localhost:3000/twitterapi',
+            data: query,
+            dataType: 'json',
+            encode: true
+        }).done(function (data) {
+            console.log('Success: Data from Twitter received');
+        }).fail(function (xhr, status, error) {
+            console.log('Error: ' + error);
+        });
 
-            $.ajax({
-                type: 'POST',
-                url: 'http://localhost:3000/twitterapi',
-                data: query,
-                dataType: 'json',
-                encode: true
-            }).done(function (data) {
-                processTweets(data);
-                console.log('Success: Data from Twitter received');
-            }).fail(function (xhr, status, error) {
-                console.log('Error: ' + error);
-            });
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:3000/tweetdb',
+        }).done(function (data) {
+            console.log('Success: Tweets from the database received');
+            filterTweets(data);
+        }).fail(function (xhr, status, error) {
+            console.log('Error: ' + error);
         });
     });
 };
 
-function drawTweetsToMap(bounds) {
+function getPolygonsInBbox() {
+    var bboxsouthWest_lat = parseFloat(getCookie("bboxsouthWest_lat"));
+    var bboxsouthWest_lng = parseFloat(getCookie("bboxsouthWest_lng"));
+    var bboxnorthEast_lat = parseFloat(getCookie("bboxnorthEast_lat"));
+    var bboxnorthEast_lng = parseFloat(getCookie("bboxnorthEast_lng"));
 
+    var bboxsouthWest = [bboxsouthWest_lng, bboxsouthWest_lat];
+    var bboxnorthWest = [bboxsouthWest_lng, bboxnorthEast_lat];
+    var bboxnorthEast = [bboxnorthEast_lng, bboxnorthEast_lat];
+    var bboxsouthEast = [bboxnorthEast_lng, bboxsouthWest_lat];
+
+    var bbox = {
+        "type": "Polygon",
+        "coordinates": [[
+            bboxsouthWest, bboxnorthWest, bboxnorthEast, bboxsouthEast, bboxsouthWest
+        ]]
+    };
+
+    var dwd = output.features;
+    var polygons = [];
+
+    dwd.forEach((polygon) => {
+        if (polygon.geometry.type == "MultiPolygon") {
+            polygon.geometry.coordinates.forEach((coordinates) => {
+                var poly = {
+                    "type": "Polygon",
+                    "coordinates": coordinates
+                };
+
+                polygons.push(poly);
+            });
+        } else {
+            if (polygon.geometry.type == "Polygon") {
+                polygons.push(polygon.geometry);
+            }
+        }
+    });
+
+    var polygonswithinbbox = [];
+
+    polygons.forEach((p) => {
+        if (turf.booleanContains(bbox, p)) {
+            polygonswithinbbox.push(p);
+        }
+    });
+
+    return polygonswithinbbox;
+}
+
+//TODO: Ueberpruefe, ob Tweet im Polygon liegt
+function polygonContainsTweet(polygon, tweet) {
+
+}
+
+function filterTweets(tweets) {
+    var polygons = getPolygonsInBbox();
+
+    var filteredtweets = [];
+
+    polygons.forEach((polygon) => {
+        tweets.forEach((tweet) => {
+            if (polygonContainsTweet(polygon, tweet)) {
+                filteredtweets.push(tweet);
+            }
+        });
+    });
 }
 
 /* function processData(data) {

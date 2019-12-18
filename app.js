@@ -67,7 +67,7 @@ app.post('/jsnlog.logger', (req, res) => {
   res.send('');
 });
 
-app.post('/twitterapi', (req, res) => {
+app.post('/twitterapi', async (req, res) => {
   var query = req.body;
   TwitClient.get('search/tweets', {
     q: query.keyword,
@@ -81,10 +81,10 @@ app.post('/twitterapi', (req, res) => {
     max_id: query.max_id,
     include_entities: query.include_entities
   },
-    function (err, data, response) {
+    await function (err, data, response) {
       processTweets(data);
     });
-  res.send();
+  res.send({});
 });
 
 function processTweets(tweets) {
@@ -101,6 +101,15 @@ function processTweets(tweets) {
     }
   });
 }
+
+app.get('/tweetdb', async (request, response) => {
+  try {
+    var result = await tweetModel.find().exec();
+    response.json(result);
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 // Express Validator Middleware
 // @see https://github.com/VojtaStavik/GetBack2Work-Node/blob/master/node_modules/express-validator/README.md
@@ -193,35 +202,5 @@ async function connectDatabase() {
 };
 
 connectDatabase();
-
-/* function connectMongoDB() {
-  (async () => {
-    // set up default ("Docker") mongoose connection
-    await mongoose.connect(config.databaseDocker, {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      autoReconnect: true
-    }).then(db => {
-      console.log('Connected to MongoDB (databasename: "' + db.connections[0].name + '") on host "' + db.connections[0].host + '" and on port "' + db.connections[0].port + '""');
-    }).catch(async err => {
-      console.log('Connection to ' + config.databaseDocker + ' failed, try to connect to ' + config.databaseLocal);
-      // set up "local" mongoose connection
-      await mongoose.connect(config.databaseLocal, {
-        useNewUrlParser: true,
-        useCreateIndex: true,
-        autoReconnect: true
-      }).then(db => {
-        console.log('Connected to MongoDB (databasename: "' + db.connections[0].name + '") on host "' + db.connections[0].host + '" and on port "' + db.connections[0].port + '""');
-      }).catch(err2nd => {
-        console.log('Error at MongoDB-connection with Docker: ' + err);
-        console.log('Error at MongoDB-connection with Localhost: ' + err2nd);
-        console.log('Retry to connect in 3 seconds');
-        setTimeout(connectMongoDB, 3000); // retry until db-server is up
-      });
-    });
-  })();
-}
-// connect to MongoDB
-connectMongoDB(); */
 
 module.exports = app;
