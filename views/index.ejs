@@ -47,8 +47,31 @@
           <div class="row">
             <div class="col">
               <div class="collapse" id="twitter_filter">
-                <div>
-                  <input class="form-control" type="text" placeholder="keyword" id="keyword_input">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <label class="input-group-text" for="keyword_input"><i class="fas fa-search"></i></label>
+                  </div>
+                  <input class="form-control" id="keyword_input" placeholder="keywords">
+                </div>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <label class="input-group-text" for="language_select"><i class="fas fa-globe"></i></label>
+                  </div>
+                  <select class="browser-default custom-select" id="language_select">
+                    <option selected>All</option>
+                    <option value="en">English</option>
+                    <option value="de">German</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <label class="input-group-text" for="type_select"><i class="fas fa-poll"></i></label>
+                  </div>
+                  <select class="browser-default custom-select" id="type_select">
+                    <option value="recent" selected>recent</option>
+                    <option value="popular">popular</option>
+                    <option value="mixed">mixed</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -63,9 +86,6 @@
                   <span class="carousel-control-next-icon"></span>
                 </a>
                 <div class="carousel-inner" id="tweet_carousel_inner">
-                  <div class="carousel-item active">
-                    <img class="d-block w-100" src="https://mdbootstrap.com/img/Photos/Slides/img%20(35).jpg">
-                  </div>
                 </div>
               </div>
             </div>
