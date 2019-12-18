@@ -48,6 +48,6 @@ function zoom () {
 function show_wfs_changes() {
   WFSLayer.clearLayers();
   getWFSLayer();
-  filter_wfs_output();
+  //filter_wfs_output();
 
 }
