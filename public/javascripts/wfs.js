@@ -43,3 +43,11 @@ function zoom() {
     //console.log(center_gesamt);
     return center_gesamt;
 }
+
+
+function show_wfs_changes() {
+  WFSLayer.clearLayers();
+  getWFSLayer();
+  filter_wfs_output();
+
+}
