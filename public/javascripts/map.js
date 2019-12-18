@@ -53,59 +53,56 @@ function initMap() {
         }
     }
     else {
+        }
 
-        var startpoint = [51.26524, 9.72767];
-        var zoomLevel = 5;
-        var urlParam = getAllUrlParams();
+    if (urlParam.zoomlevel !== undefined && urlParam.zoomlevel !== "") {
+        try {
+            if (urlParam.zoomlevel >= 0 && urlParam.zoomlevel <= 18) {
+                zoomLevel = urlParam.zoomlevel;
+            }
+            else {
+                $("#message").append("<div class='alert alert-danger' role='alert'>invalid zoomlevel - please check the <a href='/doku'>documentation</a></div>");
+            }
+        }
+        catch (err) {
+            $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
+        }
+    }
+    else {
+        var cookieZoomLevel = getCookie("zoomlevel");
+        if (cookieZoomLevel != "") {
+            zoomLevel = cookieZoomLevel;
+        }
+    }
+    if (urlParam.centerpoint !== undefined && urlParam.centerpoint !== "") {
+        try {
+            startpoint = JSON.parse(urlParam.centerpoint);
+        }
+        catch (err) {
+            $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
+        }
+    }
+    else {
 
-        if (urlParam.zoomlevel !== undefined && urlParam.zoomlevel !== "") {
+        if (getCookie("startX") != "" && getCookie("startY") != "") {
             try {
-                if (urlParam.zoomlevel >= 0 && urlParam.zoomlevel <= 18) {
-                    zoomLevel = urlParam.zoomlevel;
-                }
-                else {
-                    $("#message").append("<div class='alert alert-danger' role='alert'>invalid zoomlevel - please check the <a href='/doku'>documentation</a></div>");
-                }
+                startpoint = [getCookie("startX"), getCookie("startY")];
             }
             catch (err) {
                 $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
-            }
-        }
-        else {
-            var cookieZoomLevel = getCookie("zoomlevel");
-            if (cookieZoomLevel != "") {
-                zoomLevel = cookieZoomLevel;
-            }
-        }
-        if (urlParam.centerpoint !== undefined && urlParam.centerpoint !== "") {
-            try {
-                startpoint = JSON.parse(urlParam.centerpoint);
-            }
-            catch (err) {
-                $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
-            }
-        }
-        else {
 
-            if (getCookie("startX") != "" && getCookie("startY") != "") {
-                try {
-                    startpoint = [getCookie("startX"), getCookie("startY")];
-                }
-                catch (err) {
-                    $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
-
-                }
             }
         }
-        //twittersearch
-        if (urlParam.twittersearch !== undefined && urlParam.twittersearch !== "") {
-            try {
-                twittersearch = urlParam.twittersearch;
-            }
-            catch (err) {
-                $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
-            }
+    }
+    //twittersearch
+    if (urlParam.twittersearch !== undefined && urlParam.twittersearch !== "") {
+        try {
+            twittersearch = urlParam.twittersearch;
         }
+        catch (err) {
+            $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
+        }
+    }
 
         //TODO es mnüssen noch der Searchbegriff und die BBox an die entsprechenden Stellen weitergeleitet werden
         //TODO twittersearch als Cookie speichern
@@ -161,12 +158,20 @@ function initMap() {
             // }
         });
 
+        //add the set values to the current URL
+        var newRequest = ["centerpoint=[" + startpoint[0] + "," + startpoint[1] + "]", "zoomlevel=" + zoomLevel];
+        var newURL = buildUrl(newRequest);
+        var justReq = newURL.split("?")[1];
+        var stateObj = { foo: justReq };
+        history.pushState(stateObj, "init", "?" + justReq);
+
         map.setView(startpoint, zoomLevel)
             .on('zoomend', function () {
-                var newRequest = ["zoomlevel=" + map.getZoom()];
-                var newURL = buildUrl(newRequest);
-                var justReq = newURL.split("?")[1];
-                var stateObj = { foo: justReq };
+                var currentCenter = map.getCenter();
+                newRequest = ["centerpoint=[" + currentCenter.lat + "," + currentCenter.lng + "]", "zoomlevel=" + map.getZoom()];
+                newURL = buildUrl(newRequest);
+                justReq = newURL.split("?")[1];
+                stateObj = { foo: justReq };
                 history.pushState(stateObj, "test", "?" + justReq);
 
                 //TODO if (wenn keine Bbox im Bbox Layer eingezeichnet wurde, dann soll der neue Ausschnitt hier als Bbox für Twitter dienen){
@@ -182,10 +187,10 @@ function initMap() {
             })
             .on('moveend', function () {
                 var currentCenter = map.getCenter();
-                var newRequest = ["centerpoint=[" + currentCenter.lat + "," + currentCenter.lng + "]"];
-                var newURL = buildUrl(newRequest);
-                var justReq = newURL.split("?")[1];
-                var stateObj = { foo: justReq };
+                newRequest = ["centerpoint=[" + currentCenter.lat + "," + currentCenter.lng + "]", "zoomlevel=" + map.getZoom()];
+                newURL = buildUrl(newRequest);
+                justReq = newURL.split("?")[1];
+                stateObj = { foo: justReq };
                 history.pushState(stateObj, "test", "?" + justReq);
 
                 //TODO if (wenn keine Bbox im Bbox Layer eingezeichnet wurde, dann soll der neue Ausschnitt hier als Bbox für Twitter dienen){
@@ -319,7 +324,6 @@ function initMap() {
         });
 
         map.addControl(new custom());
-    }
 }
 
 // Funktion um die einzelnen Landkreise farblich korrekt darzustellen. Die Farbe ist anhängig
