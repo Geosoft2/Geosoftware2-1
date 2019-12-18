@@ -49,7 +49,7 @@ function initMap() {
             */
         }
         catch (err) {
-            $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
+            $("#message").append("<div class='alert alert-danger col-12' role='alert'>" + err.message + "</div>");
         }
     }
     else {
@@ -61,11 +61,11 @@ function initMap() {
                 zoomLevel = urlParam.zoomlevel;
             }
             else {
-                $("#message").append("<div class='alert alert-danger' role='alert'>invalid zoomlevel - please check the <a href='/doku'>documentation</a></div>");
+                $("#message").append("<div class='alert alert-danger col-12' role='alert' >invalid zoomlevel - please check the <a href='/doku'>documentation</a></div>");
             }
         }
         catch (err) {
-            $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
+            $("#message").append("<div class='alert alert-danger col-12' role='alert'>" + err.message + "</div>");
         }
     }
     else {
@@ -79,7 +79,7 @@ function initMap() {
             startpoint = JSON.parse(urlParam.centerpoint);
         }
         catch (err) {
-            $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
+            $("#message").append("<div class='alert alert-danger col-12' role='alert'>" + err.message + "</div>");
         }
     }
     else {
@@ -89,7 +89,7 @@ function initMap() {
                 startpoint = [getCookie("startX"), getCookie("startY")];
             }
             catch (err) {
-                $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
+                $("#message").append("<div class='alert alert-danger col-12' role='alert'>" + err.message + "</div>");
 
             }
         }
@@ -100,7 +100,7 @@ function initMap() {
             twittersearch = urlParam.twittersearch;
         }
         catch (err) {
-            $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
+            $("#message").append("<div class='alert alert-danger col-12' role='alert'>" + err.message + "</div>");
         }
     }
 
