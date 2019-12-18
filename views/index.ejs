@@ -103,7 +103,7 @@
                 </div>
         <div class="row">
           <div id="button_div" class="col-4">
-            <button type="button" onclick="setStyles2(output)">change Warnings</button>
+            <button type="button" onclick="show_wfs_changes()">change Warnings</button>
             <from id="Selection_Severity">
               Minor <input type="checkbox" id="Severity_Minor" checked />
               Moderate <input type="checkbox" id="Severity_Moderate" checked />
@@ -111,8 +111,18 @@
               Extreme<input type="checkbox" id="Severity_Extreme" checked />
             </from>
           </div>
-        </div>
-      </div>
+          <div>
+            <select id="wfs_selection_box">
+                <option values="Select_All">All</option>
+                <option values="Sturm">storm</option>
+                <option values="Gewitter">thunderstorm</option>
+                <option values="Nebel">fog</option>
+                <option values="Schneefall">snowfall</option>
+           </select>
+
+          </div>
+    </div>
+    </div>
   </main>
 
   <% include partials/footer.ejs %>
@@ -132,10 +142,10 @@
   <script src="leaflet.awesome-markers/leaflet.awesome-markers.min.js"></script>
   <script src="config/twitter-widgets-config.js"></script>
   <script src="javascripts/betterwms.js"></script>
-  <script src="javascripts/wfs.js"></script>
   <script src="javascripts/twitter-widgets.js"></script>
   <script src="javascripts/URLparameters.js"></script>
   <script src="javascripts/cookies.js"></script>
+  <script src="javascripts/wfs.js"></script>
   <script src="javascripts/map.js"></script>
   <script src="javascripts/index.js"></script>
 

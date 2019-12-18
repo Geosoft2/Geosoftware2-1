@@ -12,6 +12,8 @@
 var map = L.map('mapdiv');
 var output;
 var startpoint;
+var WFSLayer;
+var marker;
 
 // setting the wfs input in var output to work with it locally
 function set_output(x) {
@@ -101,15 +103,18 @@ function initMap() {
         }
         catch (err) {
             $("#message").append("<div class='alert alert-danger' role='alert'>" + err.message + "</div>");
+          }
+
+
         }
-    }
+    getWFSLayer();
 
         //TODO es mnüssen noch der Searchbegriff und die BBox an die entsprechenden Stellen weitergeleitet werden
         //TODO twittersearch als Cookie speichern
         //TODO Bbox entweder in die Datenbank oder auch als Cookie
 
         // setting connection to wfs server with a ajax call
-        var owsrootUrl = 'https://maps.dwd.de/geoserver/dwd/ows';
+      /*  var owsrootUrl = 'https://maps.dwd.de/geoserver/dwd/ows';
         var defaultParameters = {
             service: 'WFS',
             version: '2.0',
@@ -146,7 +151,7 @@ function initMap() {
                 }).addTo(map);
                 return response;
             }
-        }).responseText;
+        }).responseText;*/
 
         map.on('load', function () {
             //TODO if (wenn keine Bbox im Bbox Layer eingezeichnet wurde, dann soll der neue Ausschnitt hier als Bbox für Twitter dienen){
@@ -326,6 +331,58 @@ function initMap() {
         map.addControl(new custom());
 }
 
+function getWFSLayer () {
+  var owsrootUrl = 'https://maps.dwd.de/geoserver/dwd/ows';
+
+var defaultParameters = {
+  service : 'WFS',
+  version : '2.0',
+  request : 'GetFeature',
+  typeName : 'dwd:Warnungen_Landkreise',
+  outputFormat : 'text/javascript',
+  format_options : 'callback:getJson',
+  SrsName : 'EPSG:4326'
+};
+
+var parameters = L.Util.extend(defaultParameters);
+var URL = owsrootUrl + L.Util.getParamString(parameters);
+
+  WFSLayer = null;
+var ajax = $.ajax({
+  url : URL,
+  dataType : 'jsonp',
+  jsonpCallback : 'getJson',
+  success : function (response) {
+      set_output(response);
+      //response=filter_wfs_output(response);
+      // muss noch weiter bearbeitet werden. Idee: den Startpunkt der Karte abhängig von dem
+      // wfs output zu machen. zoom() funktion steht in wfs.js
+      if (response != null) {
+          startpoint=zoom();
+          console.log(response);
+      }
+
+      WFSLayer = L.geoJson(response, {
+          style: setStyles, // setStyles function steht unten im Dokument.
+          onEachFeature: function (feature, layer) {
+              //popupOptions = {maxWidth: 200};
+              layer.bindPopup(feature.properties.EVENT+"<br><br>"+"VON: "+feature.properties.EFFECTIVE+"<br>Bis voraussichtlich: "+feature.properties.EXPIRES);
+
+          }
+      }).addTo(map);
+      return response;
+  }
+}).responseText;
+
+}
+
+function setPopup (feature, layer) {
+    console.log(layer);
+    //popupOptions = {maxWidth: 200};
+    layer.bindPopup(feature.properties.EVENT+"<br><br>"+"VON: "+feature.properties.EFFECTIVE+"<br>Bis voraussichtlich: "+feature.properties.EXPIRES);
+
+};
+
 // Funktion um die einzelnen Landkreise farblich korrekt darzustellen. Die Farbe ist anhängig
 // vom Stärkegrad des Unwetters. Gelb steht für minor, orange für moderate, rot für severe
 // und violett für Extreme
@@ -344,25 +401,60 @@ function setStyles(feature) {
             };
         };
     }
-    if (feature.properties.SEVERITY == "Moderate") {
+    else { return {
+            stroke:false,
+            fillOpacity: 0.0
+          };
+    }
+    if (document.getElementById("Severity_Moderate").checked==true) {
+      if (feature.properties.SEVERITY == "Moderate") {
         return {
             stroke: true,
             fillColor: '#D35400',
             fillOpacity: 0.8
         };
-    };
-    if (feature.properties.SEVERITY == "Severe") {
+      };
+    }
+    else { return {
+            stroke:false,
+            fillOpacity: 0.0
+          };
+    }
+    if (document.getElementById("Severity_Severe").checked==true) {
+      if (feature.properties.SEVERITY == "Severe") {
         return {
             stroke: true,
             fillColor: '#C0392B',
             fillOpacity: 0.8
         };
-    };
-    if (feature.properties.SEVERITY == "Extreme") {
+      };
+    }
+    else { return {
+            stroke:false,
+            fillOpacity: 0.0
+          };
+    }
+    if (document.getElementById("Severity_Severe").checked==true) {
+      if (feature.properties.SEVERITY == "Extreme") {
         return {
             stroke: true,
             fillColor: '#7D3C98',
             fillOpacity: 0.8
         };
-    };
+      };
+    }
+    else { return {
+            stroke:false,
+            fillOpacity: 0.0
+          };
+    }
 }
+
+/*function filter_wfs_output (wfs_response) {
+  var new_response;
+  //console.log(document.getElementById('wfs_selection_box').options.selectedIndex);
+  if (document.getElementById('wfs_selection_box').options.selectedIndex==0) {
+    new_response=wfs_response;
+    return new_response;
+  }
+}*/
