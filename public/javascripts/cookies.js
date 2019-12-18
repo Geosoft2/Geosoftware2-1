@@ -48,7 +48,7 @@ function saveCookie(){
     var justReq = newURL.split("?")[1];
     var stateObj = {foo: justReq};
     history.pushState(stateObj, "Cookie-Update", "?" + justReq);
-    $("#message").append("<div class='alert alert-secondary col-12' role='alert' style='margin-top:5px'>" + "Your view has set to your saved view saved as a cookie" + "</div>");
+    $("#message").append("<div class='alert alert-secondary col-12' role='alert' style='margin-top:5px'>" + "Your current view has saved  as your personal view" + "</div>");
 
 }
 
