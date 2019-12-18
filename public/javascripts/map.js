@@ -9,10 +9,9 @@
 * apllication for changing the cursor
 */
 
-var map;
+var map = L.map('mapdiv');
 var output;
 var startpoint;
-
 
 // setting the wfs input in var output to work with it locally
 function set_output(x) {
@@ -23,10 +22,12 @@ function get_output() {
     return output;
 }
 
+initMap();
+
 /**
 * @desc create map
 */
-function map() {
+function initMap() {
     var startpoint = [51.26524, 9.72767];
     var zoomLevel = 6;
     var urlParam = getAllUrlParams();
@@ -150,14 +151,13 @@ function map() {
             }
         }).responseText;
 
-        map = L.map('mapdiv');
         map.on('load', function () {
             //TODO if (wenn keine Bbox im Bbox Layer eingezeichnet wurde, dann soll der neue Ausschnitt hier als Bbox für Twitter dienen){
             var bbox = map.getBounds();
             document.cookie = "bboxsouthWest_lat=" + bbox._southWest.lat;
             document.cookie = "bboxsouthWest_lng=" + bbox._southWest.lng;
-            document.cookie = "bboxnothEast_lat=" + bbox._northEast.lat;
-            document.cookie = "bboxnothEast_lng=" + bbox._northEast.lng;
+            document.cookie = "bboxnorthEast_lat=" + bbox._northEast.lat;
+            document.cookie = "bboxnorthEast_lng=" + bbox._northEast.lng;
             // }
         });
 
@@ -173,9 +173,9 @@ function map() {
                 var bbox = map.getBounds();
                 document.cookie = "bboxsouthWest_lat=" + bbox._southWest.lat;
                 document.cookie = "bboxsouthWest_lng=" + bbox._southWest.lng;
-                document.cookie = "bboxnothEast_lat=" + bbox._northEast.lat;
-                document.cookie = "bboxnothEast_lng=" + bbox._northEast.lng;
-                console.log(bbox);
+                document.cookie = "bboxnorthEast_lat=" + bbox._northEast.lat;
+                document.cookie = "bboxnorthEast_lng=" + bbox._northEast.lng;
+                //console.log(bbox);
                 // }
 
 
@@ -192,9 +192,9 @@ function map() {
                 var bbox = map.getBounds();
                 document.cookie = "bboxsouthWest_lat=" + bbox._southWest.lat;
                 document.cookie = "bboxsouthWest_lng=" + bbox._southWest.lng;
-                document.cookie = "bboxnothEast_lat=" + bbox._northEast.lat;
-                document.cookie = "bboxnothEast_lng=" + bbox._northEast.lng;
-                console.log(bbox);
+                document.cookie = "bboxnorthEast_lat=" + bbox._northEast.lat;
+                document.cookie = "bboxnorthEast_lng=" + bbox._northEast.lng;
+                //console.log(bbox);
                 // }
             });
 
@@ -220,8 +220,6 @@ function map() {
             "Dark": dark,
             "Satellite": satellite
         };
-
-
 
         // Warnungs-Layer vom DWD-Geoserver - betterWms fügt Möglichkeiten zur GetFeatureInfo hinzu
         var warnlayer = L.tileLayer.betterWms("https://maps.dwd.de/geoproxy_warnungen/service/", {
@@ -273,12 +271,8 @@ function map() {
 
             document.cookie = "bboxsouthWest_lat=" + e.layer._latlngs[0][0].lat;
             document.cookie = "bboxsouthWest_lng=" + e.layer._latlngs[0][0].lng;
-            document.cookie = "bboxnothEast_lat=" + e.layer._latlngs[0][2].lat;
-            document.cookie = "bboxnothEast_lng=" + e.layer._latlngs[0][2].lng;
-
-            let geocode = "" + e.layer._latlng.lat + "," + e.layer._latlng.lng + "," + Math.floor(e.layer._mRadius / 1000) + "km";
-
-            document.cookie = "geocode=" + geocode;
+            document.cookie = "bboxnorthEast_lat=" + e.layer._latlngs[0][2].lat;
+            document.cookie = "bboxnorthEast_lng=" + e.layer._latlngs[0][2].lng;
         });
 
         var bbox;
@@ -289,9 +283,9 @@ function map() {
             defaultMarkGeocode: false
         })
             .on('markgeocode', function (e) {
-                console.log(poly);
+                //console.log(poly);
                 if (poly != null) {
-                    console.log("if");
+                    //console.log("if");
                     map.removeLayer(poly);
                 }
                 bbox = e.geocode.bbox;
@@ -305,7 +299,7 @@ function map() {
             })
             .addTo(map);
 
-        //Custom Controls
+        //Button, um Startansicht zu speichern
         var custom = L.Control.extend({
             options: {
                 position: "bottomleft"
@@ -333,7 +327,7 @@ function map() {
 // und violett für Extreme
 function setStyles(feature) {
 
-    console.log("2  " + startpoint);
+    //console.log("2  " + startpoint);
 
     var test = document.getElementById("Selection_Severity");
 
