@@ -3,9 +3,10 @@
 }
 
 .eupopup-container {
-	background-color: rgba(25, 25, 25, 0.9);
+	background-color: rgba(100, 100, 100, 0.9);
 	color: #efefef;
 	padding: 5px 20px;
+	margin-bottom: 30px;
 	font-size: 12px;
 	line-height: 1.2em;
 	text-align: center;

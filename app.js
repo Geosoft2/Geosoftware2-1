@@ -157,12 +157,10 @@ app.get('*', function (req, res, next) {
 });
 
 // route files
-let indexRouter = require('./routes/index');
-app.use('/', indexRouter);
-let impressumRouter = require('./routes/impressum');
-app.use('/impressum', impressumRouter);
-let dokuRouter = require('./routes/doku');
-app.use('/doku', dokuRouter);
+app.use('/', require('./routes/index'));
+app.use('/impressum', require('./routes/impressum'));
+app.use('/doku', require('./routes/doku'));
+app.use('/api', require('./routes/api'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

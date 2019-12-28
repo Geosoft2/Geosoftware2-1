@@ -1,14 +1,21 @@
-nav {
-  height: 15vh;
+#mainnav {
+  height: 54px;
   font-size: large;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 #logo {
-  height: 10vh;
+  height: 40px;
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
-
+#logo-div{
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
 main {
-  padding-top: 17vh;
+  padding-top: 56px;
   padding-left: 1vw;
   padding-right: 1vw;
   overflow: auto;
@@ -19,7 +26,7 @@ main {
 }
 
 #footer {
-  height: 5vh;
+  height: 25px;
 }
 
 .footer-elem {
