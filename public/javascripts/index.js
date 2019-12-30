@@ -1,3 +1,5 @@
+var geocode = "10.445921,51.158627,100km"; //("LNG,LAT,RADIUS") Mittelpunkt Deutschlands 
+
 $(document).ready(() => {
     requestTweets();
 });
@@ -6,7 +8,7 @@ function requestTweets() {
     $("#btn_tweetrequest").on("click", async () => {
         var query = {
             keyword: $("#keyword_input").val(),
-            geocode: "37.735997,-118.427388,100km",
+            geocode: geocode,
             language: $("#language_select").val(),
             locale: "ja",
             result_type: "recent",
@@ -35,14 +37,46 @@ function requestTweets() {
         }).done(function (data) {
             console.log('Success: Tweets from the database received');
             //filterTweets(data);
-            test(data);
         }).fail(function (xhr, status, error) {
             console.log('Error: ' + error);
         });
     });
 };
 
-/* function getPolygonsInBbox() {
+function filterTweets(tweets) {
+    var polygons = getPolygonsInBbox();
+
+    var testpolygon = {
+        "geometry": {
+            "type": "Polygon",
+            "coordinates": [[
+                [7.5146484375, 52.29504228453735],
+                [7.84423828125, 50.708634400828224],
+                [10.61279296875, 50.233151832472245],
+                [13.095703125, 51.97134580885172],
+                [10.349121093749998, 53.173119202640635],
+                [7.5146484375, 52.29504228453735]
+            ]]
+        }
+    };
+
+    polygons.push(testpolygon);
+
+    //console.log(polygons);
+
+    var filteredtweets = [];
+
+    polygons.forEach((polygon) => {
+        tweets.forEach((t) => {
+            var tweet = JSON.parse(t.tweet);
+            if (polygonContainsTweet(polygon, tweet)) {
+                filteredtweets.push();
+            }
+        });
+    });
+};
+
+function getPolygonsInBbox() {
     var bboxsouthWest_lat = parseFloat(getCookie("bboxsouthWest_lat"));
     var bboxsouthWest_lng = parseFloat(getCookie("bboxsouthWest_lng"));
     var bboxnorthEast_lat = parseFloat(getCookie("bboxnorthEast_lat"));
@@ -89,7 +123,7 @@ function requestTweets() {
     });
 
     return polygonswithinbbox;
-}
+};
 
 //TODO: Ueberpruefe, ob Tweet im Polygon liegt
 function polygonContainsTweet(polygon, tweet) {
@@ -103,50 +137,7 @@ function polygonContainsTweet(polygon, tweet) {
             //console.log(tweet.place);
         }
     }
-}
-
-function filterTweets(tweets) {
-    var polygons = getPolygonsInBbox();
-
-    var testpolygon = {
-        "geometry": {
-            "type": "Polygon",
-            "coordinates": [[
-                [7.5146484375, 52.29504228453735],
-                [7.84423828125, 50.708634400828224],
-                [10.61279296875, 50.233151832472245],
-                [13.095703125, 51.97134580885172],
-                [10.349121093749998, 53.173119202640635],
-                [7.5146484375, 52.29504228453735]
-            ]]
-        }
-    };
-
-    polygons.push(testpolygon);
-
-    //console.log(polygons);
-
-    var filteredtweets = [];
-
-    polygons.forEach((polygon) => {
-        tweets.forEach((t) => {
-            var tweet = JSON.parse(t.tweet);
-            if (polygonContainsTweet(polygon, tweet)) {
-                filteredtweets.push();
-            }
-        });
-    });
-} */
-
-function test(tweets) {
-    $(".tweet").remove();
-    tweets.forEach((t) => {
-        var tweet = JSON.parse(t.tweet);
-        drawTweetToUI(tweet);
-        drawTweetToMap(tweet);
-    });
-    $('.carousel-item').first().addClass("active");
-}
+};
 
 function drawTweetToUI(tweet) {
     var tweet_id = tweet.id_str;
