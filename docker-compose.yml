@@ -1,6 +1,9 @@
 version: '3'
 services:
   app:
+    container_name: app # How the container will appear when listing containers from the CLI
+    image: node:10 # The <container-name>:<tag-version> of the container, in this case the tag version aligns with the version of node
+    user: node # The user to run as in the container
     build: .
     ports:
       - "3000:3000"
@@ -12,5 +15,5 @@ services:
     image: mongo
     ports:
       - "27017:27017"
-    volumes:
-      - ./data:/data/db
+
+

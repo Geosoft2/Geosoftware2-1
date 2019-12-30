@@ -28,7 +28,7 @@ $.fn.euCookieLawPopup = (function() {
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// PARAMETERS (MODIFY THIS PART) //////////////////////////////////////////////////////////////
 	_self.params = {
-		cookiePolicyUrl : '/?cookie-policy',
+		cookiePolicyUrl : '/doku#cookiepolicy',
 		popupPosition : 'top',
 		colorStyle : 'default',
 		compactStyle : false,
