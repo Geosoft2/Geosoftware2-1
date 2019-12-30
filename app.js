@@ -67,7 +67,7 @@ app.post('/jsnlog.logger', (req, res) => {
   res.send('');
 });
 
-app.post('/twitterapi', async (req, res) => {
+/* app.post('/twitterapi', async (req, res) => {
   var query = req.body;
   TwitClient.get('search/tweets', {
     q: query.keyword,
@@ -85,6 +85,15 @@ app.post('/twitterapi', async (req, res) => {
       processTweets(data);
     });
   res.send({});
+}); */
+
+app.post('/twitterapi', async (req, res) => {
+  var query = req.body;
+  console.log(query.keyword);
+  var stream = TwitClient.stream('statuses/filter', { location: ['44.84029065139799', '2.417054319834398', '56.92099675839107', '17.7100230698344'] });
+  stream.on('tweet', (tweet) => {
+    console.log(tweet);
+  });
 });
 
 function processTweets(tweets) {
