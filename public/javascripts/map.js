@@ -233,14 +233,13 @@ function initMap() {
     };
 
     // Warnungs-Layer vom DWD-Geoserver - betterWms fügt Möglichkeiten zur GetFeatureInfo hinzu
-    var warnlayer = L.tileLayer.betterWms("https://maps.dwd.de/geoproxy_warnungen/service/", {
-        layers: 'Warnungen_Landkreise',
-        // eigene Styled Layer Descriptor (SLD) können zur alternativen Anzeige der Warnungen genutzt werden (https://docs.geoserver.org/stable/en/user/styling/sld/reference/)
-        //sld: 'https://eigenerserver/alternativer.sld',
+    var warnlayer = L.tileLayer.betterWms("https://maps.dwd.de/geoserver/dwd/ows", {
+        layers: 'dwd:RX-Produkt',
+        request: 'GetMap',
         format: 'image/png',
         transparent: true,
-        opacity: 0.8,
-        attribution: 'Warndaten: &copy; <a href="https://www.dwd.de">DWD</a>'
+        opacity: 0.6,
+        attribution: 'Radardaten: &copy; <a href="https://www.dwd.de">DWD</a>'
     }).addTo(map);
 
     // CQL_FILTER können benutzt werden um angezeigte Warnungen zu filtern (https://docs.geoserver.org/stable/en/user/tutorials/cql/cql_tutorial.html)
