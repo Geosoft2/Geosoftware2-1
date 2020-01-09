@@ -2,11 +2,7 @@
 // jshint node: true
 "use strict";
 
-
-const express = require('express');
-var cookieParser = require('cookie-parser');
-var cookie = require('cookie');
-const router = express.Router();
+const router = require('express').Router();
 
 const IndexController = require('../controllers/index');
 

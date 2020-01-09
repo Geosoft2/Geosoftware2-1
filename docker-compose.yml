@@ -1,16 +1,17 @@
-version: '3'
+version: "3.7"
 services:
   app:
+    container_name: docker-node-mongo
+    restart: always
     build: .
     ports:
       - "3000:3000"
-    environment:
-      - "TZ=Europe/Amsterdam" # offset +01:00 / DST +02:00
-    depends_on:
-      - mongodbservice
-  mongodbservice:
+    links:
+      - mongo
+  mongo:
+    container_name: mongo
     image: mongo
     ports:
       - "27017:27017"
-    volumes:
-      - ./data:/data/db
+
+
