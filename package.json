@@ -3,7 +3,7 @@
   "author": "Lukas, Christin, Constantin, Max",
   "version": "1.0.0",
   "main": "app.js",
-  "description": "this is the solution for the Geosoftware2 Projekt",
+  "description": "this is the solution for the Geosoftware2 Projekt (check dependencies usage with npx depcheck)",
   "license": "ISC",
   "homepage": "https://github.com/Leverkusen/GeoSoftware2#readme",
   "private": true,
