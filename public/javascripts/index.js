@@ -1,23 +1,15 @@
-var geocode = "10.445921,51.158627,100km"; //("LNG,LAT,RADIUS") Mittelpunkt Deutschlands 
-
 $(document).ready(() => {
     requestTweets();
 });
 
 function requestTweets() {
     $("#btn_tweetrequest").on("click", async () => {
-        var query = {
-            keyword: $("#keyword_input").val(),
-            geocode: geocode,
-            language: $("#language_select").val(),
-            locale: "ja",
-            result_type: "recent",
-            count: "100",
-            until: "",
-            since_id: "",
-            max_id: "",
-            include_entities: false
-        };
+
+        //Search API
+        var query = twitter_default;
+        query.q = $("#keyword_input").val();
+        query.lang = $("#language_select").val();
+        //evtl noch result type
 
         await $.ajax({
             type: 'POST',
@@ -31,12 +23,31 @@ function requestTweets() {
             console.log('Error: ' + error);
         });
 
+
+        //Streaming API
+        /*  var query = {
+             track: $("#keyword_input").val(),
+             bbox: default_bbox
+         };
+ 
+         await $.ajax({
+             type: 'POST',
+             url: 'http://localhost:3000/twitterapi',
+             data: query,
+             dataType: 'json',
+             encode: true
+         }).done(function (data) {
+             console.log('Success: Data from Twitter received');
+         }).fail(function (xhr, status, error) {
+             console.log('Error: ' + error);
+         }); */
+
         $.ajax({
             type: 'GET',
             url: 'http://localhost:3000/tweetdb',
         }).done(function (data) {
             console.log('Success: Tweets from the database received');
-            //filterTweets(data);
+            filterTweets(data);
         }).fail(function (xhr, status, error) {
             console.log('Error: ' + error);
         });
@@ -46,34 +57,30 @@ function requestTweets() {
 function filterTweets(tweets) {
     var polygons = getPolygonsInBbox();
 
-    var testpolygon = {
-        "geometry": {
-            "type": "Polygon",
-            "coordinates": [[
-                [7.5146484375, 52.29504228453735],
-                [7.84423828125, 50.708634400828224],
-                [10.61279296875, 50.233151832472245],
-                [13.095703125, 51.97134580885172],
-                [10.349121093749998, 53.173119202640635],
-                [7.5146484375, 52.29504228453735]
-            ]]
-        }
-    };
-
-    polygons.push(testpolygon);
-
-    //console.log(polygons);
-
     var filteredtweets = [];
 
-    polygons.forEach((polygon) => {
-        tweets.forEach((t) => {
-            var tweet = JSON.parse(t.tweet);
-            if (polygonContainsTweet(polygon, tweet)) {
-                filteredtweets.push();
+    tweets.forEach((t, index) => {
+        tweets[index] = toJSON(t);
+
+        /* var inside = false;
+        var i = 0;
+        //TODO: Laufzeit problematisch
+        while ((!inside) && (i < polygons.length)) {
+            if (tweetInPolygon(tweet, polygons[i])) {
+                filteredtweets.push(tweet);
+                inside = true;
             }
-        });
+        } */
+
+        t = tweets[index];
+
+        if (t.geo != null) {
+            filteredtweets.push(t);
+        }
     });
+
+    drawTweetsToMap(filteredtweets);
+    drawTweetsToUI(filteredtweets);
 };
 
 function getPolygonsInBbox() {
@@ -99,13 +106,15 @@ function getPolygonsInBbox() {
 
     dwd.forEach((polygon) => {
         if (polygon.geometry.type == "MultiPolygon") {
-            polygon.geometry.coordinates.forEach((coordinates) => {
-                var poly = {
-                    "type": "Polygon",
-                    "coordinates": coordinates
-                };
+            polygon.geometry.coordinates.forEach((c) => {
+                c.forEach((coordinates) => {
+                    var poly = {
+                        "type": "Polygon",
+                        "coordinates": [coordinates]
+                    };
 
-                polygons.push(poly);
+                    polygons.push(poly);
+                });
             });
         } else {
             if (polygon.geometry.type == "Polygon") {
@@ -126,12 +135,9 @@ function getPolygonsInBbox() {
 };
 
 //TODO: Ueberpruefe, ob Tweet im Polygon liegt
-function polygonContainsTweet(polygon, tweet) {
-    //console.log(polygon, tweet);
-
+function tweetInPolygon(tweet, polygon) {
     if (tweet.geo != null) {
-        var coord = tweet.geo.coordinates;
-        console.log(turf.booleanPointInPolygon(coord, polygon));
+        return d3.geoContains(polygon, tweet.geo);
     } else {
         if (tweet.place != null) {
             //console.log(tweet.place);
@@ -139,13 +145,58 @@ function polygonContainsTweet(polygon, tweet) {
     }
 };
 
-function drawTweetToUI(tweet) {
-    var tweet_id = tweet.id_str;
-    var tweet_html = '<div class="tweet carousel-item" id="' + tweet_id + '"></div>';
-    $("#tweet_carousel_inner").append(tweet_html);
-    var tweet_dom = $("#" + tweet_id)[0];
-    twttr.widgets.createTweet(tweet_id, tweet_dom, widget_config);
+function drawTweetsToUI(tweets) {
+    var first = tweets[0].id_str;
+    tweets.forEach((tweet) => {
+        console.log(tweet);
+        var tweet_id = tweet.id_str;
+        var tweet_html = '<div class="tweet carousel-item" id="' + tweet_id + '"></div>';
+        $("#tweet_carousel_inner").append(tweet_html);
+        var tweet_dom = $("#" + tweet_id)[0];
+        twttr.widgets.createTweet(tweet_id, tweet_dom, widget_config);
+    });
+
+    $(".carousel-item").first().addClass("active");
 };
 
-function drawTweetToMap(tweet) {
+function drawTweetsToMap(tweets) {
+    var defaultIcon = L.ExtraMarkers.icon({
+        markerColor: 'cyan',
+        prefix: 'fab',
+        icon: 'fa-twitter',
+        iconColor: 'white'
+    });
+
+    var selectedIcon = L.ExtraMarkers.icon({
+        markerColor: 'green-light',
+        prefix: 'fab',
+        icon: 'fa-twitter',
+        iconColor: 'white'
+    });
+
+    var markergroup = L.featureGroup()
+        .addEventListener("click", (e) => {
+            markergroup.eachLayer((marker) => {
+                marker.setIcon(defaultIcon);
+            });
+
+            e.layer.setIcon(selectedIcon);
+        })
+        .addTo(map);
+
+    tweets.forEach((t) => {
+        if (t.geo != null) {
+            var marker = L.marker(t.geo.coordinates, { icon: defaultIcon, alt: "marker" })
+
+            markergroup.addLayer(marker);
+        }
+    });
+};
+
+function toJSON(tweet) {
+    return {
+        id: JSON.parse(tweet.id),
+        geo: JSON.parse(tweet.geo),
+        place: JSON.parse(tweet.place)
+    };
 }

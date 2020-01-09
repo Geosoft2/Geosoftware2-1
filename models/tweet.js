@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 
 const tweetSchema = new mongoose.Schema({
-    tweet: String
+    id: String,
+    geo: String,
+    place: String
 });
 
 const tweetModel = mongoose.model("TweetModel", tweetSchema);

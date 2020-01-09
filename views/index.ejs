@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="stylesheets/jquery-eu-cookie-law-popup.css">
   <link rel="stylesheet" href="flag-icon-css/css/flag-icon.min.css">
   <link rel="stylesheet" href="bootstrap-select/css/bootstrap-select.min.css">
-  <link rel="stylesheet" href="leaflet.awesome-markers/leaflet.awesome-markers.css">
+  <link rel="stylesheet" href="leaflet-extra-markers/css/leaflet.extra-markers.min.css">
 
 </head>
 
@@ -30,146 +30,147 @@
       <div id="message" class="row">
       </div>
       <div class="row">
-        <div class="col-6" id="mapdiv"></div>
-        <div class="col-3">
-          <div class="row">
-            <div class="col text-center">
-              <span class="text-info"><i class="fab fa-twitter-square fa-4x"></i></span>
-            </div>
-          </div>
+        <div class="col" id="mapdiv"></div>
+        <div class="col">
           <div class="row">
             <div class="col">
-              <button class="btn btn-outline-info" id="btn_tweetrequest">Get Tweets</button>
-            </div>
-            <div class="col">
-              <a data-toggle="collapse" href="#twitter_filter"><span class="text-info"><i
-                    class="fas fa-sliders-h fa-2x"></i></span></a>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <div class="collapse" id="twitter_filter">
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <label class="input-group-text" for="keyword_input"><i class="fas fa-search"></i></label>
-                  </div>
-                  <input class="form-control" id="keyword_input" placeholder="keywords">
+              <div class="row">
+                <div class="col text-center">
+                  <span class="text-info"><i class="fab fa-twitter-square fa-4x"></i></span>
                 </div>
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <label class="input-group-text" for="language_select"><i class="fas fa-globe"></i></label>
-                  </div>
-                  <select class="browser-default custom-select" id="language_select">
-                    <option selected>All</option>
-                    <option value="en">English</option>
-                    <option value="de">German</option>
-                  </select>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <button class="btn btn-outline-info" id="btn_tweetrequest">Get Tweets</button>
                 </div>
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <label class="input-group-text" for="type_select"><i class="fas fa-poll"></i></label>
+                <div class="col">
+                  <a data-toggle="collapse" href="#twitter_filter"><span class="text-info"><i
+                        class="fas fa-sliders-h fa-2x"></i></span></a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <div class="collapse" id="twitter_filter">
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <label class="input-group-text" for="keyword_input"><i class="fas fa-search"></i></label>
+                      </div>
+                      <input class="form-control" id="keyword_input" placeholder="keywords">
+                    </div>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <label class="input-group-text" for="language_select"><i class="fas fa-globe"></i></label>
+                      </div>
+                      <select class="browser-default custom-select" id="language_select">
+                        <option selected>All</option>
+                        <option value="en">English</option>
+                        <option value="de">German</option>
+                      </select>
+                    </div>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <label class="input-group-text" for="type_select"><i class="fas fa-poll"></i></label>
+                      </div>
+                      <select class="browser-default custom-select" id="type_select">
+                        <option value="recent" selected>recent</option>
+                        <option value="popular">popular</option>
+                        <option value="mixed">mixed</option>
+                      </select>
+                    </div>
                   </div>
-                  <select class="browser-default custom-select" id="type_select">
-                    <option value="recent" selected>recent</option>
-                    <option value="popular">popular</option>
-                    <option value="mixed">mixed</option>
-                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <div id="tweet_carousel" class="carousel slide" data-interval="false">
+                    <a class="carousel-control-prev" href="#tweet_carousel" role="button" data-slide="prev">
+                      <span class="carousel-control-prev-icon"></span>
+                    </a>
+                    <a class="carousel-control-next" href="#tweet_carousel" role="button" data-slide="next">
+                      <span class="carousel-control-next-icon"></span>
+                    </a>
+                    <div class="carousel-inner" id="tweet_carousel_inner">
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="row">
             <div class="col">
-              <div id="tweet_carousel" class="carousel slide" data-interval="false">
-                <a class="carousel-control-prev" href="#tweet_carousel" role="button" data-slide="prev">
-                  <span class="carousel-control-prev-icon"></span>
-                </a>
-                <a class="carousel-control-next" href="#tweet_carousel" role="button" data-slide="next">
-                  <span class="carousel-control-next-icon"></span>
-                </a>
-                <div class="carousel-inner" id="tweet_carousel_inner">
+              <div class="row">
+                <div class="col text-center">
+                  <span class="text-danger"><i class="fab fa-instagram fa-4x"></i></span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <button class="btn btn-outline-danger">Get Posts</button>
+                </div>
+                <div class="col">
+                  <a data-toggle="collapse" href="#instagram_filter"><span class="text-danger"><i
+                        class="fas fa-sliders-h fa-2x"></i></span></a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <div class="collapse" id="instagram_filter">
+                    <div>EXAMPLETEXT
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-3">
-          <div class="row">
-            <div class="col text-center">
-              <span class="text-danger"><i class="fab fa-instagram fa-4x"></i></span>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <button class="btn btn-outline-danger">Get Posts</button>
-            </div>
-            <div class="col">
-              <a data-toggle="collapse" href="#instagram_filter"><span class="text-danger"><i
-                    class="fas fa-sliders-h fa-2x"></i></span></a>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <div class="collapse" id="instagram_filter">
-                <div>EXAMPLETEXT
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      </div>
+      <!-- TODO: WFS Menu in die Karte als Control integrieren -->
+      <div class="row">
         <div id="button_div" class="col-4">
-                  <button type="button" class="btn btn-warning" onclick="saveCookie();"
-                    title="Set your current view as defaultview."><img id="save_icon" class="img-fluid"
-                      src="/images/save_icon.png" alt="Set your current view as Defaultview"
-                      style="width:20px; height:auto;"></button>
-                </div>
-        <div class="row">
-          <div id="button_div" class="col-4">
-            <button type="button" onclick="show_wfs_changes()">change Warnings</button>
-            <from id="Selection_Severity">
-              Minor <input type="checkbox" id="Severity_Minor" checked />
-              Moderate <input type="checkbox" id="Severity_Moderate" checked />
-              Severe <input type="checkbox" id="Severity_Severe" checked />
-              Extreme<input type="checkbox" id="Severity_Extreme" checked />
-            </from>
-          </div>
-          <div>
-            <select id="wfs_selection_box">
-                <option values="Select_All">All</option>
-                <option values="Sturm">storm</option>
-                <option values="Gewitter">thunderstorm</option>
-                <option values="Nebel">fog</option>
-                <option values="Schneefall">snowfall</option>
-           </select>
-
-          </div>
-    </div>
+          <button type="button" onclick="show_wfs_changes()">change Warnings</button>
+          <from id="Selection_Severity">
+            Minor <input type="checkbox" id="Severity_Minor" checked />
+            Moderate <input type="checkbox" id="Severity_Moderate" checked />
+            Severe <input type="checkbox" id="Severity_Severe" checked />
+            Extreme<input type="checkbox" id="Severity_Extreme" checked />
+          </from>
+        </div>
+        <div>
+          <select id="wfs_selection_box">
+            <option values="Select_All">All</option>
+            <option values="Sturm">storm</option>
+            <option values="Gewitter">thunderstorm</option>
+            <option values="Nebel">fog</option>
+            <option values="Schneefall">snowfall</option>
+          </select>
+        </div>
+      </div>
     </div>
   </main>
 
   <% include partials/footer.ejs %>
 
-  <script src="leaflet/leaflet.js"></script>
-  <script src="turf/turf.min.js"></script>
-  <script src="jquery/jquery.min.js"></script>
-  <script src="javascripts/jquery-eu-cookie-law-popup.js"></script>
-  <script src="popper/umd/popper.min.js"></script>
-  <script src="bootstrap/js/bootstrap.min.js"></script>
-  <script src="mdbootstrap/js/mdb.min.js"></script>
-  <script src="bootstrap-select/js/bootstrap-select.min.js"></script>
-  <script src="jsnlog/jsnlog.min.js"></script>
-  <script src="leaflet-control-geocoder/Control.Geocoder.min.js"></script>
-  <script src="leaflet-draw/leaflet.draw.js"></script>
-  <script src="fontawesome/js/all.min.js"></script>
-  <script src="leaflet.awesome-markers/leaflet.awesome-markers.min.js"></script>
-  <script src="config/twitter-widgets-config.js"></script>
-  <script src="javascripts/betterwms.js"></script>
-  <script src="javascripts/twitter-widgets.js"></script>
-  <script src="javascripts/URLparameters.js"></script>
-  <script src="javascripts/cookies.js"></script>
-  <script src="javascripts/wfs.js"></script>
-  <script src="javascripts/map.js"></script>
-  <script src="javascripts/index.js"></script>
+  <script src="/leaflet/leaflet.js"></script>
+  <script src="/turf/turf.min.js"></script>
+  <script src="/jquery/jquery.min.js"></script>
+  <script src="/javascripts/jquery-eu-cookie-law-popup.js"></script>
+  <script src="/popper/umd/popper.min.js"></script>
+  <script src="/bootstrap/js/bootstrap.min.js"></script>
+  <script src="/mdbootstrap/js/mdb.min.js"></script>
+  <script src="/bootstrap-select/js/bootstrap-select.min.js"></script>
+  <script src="/jsnlog/jsnlog.min.js"></script>
+  <script src="/leaflet-control-geocoder/Control.Geocoder.min.js"></script>
+  <script src="/leaflet-draw/leaflet.draw.js"></script>
+  <script src="/fontawesome/js/all.min.js"></script>
+  <script src="/leaflet-extra-markers/js/leaflet.extra-markers.min.js"></script>
+  <script src="/d3-geo/d3-geo.min.js"></script>
+  <script src="/config/twitter-widgets-config.js"></script>
+  <script src="/config/default.js"></script>
+  <script src="/javascripts/widgets-load.js"></script>
+  <script src="/javascripts/betterwms.js"></script>
+  <script src="/javascripts/URLparameters.js"></script>
+  <script src="/javascripts/cookies.js"></script>
+  <script src="/javascripts/wfs.js"></script>
+  <script src="/javascripts/map.js"></script>
+  <script src="/javascripts/index.js"></script>
 
 </body>
 
