@@ -25,6 +25,7 @@ function get_output() {
 }
 
 initMap();
+extendMap();
 
 /**
 * @desc create map
@@ -308,27 +309,6 @@ function initMap() {
             map.fitBounds(poly.getBounds());
         })
         .addTo(map);
-
-    //Button, um Startansicht zu speichern
-    var custom = L.Control.extend({
-        options: {
-            position: "bottomleft"
-        },
-        onAdd: function (map) {
-            var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-
-            container.style.backgroundColor = 'white';
-            container.style.width = '30px';
-            container.style.height = '30px';
-
-            container.onclick = function () {
-                saveCookie();
-            }
-            return container;
-        }
-    });
-
-    map.addControl(new custom());
 }
 
 function getWFSLayer() {
@@ -462,3 +442,26 @@ function setStyles(feature) {
     return new_response;
   }
 }*/
+
+function extendMap() {
+    //Button, um Startansicht zu speichern
+    var saveviewControl = L.Control.extend({
+        options: {
+            position: "bottomleft"
+        },
+        onAdd: () => {
+            var container = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
+
+            container.innerHTML = '<i class="far fa-save"></i>';
+            container.style.width = '30px';
+            container.style.height = '30px';
+
+            container.onclick = () => {
+                saveCookie();
+            }
+            return container;
+        }
+    });
+
+    map.addControl(new saveviewControl);
+}

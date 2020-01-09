@@ -20,7 +20,7 @@ var twit = require('twit');
 var mongoose = require('mongoose');
 
 var token = require('./config/token');
-/* var config = require('./config/database'); */
+var dbconfig = require('./config/database');
 var tweetModel = require('./models/tweet').tweetModel;
 
 var app = express();
@@ -55,7 +55,8 @@ app.use('/fontawesome', express.static(__dirname + '/node_modules/@fortawesome/f
 app.use("/leaflet-draw", express.static(__dirname + "/node_modules/leaflet-draw/dist"));
 app.use("/flag-icon-css", express.static(__dirname + "/node_modules/flag-icon-css"));
 app.use("/bootstrap-select", express.static(__dirname + "/node_modules/bootstrap-select/dist"));
-app.use('/leaflet.awesome-markers', express.static(__dirname + "/node_modules/leaflet.awesome-markers/dist"));
+app.use('/leaflet-extra-markers', express.static(__dirname + "/node_modules/leaflet-extra-markers/dist"));
+app.use('/d3-geo', express.static(__dirname + '/node_modules/d3-geo/dist'));
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
@@ -67,44 +68,40 @@ app.post('/jsnlog.logger', (req, res) => {
   res.send('');
 });
 
-/* app.post('/twitterapi', async (req, res) => {
+//Search API
+app.post('/twitterapi', async (req, res) => {
   var query = req.body;
-  TwitClient.get('search/tweets', {
-    q: query.keyword,
-    geocode: query.geocode,
-    lang: query.language,
-    locale: query.locale,
-    result_type: query.result_type,
-    count: query.count,
-    until: query.until,
-    since_id: query.since_id,
-    max_id: query.max_id,
-    include_entities: query.include_entities
-  },
+  TwitClient.get('search/tweets', query,
     await function (err, data, response) {
       processTweets(data);
     });
   res.send({});
-}); */
+});
 
+/* //Streaming API
 app.post('/twitterapi', async (req, res) => {
   var query = req.body;
-  console.log(query.keyword);
-  var stream = TwitClient.stream('statuses/filter', { location: ['44.84029065139799', '2.417054319834398', '56.92099675839107', '17.7100230698344'] });
+  console.log(query.bbox);
+  var stream = TwitClient.stream('statuses/filter', { locations: [query.bbox.sw_lng, query.bbox.sw_lat, query.bbox.ne_lng, query.bbox.ne_lat] });
+  var count = 0;
   stream.on('tweet', (tweet) => {
-    console.log(tweet);
+    console.log(count++);
   });
-});
+}); */
 
 function processTweets(tweets) {
   var raw = tweets.statuses;
-  tweetModel.collection.drop();
 
   raw.forEach((tweet) => {
     if ((tweet.coordinates != null) || (tweet.geo != null) || (tweet.place != null)) {
       var dbtweet = {
-        tweet: JSON.stringify(tweet)
+        id: tweet.id_str,
+        geo: JSON.stringify(tweet.geo),
+        place: JSON.stringify(tweet.place)
       };
+
+      //tweetModel.deleteMany({ id: dbtweet.id });
+
       tweetModel.create(dbtweet)
         .catch(error => console.log(error));
     }
@@ -204,10 +201,15 @@ async function connectDatabase() {
     console.log("MongoDB connection error!", error);
   });
 
-  mongoose.connect('mongodb://localhost:27017/tweetdb', { useNewUrlParser: true })
+  mongoose.connect(dbconfig.localhost, { useNewUrlParser: true, useUnifiedTopology: true })
     .catch(error => console.log(error));
 };
 
+async function clearUpDatabase() {
+  /* tweetModel.deleteMany({})
+    .catch(error => console.log(error)); */
+}
 connectDatabase();
+clearUpDatabase();
 
 module.exports = app;
