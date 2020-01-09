@@ -109,49 +109,6 @@ function initMap() {
         }
     getWFSLayer();
 
-        //TODO es mnüssen noch der Searchbegriff und die BBox an die entsprechenden Stellen weitergeleitet werden
-        //TODO twittersearch als Cookie speichern
-        //TODO Bbox entweder in die Datenbank oder auch als Cookie
-
-        // setting connection to wfs server with a ajax call
-      /*  var owsrootUrl = 'https://maps.dwd.de/geoserver/dwd/ows';
-        var defaultParameters = {
-            service: 'WFS',
-            version: '2.0',
-            request: 'GetFeature',
-            typeName: 'dwd:Warnungen_Landkreise',
-            outputFormat: 'text/javascript',
-            format_options: 'callback:getJson',
-            SrsName: 'EPSG:4326'
-        };
-
-        var parameters = L.Util.extend(defaultParameters);
-        var URL = owsrootUrl + L.Util.getParamString(parameters);
-
-        var WFSLayer = null;
-        var ajax = $.ajax({
-            url: URL,
-            dataType: 'jsonp',
-            jsonpCallback: 'getJson',
-            success: function (response) {
-                set_output(response);
-                // muss noch weiter bearbeitet werden. Idee: den Startpunkt der Karte abhängig von dem
-                // wfs output zu machen. zoom() funktion steht in wfs.js
-                if (response != null) {
-                    startpoint = zoom();
-                }
-
-                WFSLayer = L.geoJson(response, {
-                    style: setStyles, // setStyles function steht unten im Dokument.
-                    onEachFeature: function (feature, layer) {
-                        //popupOptions = {maxWidth: 200};
-                        layer.bindPopup(feature.properties.EVENT + "<br><br>" + "VON: " + feature.properties.EFFECTIVE + "<br>Bis voraussichtlich: " + feature.properties.EXPIRES);
-
-                    }
-                }).addTo(map);
-                return response;
-            }
-        }).responseText;*/
 
         map.on('load', function () {
             //TODO if (wenn keine Bbox im Bbox Layer eingezeichnet wurde, dann soll der neue Ausschnitt hier als Bbox für Twitter dienen){
@@ -232,7 +189,7 @@ function initMap() {
         };
 
         // Warnungs-Layer vom DWD-Geoserver - betterWms fügt Möglichkeiten zur GetFeatureInfo hinzu
-        var warnlayer = L.tileLayer.betterWms("https://maps.dwd.de/geoproxy_warnungen/service/", {
+        /*var warnlayer = L.tileLayer.betterWms("https://maps.dwd.de/geoproxy_warnungen/service/", {
             layers: 'Warnungen_Landkreise',
             // eigene Styled Layer Descriptor (SLD) können zur alternativen Anzeige der Warnungen genutzt werden (https://docs.geoserver.org/stable/en/user/styling/sld/reference/)
             //sld: 'https://eigenerserver/alternativer.sld',
@@ -240,7 +197,7 @@ function initMap() {
             transparent: true,
             opacity: 0.8,
             attribution: 'Warndaten: &copy; <a href="https://www.dwd.de">DWD</a>'
-        }).addTo(map);
+        }).addTo(map);*/
 
         // CQL_FILTER können benutzt werden um angezeigte Warnungen zu filtern (https://docs.geoserver.org/stable/en/user/tutorials/cql/cql_tutorial.html)
         // Filterung kann auf Basis der verschiedenen properties der Warnungen erfolgen (bspw. EC_II, EC_GROUP, DESCRIPTION ... ) siehe https://www.dwd.de/DE/wetter/warnungen_aktuell/objekt_einbindung/einbindung_karten_geowebservice.pdf
@@ -249,11 +206,12 @@ function initMap() {
         //delete warnlayer.wmsParams.CQL_FILTER;
         //warnlayer.redraw();
 
-        var overlayMaps = {
+        /*var overlayMaps = {
             "DWD Warnings": warnlayer
-        };
+        };*/
+        //overlayMaps
 
-        L.control.layers(baseMaps, overlayMaps).addTo(map);
+        L.control.layers(baseMaps).addTo(map);
 
         var drawnItems = new L.FeatureGroup();
         map.addLayer(drawnItems);
@@ -358,103 +316,174 @@ var ajax = $.ajax({
       // muss noch weiter bearbeitet werden. Idee: den Startpunkt der Karte abhängig von dem
       // wfs output zu machen. zoom() funktion steht in wfs.js
       if (response != null) {
-          startpoint=zoom();
-          console.log(response);
+          console.log(response.features.length);
+          //console.log(output);
+          var filtered_response= new Array();
+          var counter=0;
+          for (var i =0; i<output.features.length; i++) {
+            var filter_feature=filter_wfs_output(output.features[i]);
+            //console.log(filter_feature);
+            if (filter_feature != null) {
+              filtered_response[counter]=filter_feature;
+              counter++;
+            }
+          }
+          console.log(filtered_response);
       }
 
-      WFSLayer = L.geoJson(response, {
+      WFSLayer = L.geoJson(filtered_response, {
           style: setStyles, // setStyles function steht unten im Dokument.
           onEachFeature: function (feature, layer) {
               //popupOptions = {maxWidth: 200};
-              layer.bindPopup(feature.properties.EVENT+"<br><br>"+"VON: "+feature.properties.EFFECTIVE+"<br>Bis voraussichtlich: "+feature.properties.EXPIRES);
+              layer.bindPopup(feature.properties.EVENT+"<br><br>"+"VON: "+feature.properties.EFFECTIVE+"<br>Bis voraussichtlich: "+feature.properties.EXPIRES+"<br><br>"+feature.properties.EC_II);
 
           }
       }).addTo(map);
-      return response;
+
   }
 }).responseText;
 
 }
 
-function setPopup (feature, layer) {
+/*function setPopup (feature, layer) {
     console.log(layer);
     //popupOptions = {maxWidth: 200};
     layer.bindPopup(feature.properties.EVENT+"<br><br>"+"VON: "+feature.properties.EFFECTIVE+"<br>Bis voraussichtlich: "+feature.properties.EXPIRES);
 
-};
+};*/
 
 // Funktion um die einzelnen Landkreise farblich korrekt darzustellen. Die Farbe ist anhängig
 // vom Stärkegrad des Unwetters. Gelb steht für minor, orange für moderate, rot für severe
 // und violett für Extreme
 function setStyles(feature) {
 
-    //console.log("2  " + startpoint);
+  //console.log(feature.properties.SEVERITY);
 
-    var test = document.getElementById("Selection_Severity");
-
-    if (document.getElementById("Severity_Minor").checked == true) {
-        if (feature.properties.SEVERITY == "Minor") {
-            return {
-                stroke: true,
-                fillColor: '#F4D03F',
-                fillOpacity: 0.8
-            };
-        };
-    }
-    else { return {
-            stroke:false,
-            fillOpacity: 0.0
-          };
-    }
-    if (document.getElementById("Severity_Moderate").checked==true) {
-      if (feature.properties.SEVERITY == "Moderate") {
+  if (feature.properties.SEVERITY == "Minor") {
         return {
             stroke: true,
+            weight: 1,
+            color: '#A4A4A4',
+            fillColor: '#F4D03F',
+            fillOpacity: 0.2,
+        };
+      }
+  if (feature.properties.SEVERITY == "Moderate") {
+        return {
+            stroke: true,
+            weight: 0.5,
+            color: '#A4A4A4',
             fillColor: '#D35400',
-            fillOpacity: 0.8
+            fillOpacity: 0.2
         };
+  }
+
+  if (feature.properties.SEVERITY == "Severe") {
+      return {
+          stroke: true,
+          weight: 0.5,
+          color: '#A4A4A4',
+          fillColor: '#C0392B',
+          fillOpacity: 0.2
       };
-    }
-    else { return {
-            stroke:false,
-            fillOpacity: 0.0
-          };
-    }
-    if (document.getElementById("Severity_Severe").checked==true) {
-      if (feature.properties.SEVERITY == "Severe") {
-        return {
-            stroke: true,
-            fillColor: '#C0392B',
-            fillOpacity: 0.8
-        };
+  }
+
+  if (feature.properties.SEVERITY == "Extreme") {
+      return {
+          stroke: true,
+          weight: 0.5,
+          color: '#A4A4A4',
+          fillColor: '#7D3C98',
+          fillOpacity: 0.2
       };
-    }
-    else { return {
-            stroke:false,
-            fillOpacity: 0.0
-          };
-    }
-    if (document.getElementById("Severity_Severe").checked==true) {
-      if (feature.properties.SEVERITY == "Extreme") {
-        return {
-            stroke: true,
-            fillColor: '#7D3C98',
-            fillOpacity: 0.8
-        };
-      };
-    }
-    else { return {
-            stroke:false,
-            fillOpacity: 0.0
-          };
     }
 }
 
-/*function filter_wfs_output (wfs_response) {
-  var new_response;
-  //console.log(document.getElementById('wfs_selection_box').options.selectedIndex);
-  if (document.getElementById('wfs_selection_box').options.selectedIndex==0) {
-    new_response=wfs_response;
-    return new_response;
+function filter_wfs_output (response) {
+  var e=document.getElementById('wfs_selection_box');
+  var selectedOption=e.options[e.selectedIndex].text;
+  //console.log(selectedOption);
+
+
+
+  if (selectedOption=="All") {
+    return filter_dwdoutput_severity(response);
   }
-}*/
+
+  if (selectedOption=="storm/wind") {
+    //if (response.properties.EVENT=="STURM" || response.properties.EVENT=="STURMBÖEN" || response.properties.EVENT=="WINDBÖEN" || response.properties.EVENT=="SCHWERE STURMBÖEN" || response.properties.EVENT=="ORKANARTIGE BÖEN" || response.properties.EVENT=="ORKANBÖEN" || response.properties.EVENT=="EXTREME ORKANBÖEN" ) {
+    if (response.properties.EC_II==13 || response.properties.EC_II==51 || response.properties.EC_II==52 || response.properties.EC_II==53 || response.properties.EC_II==54 || response.properties.EC_II==55 || response.properties.EC_II==56 || response.properties.EC_II==57 || response.properties.EC_II==58){
+      return filter_dwdoutput_severity(response);
+    }
+  }
+
+  if (selectedOption=="thunderstorm") {
+    if (response.properties.EVENT=="GEWITTER" || response.properties.EVENT=="STARKES GEWITTER" || response.properties.EVENT=="SCHWERES GEWITTER mit EXTREMEN ORKANBÖEN" ) {
+      return filter_dwdoutput_severity(response);
+    }
+  }
+
+  if (selectedOption=="fog") {
+    if (response.properties.EVENT=="NEBEL") {
+      return filter_dwdoutput_severity(response);
+    }
+  }
+
+  if (selectedOption=="rain") {
+    if (response.properties.EVENT=="DAUERREGEN" || response.properties.EVENT=="STARKREGEN" || response.properties.EVENT=="HEFTIGER STARKREGEN" || response.properties.EVENT=="ERGIEBIGER DAUERREGEN" || response.properties.EVENT=="EXTREM HEFTIGER STARKREGEN" ) {
+      return filter_dwdoutput_severity(response);
+    }
+  }
+
+  if (selectedOption=="snowfall") {
+    if (response.properties.EVENT=="STARKER SCHNEEFALL" || response.properties.EVENT=="EXTREM STARKER SCHNEEFALL" || response.properties.EVENT=="STARKE SCHNEEVERWEHUNG" || response.properties.EVENT=="EXTREM STARKE SCHNEEVERWEHUNG" ) {
+      return filter_dwdoutput_severity(response);
+    }
+  }
+
+  if (selectedOption=="frost") {
+    if (response.properties.EVENT=="FROST" || response.properties.EVENT=="STRENGER FROST") {
+      return filter_dwdoutput_severity(response);
+    }
+  }
+
+  if (selectedOption=="glazed frost") {
+
+    if (response.properties.EVENT=="GLÄTTE" || response.properties.EVENT=="GLATTEIS") {
+      return filter_dwdoutput_severity(response);
+    }
+  }
+
+
+
+}
+
+
+function filter_dwdoutput_severity (response) {
+  if (document.getElementById("Severity_Minor").checked == true) {
+      if (response.properties.SEVERITY == "Minor") {
+        return response;
+      }
+  }
+
+  if (document.getElementById("Severity_Moderate").checked==true) {
+      if (response.properties.SEVERITY == "Moderate") {
+        return response;
+      }
+  }
+
+  if (document.getElementById("Severity_Severe").checked==true) {
+    if (response.properties.SEVERITY == "Severe") {
+      return response;
+    }
+  }
+
+  if (document.getElementById("Severity_Extreme").checked==true) {
+    if (response.properties.SEVERITY == "Extreme") {
+      return response;
+    }
+  }
+  else {
+      return null;
+    }
+}
