@@ -13,16 +13,9 @@
 * @param {object} res response, to send back the desired HTTP response
 */
 exports.getIndex = (req, res) => {
-
-//TODo hier muss noch ein fall rein, wenn  /?cookie.policy abgefragt wird, rein
-//dann wird ein popup mit der cookie policy angezeigt oder eine neue Seite
-
-    //TODO außerdem sollen bei falschen werten und bei nicht existierenden Anfragen ein Fahler geworfen werden
-
   res.render('index', {
     title: 'Index'
     });
-
 };
 
 

@@ -5,11 +5,11 @@
 const router = require('express').Router();
 
 const APIController = require('../controllers/api');
-
-// renders the documentation page
-router.get('/', APIController.getApi);
-router.get('/twitter', APIController.getApi);
-router.get('/instagram', APIController.getApi);
-router.get('/dwd', APIController.getApi);
+router.get('/', APIController.getApi)
+// API routes for Version 1.0
+router.get('/v1', APIController.getV1);
+router.get('/v1/twitter', APIController.getV1twitter);
+//router.get('/v1/instagram', APIController.getV1instagram);
+router.get('/v1/dwd', APIController.getV1dwd);
 
 module.exports = router;
