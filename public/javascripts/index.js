@@ -1,7 +1,11 @@
 $(document).ready(() => {
     requestTweets();
 });
+var url = window.location.href;
+var arr = url.split("/");
+var host = arr[0] + "//" + arr[2];
 
+console.log(host + " dast istr der host");
 function requestTweets() {
     $("#btn_tweetrequest").on("click", async () => {
 
@@ -13,7 +17,7 @@ function requestTweets() {
 
         await $.ajax({
             type: 'POST',
-            url: 'http://localhost:3000/twitterapi',
+            url: '' + host + '/twitterapi',
             data: query,
             dataType: 'json',
             encode: true
@@ -32,7 +36,7 @@ function requestTweets() {
  
          await $.ajax({
              type: 'POST',
-             url: 'http://localhost:3000/twitterapi',
+             url: '' + host + '/twitterapi',
              data: query,
              dataType: 'json',
              encode: true
@@ -44,7 +48,7 @@ function requestTweets() {
 
         $.ajax({
             type: 'GET',
-            url: 'http://localhost:3000/tweetdb',
+            url: '' + host + '/tweetdb',
         }).done(function (data) {
             console.log('Success: Tweets from the database received');
             filterTweets(data);
