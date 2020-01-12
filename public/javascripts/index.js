@@ -4,7 +4,7 @@ $(document).ready(() => {
 var url = window.location.href;
 var arr = url.split("/");
 var host = arr[0] + "//" + arr[2];
-
+//TODO: das ist ein test TODO
 function requestTweets() {
     $("#btn_tweetrequest").on("click", async () => {
 
