@@ -5,7 +5,6 @@ var url = window.location.href;
 var arr = url.split("/");
 var host = arr[0] + "//" + arr[2];
 
-console.log(host + " dast istr der host");
 function requestTweets() {
     $("#btn_tweetrequest").on("click", async () => {
 
