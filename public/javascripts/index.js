@@ -15,7 +15,7 @@ function requestTweets() {
 
         await $.ajax({
             type: 'POST',
-            url: 'http://localhost:3000/api/v1/twitter/tweets',
+            url: 'http://localhost:3000/api/v1/twitter',
             data: query,
             dataType: 'json',
             encode: true
