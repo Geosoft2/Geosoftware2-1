@@ -32,7 +32,7 @@ app.set('view engine', 'ejs');
 app.use('/', express.static(__dirname + '/public'));
 
 //import cache middleware
-const cache = require('./cache-middleware') 
+const cache = require('./middlewares/cache') 
 
 // make packages available for client using statics
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
