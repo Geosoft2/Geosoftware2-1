@@ -1,3 +1,7 @@
+// jshint esversion: 6
+// jshint node: true
+"use strict";
+
 const mongoose = require('mongoose');
 
 const tweetSchema = new mongoose.Schema({
@@ -8,4 +12,4 @@ const tweetSchema = new mongoose.Schema({
 
 const tweetModel = mongoose.model("TweetModel", tweetSchema);
 
-module.exports = { tweetModel };
+module.exports = tweetModel;
