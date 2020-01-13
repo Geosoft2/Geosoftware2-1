@@ -32,46 +32,13 @@ exports.getApi = (req, res) => {
 exports.getV1 = (req, res) => {
 
 };
-exports.getV1twitter = (req, res) => {
-
-};
-//exports.getV1instagram (req, res) => {
-//
-//};
-exports.getV1dwd = (req, res) => {
-
-};
-exports.getV1mapbox = (req, res) => {
-  const https = require('https')
-  const options = {
-    hostname: 'https://api.mapbox.com',
-    access_token: Tokens.mapbox_accessToken,
-    path: '/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}',
-    method: 'GET'
-  }
-  const req_map = https.request(options, res_map => {
-    console.log(`statusCode: ${res_map.statusCode}`)
-
-    res_map.on('data', d => {
-      process.stdout.write(d)
-    })
-  })
-
-  req_map.on('error', error => {
-    console.error(error)
-  })
-  req_map.end()
-  res.render('doku', {
-    title: 'Documentation'
-  });
-};
 
 /**
  * @desc Requests Tweets directly from Twitter's Search API
- * @param {json} req Contains all necessary parameters for the tweet search 
+ * @param {json} req Contains all necessary parameters for the tweet search
  * @param {json} res Contains all tweets found by the Search API
  */
-exports.getTweets = (req, res) => {
+exports.getV1twitter = (req, res) => {
   const query = req.body; //Unfiltered tweets from Twitter
 
   TwitClient.get('search/tweets', query, dataReceived);
@@ -103,4 +70,37 @@ exports.getTweets = (req, res) => {
   };
 
   //TODO: Send Tweets back to client
+};
+
+//exports.getV1instagram (req, res) => {
+//
+//};
+
+exports.getV1dwd = (req, res) => {
+
+};
+
+exports.getV1mapbox = (req, res) => {
+  const https = require('https')
+  const options = {
+    hostname: 'https://api.mapbox.com',
+    access_token: Tokens.mapbox_accessToken,
+    path: '/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}',
+    method: 'GET'
+  }
+  const req_map = https.request(options, res_map => {
+    console.log(`statusCode: ${res_map.statusCode}`)
+
+    res_map.on('data', d => {
+      process.stdout.write(d)
+    })
+  })
+
+  req_map.on('error', error => {
+    console.error(error)
+  })
+  req_map.end()
+  res.render('doku', {
+    title: 'Documentation'
+  });
 };
