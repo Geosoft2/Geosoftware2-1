@@ -16,22 +16,13 @@ var flash = require('express-flash');
 var session = require('express-session');
 var JL = require('jsnlog').JL;
 var jsnlog_nodejs = require('jsnlog-nodejs').jsnlog_nodejs;
-var twit = require('twit');
 var mongoose = require('mongoose');
 
-var token = require('./config/token');
+var tokens = require('./config/tokens.js');
 var dbconfig = require('./config/database');
 var tweetModel = require('./models/tweet').tweetModel;
 
 var app = express();
-
-//create new TwitClient
-var TwitClient = new twit({
-  consumer_key: token.twitter_consumer_key,
-  consumer_secret: token.twitter_consumer_secret,
-  access_token: token.twitter_access_token,
-  access_token_secret: token.twitter_access_token_secret
-});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -71,55 +62,6 @@ app.post('/jsnlog.logger', (req, res) => {
   res.send('');
 });
 
-//Search API
-app.post('/twitterapi', async (req, res) => {
-  var query = req.body;
-  TwitClient.get('search/tweets', query,
-    await function (err, data, response) {
-      processTweets(data);
-    });
-  res.send({});
-});
-
-/* //Streaming API
-app.post('/twitterapi', async (req, res) => {
-  var query = req.body;
-  console.log(query.bbox);
-  var stream = TwitClient.stream('statuses/filter', { locations: [query.bbox.sw_lng, query.bbox.sw_lat, query.bbox.ne_lng, query.bbox.ne_lat] });
-  var count = 0;
-  stream.on('tweet', (tweet) => {
-    console.log(count++);
-  });
-}); */
-
-function processTweets(tweets) {
-  var raw = tweets.statuses;
-
-  raw.forEach((tweet) => {
-    if ((tweet.coordinates != null) || (tweet.geo != null) || (tweet.place != null)) {
-      var dbtweet = {
-        id: tweet.id_str,
-        geo: JSON.stringify(tweet.geo),
-        place: JSON.stringify(tweet.place)
-      };
-
-      //tweetModel.deleteMany({ id: dbtweet.id });
-
-      tweetModel.create(dbtweet)
-        .catch(error => console.log(error));
-    }
-  });
-}
-
-app.get('/tweetdb', async (request, response) => {
-  try {
-    var result = await tweetModel.find().exec();
-    response.json(result);
-  } catch (error) {
-    console.log(error);
-  }
-});
-
 // Express Validator Middleware
 // @see https://github.com/VojtaStavik/GetBack2Work-Node/blob/master/node_modules/express-validator/README.md
 app.use(validator({
@@ -145,7 +87,7 @@ app.use(logger('dev'));
 // Express Session Middleware
 // @see https://github.com/expressjs/session
 app.use(session({
-  secret: token.secretSession,
+  secret: tokens.secretSession,
   resave: true,
   saveUninitialized: true
 }));

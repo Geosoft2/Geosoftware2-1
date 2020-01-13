@@ -12,45 +12,17 @@ function requestTweets() {
         var query = twitter_default;
         query.q = $("#keyword_input").val();
         query.lang = $("#language_select").val();
-        //evtl noch result type
 
         await $.ajax({
             type: 'POST',
-            url: '' + host + '/twitterapi',
+            url: 'http://localhost:3000/api/v1/twitter',
             data: query,
             dataType: 'json',
             encode: true
         }).done(function (data) {
             console.log('Success: Data from Twitter received');
-        }).fail(function (xhr, status, error) {
-            console.log('Error: ' + error);
-        });
-
-
-        //Streaming API
-        /*  var query = {
-             track: $("#keyword_input").val(),
-             bbox: default_bbox
-         };
- 
-         await $.ajax({
-             type: 'POST',
-             url: '' + host + '/twitterapi',
-             data: query,
-             dataType: 'json',
-             encode: true
-         }).done(function (data) {
-             console.log('Success: Data from Twitter received');
-         }).fail(function (xhr, status, error) {
-             console.log('Error: ' + error);
-         }); */
-
-        $.ajax({
-            type: 'GET',
-            url: '' + host + '/tweetdb',
-        }).done(function (data) {
-            console.log('Success: Tweets from the database received');
-            filterTweets(data);
+            console.log(data);
+            //filterTweets(data);
         }).fail(function (xhr, status, error) {
             console.log('Error: ' + error);
         });
