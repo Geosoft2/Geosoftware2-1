@@ -17,7 +17,7 @@ Project development of the course Geosoftware 2 by Lukas, Christin, Constantin a
 ```
 GeosoftwareProject
 └─┬ config
-  └── token.js
+  └── tokens.js
 ```
 
 ```// hack to make "exports" available in the browser as globals
