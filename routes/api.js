@@ -22,5 +22,6 @@ router.get('/v1/twitter', APIController.getV1twitter);
 //router.get('/v1/instagram', APIController.getV1instagram);
 
 router.get('/v1/dwd', APIController.getV1dwd);
+router.get('/v1/mapbox', APIController.getV1mapbox);
 
 module.exports = router;
