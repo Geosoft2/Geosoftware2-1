@@ -31,6 +31,9 @@ app.set('view engine', 'ejs');
 // set public folder
 app.use('/', express.static(__dirname + '/public'));
 
+//import cache middleware
+const cache = require('./middlewares/cache') 
+
 // make packages available for client using statics
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
 app.use('/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist'));
@@ -115,6 +118,7 @@ app.use(function (req, res, next) {
   next(createError(404));
 });
 
+//TODO: dasd muss noch dringend geändert werden weil wir weder die messegas noch den error haben oder verstehe iuch das falsch
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
@@ -142,16 +146,53 @@ async function connectDatabase() {
   mongoose.connection.on("error", (error) => {
     console.log("MongoDB connection error!", error);
   });
-
-  mongoose.connect(dbconfig.localhost, { useNewUrlParser: true, useUnifiedTopology: true })
-    .catch(error => console.log(error));
+  // connect to MongoDB
+  connectMongoDB();
+  //mongoose.connect(dbconfig.dbdocker, { useNewUrlParser: true, useUnifiedTopology: true })
+    //.catch(error => console.log(error));
+  
+  
 };
+
+/**
+ * function to get a connection to the Database
+ * depending on the type of connection chooses this function the 
+ * @author Luc, Phil, Lukas (Geosoftware I)
+ */
+function connectMongoDB() {
+  (async () => {
+    // set up default ("Docker") mongoose connection
+    await mongoose.connect(dbconfig.dbdocker, {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      autoReconnect: true
+    }).then(db => {
+      console.log('Connected to MongoDB (databasename: "'+db.connections[0].name+'") on host "'+db.connections[0].host+'" and on port "'+db.connections[0].port+'""');
+    }).catch(async err => {
+      console.log('Connection to '+dbconfig.dbdocker+' failed, try to connect to '+dbconfig.dblocalhost);
+      // set up "local" mongoose connection
+      await mongoose.connect(dbconfig.dblocalhost, {
+        useNewUrlParser: true,
+        useCreateIndex: true,
+        autoReconnect: true
+      }).then(db => {
+        console.log('Connected to MongoDB (databasename: "'+db.connections[0].name+'") on host "'+db.connections[0].host+'" and on port "'+db.connections[0].port+'""');
+      }).catch(err2 => {
+        console.log('Error at MongoDB-connection with Docker: '+err);
+        console.log('Error at MongoDB-connection with Localhost: '+err2);
+        console.log('Retry to connect in 3 seconds');
+        setTimeout(connectMongoDB, 3000); // retry until db-server is up
+      });
+    });
+  })();
+}
 
 async function clearUpDatabase() {
   /* tweetModel.deleteMany({})
     .catch(error => console.log(error)); */
 }
-connectDatabase();
+connectMongoDB();
+//connectDatabase();
 clearUpDatabase();
 
 module.exports = app;

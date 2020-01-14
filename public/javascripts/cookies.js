@@ -17,8 +17,10 @@
 //eventuell die BBox des Users
 //
 
-/** function to get the current expansion of the map and save it as a cookie
-**/
+/**
+ * function to get the current expansion of the map and save it as a cookie
+ * @author Lukas, Constantin, Max, Christin 
+ */
 function saveCookie(){
     var currentZoom = map.getZoom();
     var currentCenter = map.getCenter();
