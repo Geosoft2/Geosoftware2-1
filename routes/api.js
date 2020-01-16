@@ -2,14 +2,26 @@
 // jshint node: true
 "use strict";
 
-const router = require('express').Router();
+//Import modules
+const express = require('express'); //Express
 
-const APIController = require('../controllers/api');
+//Import controllers
+const APIController = require('../controllers/api.js');
 
-// renders the documentation page
-router.get('/', APIController.getApi);
-router.get('/twitter', APIController.getApi);
-router.get('/instagram', APIController.getApi);
-router.get('/dwd', APIController.getApi);
+//Define Variables
+const router = express.Router();
+
+//Routes
+router.get('/', APIController.getApi) //Default Route -> render API documentation
+
+// API routes for Version 1.0
+router.get('/v1', APIController.getV1);
+
+router.get('/v1/twitter', APIController.getV1twitter);
+
+//router.get('/v1/instagram', APIController.getV1instagram);
+
+router.get('/v1/dwd', APIController.getV1dwd);
+router.get('/v1/mapbox', APIController.getV1mapbox);
 
 module.exports = router;

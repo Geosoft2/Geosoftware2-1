@@ -3,7 +3,7 @@
   "author": "Lukas, Christin, Constantin, Max",
   "version": "1.0.0",
   "main": "app.js",
-  "description": "this is the solution for the Geosoftware2 Projekt",
+  "description": "this is the solution for the Geosoftware2 Projekt (check dependencies usage with npx depcheck)",
   "license": "ISC",
   "homepage": "https://github.com/Leverkusen/GeoSoftware2#readme",
   "private": true,
@@ -19,6 +19,7 @@
     "bootstrap-select": "^1.13.12",
     "cookie": "^0.4.0",
     "cookie-parser": "~1.4.4",
+    "d3-geo": "^1.11.9",
     "debug": "~2.6.9",
     "ejs": "~2.6.1",
     "express": "~4.16.1",
@@ -33,10 +34,11 @@
     "leaflet": "^1.5.1",
     "leaflet-control-geocoder": "^1.10.0",
     "leaflet-draw": "^1.0.4",
-    "leaflet.awesome-markers": "^2.0.5",
+    "leaflet-extra-markers": "^1.1.0",
     "mdbootstrap": "^4.9.0",
     "mongoose": "^5.8.0",
     "morgan": "~1.9.1",
+    "node-cache": "^5.1.0",
     "open-iconic": "^1.1.1",
     "popper.js": "^1.16.0",
     "twit": "^2.2.11"
@@ -46,6 +48,7 @@
     "chai-http": "^4.3.0",
     "jsdoc": "^3.6.3",
     "mocha": "^6.2.0",
+    "newman": "^4.5.7",
     "nodemon": "^1.19.4"
   },
   "repository": {

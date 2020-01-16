@@ -16,22 +16,13 @@ var flash = require('express-flash');
 var session = require('express-session');
 var JL = require('jsnlog').JL;
 var jsnlog_nodejs = require('jsnlog-nodejs').jsnlog_nodejs;
-var twit = require('twit');
 var mongoose = require('mongoose');
 
-var token = require('./config/token');
-/* var config = require('./config/database'); */
+var tokens = require('./config/tokens.js');
+var dbconfig = require('./config/database');
 var tweetModel = require('./models/tweet').tweetModel;
 
 var app = express();
-
-//create new TwitClient
-var TwitClient = new twit({
-  consumer_key: token.twitter_consumer_key,
-  consumer_secret: token.twitter_consumer_secret,
-  access_token: token.twitter_access_token,
-  access_token_secret: token.twitter_access_token_secret
-});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -39,6 +30,9 @@ app.set('view engine', 'ejs');
 
 // set public folder
 app.use('/', express.static(__dirname + '/public'));
+
+//import cache middleware
+const cache = require('./middlewares/cache') 
 
 // make packages available for client using statics
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
@@ -55,7 +49,8 @@ app.use('/fontawesome', express.static(__dirname + '/node_modules/@fortawesome/f
 app.use("/leaflet-draw", express.static(__dirname + "/node_modules/leaflet-draw/dist"));
 app.use("/flag-icon-css", express.static(__dirname + "/node_modules/flag-icon-css"));
 app.use("/bootstrap-select", express.static(__dirname + "/node_modules/bootstrap-select/dist"));
-app.use('/leaflet.awesome-markers', express.static(__dirname + "/node_modules/leaflet.awesome-markers/dist"));
+app.use('/leaflet-extra-markers', express.static(__dirname + "/node_modules/leaflet-extra-markers/dist"));
+app.use('/d3-geo', express.static(__dirname + '/node_modules/d3-geo/dist'));
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
@@ -65,50 +60,6 @@ app.post('/jsnlog.logger', (req, res) => {
   jsnlog_nodejs(JL, req.body);
   // Send empty response. This is ok, because client side jsnlog does not use response from server.
   res.send('');
-});
-
-app.post('/twitterapi', async (req, res) => {
-  var query = req.body;
-  TwitClient.get('search/tweets', {
-    q: query.keyword,
-    geocode: query.geocode,
-    lang: query.language,
-    locale: query.locale,
-    result_type: query.result_type,
-    count: query.count,
-    until: query.until,
-    since_id: query.since_id,
-    max_id: query.max_id,
-    include_entities: query.include_entities
-  },
-    await function (err, data, response) {
-      processTweets(data);
-    });
-  res.send({});
-});
-
-function processTweets(tweets) {
-  var raw = tweets.statuses;
-  tweetModel.collection.drop();
-
-  raw.forEach((tweet) => {
-    if ((tweet.coordinates != null) || (tweet.geo != null) || (tweet.place != null)) {
-      var dbtweet = {
-        tweet: JSON.stringify(tweet)
-      };
-      tweetModel.create(dbtweet)
-        .catch(error => console.log(error));
-    }
-  });
-}
-
-app.get('/tweetdb', async (request, response) => {
-  try {
-    var result = await tweetModel.find().exec();
-    response.json(result);
-  } catch (error) {
-    console.log(error);
-  }
 });
 
 // Express Validator Middleware
@@ -136,7 +87,7 @@ app.use(logger('dev'));
 // Express Session Middleware
 // @see https://github.com/expressjs/session
 app.use(session({
-  secret: token.secretSession,
+  secret: tokens.secretSession,
   resave: true,
   saveUninitialized: true
 }));
@@ -167,6 +118,7 @@ app.use(function (req, res, next) {
   next(createError(404));
 });
 
+//TODO: dasd muss noch dringend geändert werden weil wir weder die messegas noch den error haben oder verstehe iuch das falsch
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
@@ -194,11 +146,53 @@ async function connectDatabase() {
   mongoose.connection.on("error", (error) => {
     console.log("MongoDB connection error!", error);
   });
-
-  mongoose.connect('mongodb://localhost:27017/tweetdb', { useNewUrlParser: true })
-    .catch(error => console.log(error));
+  // connect to MongoDB
+  connectMongoDB();
+  //mongoose.connect(dbconfig.dbdocker, { useNewUrlParser: true, useUnifiedTopology: true })
+    //.catch(error => console.log(error));
+  
+  
 };
 
-connectDatabase();
+/**
+ * function to get a connection to the Database
+ * depending on the type of connection chooses this function the 
+ * @author Luc, Phil, Lukas (Geosoftware I)
+ */
+function connectMongoDB() {
+  (async () => {
+    // set up default ("Docker") mongoose connection
+    await mongoose.connect(dbconfig.dbdocker, {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      autoReconnect: true
+    }).then(db => {
+      console.log('Connected to MongoDB (databasename: "'+db.connections[0].name+'") on host "'+db.connections[0].host+'" and on port "'+db.connections[0].port+'""');
+    }).catch(async err => {
+      console.log('Connection to '+dbconfig.dbdocker+' failed, try to connect to '+dbconfig.dblocalhost);
+      // set up "local" mongoose connection
+      await mongoose.connect(dbconfig.dblocalhost, {
+        useNewUrlParser: true,
+        useCreateIndex: true,
+        autoReconnect: true
+      }).then(db => {
+        console.log('Connected to MongoDB (databasename: "'+db.connections[0].name+'") on host "'+db.connections[0].host+'" and on port "'+db.connections[0].port+'""');
+      }).catch(err2 => {
+        console.log('Error at MongoDB-connection with Docker: '+err);
+        console.log('Error at MongoDB-connection with Localhost: '+err2);
+        console.log('Retry to connect in 3 seconds');
+        setTimeout(connectMongoDB, 3000); // retry until db-server is up
+      });
+    });
+  })();
+}
+
+async function clearUpDatabase() {
+  /* tweetModel.deleteMany({})
+    .catch(error => console.log(error)); */
+}
+connectMongoDB();
+//connectDatabase();
+clearUpDatabase();
 
 module.exports = app;
