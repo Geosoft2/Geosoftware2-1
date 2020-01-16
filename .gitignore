@@ -1,5 +1,5 @@
 package-lock.json
 node_modules
 config/tokens.js
-config/token.js
+config/tokens.js
 /.vs
