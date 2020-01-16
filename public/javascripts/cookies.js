@@ -17,8 +17,10 @@
 //eventuell die BBox des Users
 //
 
-/** function to get the current expansion of the map and save it as a cookie
-**/
+/**
+ * function to get the current expansion of the map and save it as a cookie
+ * @author Lukas, Constantin, Max, Christin 
+ */
 function saveCookie(){
     var currentZoom = map.getZoom();
     var currentCenter = map.getCenter();
@@ -48,7 +50,7 @@ function saveCookie(){
     var justReq = newURL.split("?")[1];
     var stateObj = {foo: justReq};
     history.pushState(stateObj, "Cookie-Update", "?" + justReq);
-    $("#message").append("<div class='alert alert-secondary col-12' role='alert' style='margin-top:5px'>" + "Your current view has saved  as your personal view" + "</div>");
+    giveSuccessMessage("Your current view has saved  as your personal view");
 
 }
 

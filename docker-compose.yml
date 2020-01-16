@@ -1,17 +1,15 @@
-version: '3'
+version: "3.7"
 services:
   app:
-    container_name: app # How the container will appear when listing containers from the CLI
-    image: node:10 # The <container-name>:<tag-version> of the container, in this case the tag version aligns with the version of node
-    user: node # The user to run as in the container
+    container_name: docker-node-mongo
+    restart: always
     build: .
     ports:
       - "3000:3000"
-    environment:
-      - "TZ=Europe/Amsterdam" # offset +01:00 / DST +02:00
-    depends_on:
-      - mongodbservice
-  mongodbservice:
+    links:
+      - mongo
+  mongo:
+    container_name: mongo
     image: mongo
     ports:
       - "27017:27017"
