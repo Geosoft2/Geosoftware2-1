@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 
   <title><%= title %></title>
@@ -26,15 +25,15 @@
   <% include partials/header.ejs %>
 
   <main>
-    <div class="container-fluid">
+    <div class="container-fluid" id="app">
       <div id="message" class="row">
       </div>
       <div class="row">
-        <div class="col" id="mapdiv"></div>
-        <div class="col">
-          <div class="row">
-            <div class="col">
-              <div class="row">
+        <div class="col-lg-9" id="mapdiv"></div>
+        <div class="col-sm-3" id="interaction">
+          <div class="col" id="col_socialmedia">
+            <div class="col" id="twitter">
+              <div class="col">
                 <div class="col text-center">
                   <span class="text-info"><i class="fab fa-twitter-square fa-4x"></i></span>
                 </div>
@@ -95,7 +94,7 @@
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col" id="flickr">
               <div class="row">
                 <div class="col text-center">
                   <span class="text-danger"><i class="fab fa-instagram fa-4x"></i></span>
@@ -119,31 +118,69 @@
                 </div>
               </div>
             </div>
+            <div class="col" id="dwd_change">
+              <div class="row">
+                <div class="col text-center">
+                  <span class="change-info"><i class="fas fa-cloud-sun-rain fa-3x"></i></span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <button class="btn btn-outline-dark" onclick="show_wfs_changes()">Change Warnings</button>
+                </div>
+                <div class="col">
+                  <a data-toggle="collapse" href="#exchange_filter"><span class="change-info"><i
+                      class="fas fa-sliders-h fa-2x" style="color:#000000;"></i></span></a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <div class="collapse" id="exchange_filter">
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <label class="input-group-text" for="dwd_select"><i class="fas fa-bolt"></i></label>
+                      </div>
+                      <select class="browser-default custom-select" id="wfs_selection_box">
+                        <option selected>All</option>
+                        <option>storm/wind</option>
+                        <option>thunderstorm</option>
+                        <option>fog</option>
+                        <option>rain</option>
+                        <option>snowfall</option>
+                        <option>frost</option>
+                        <option>glazed frost</option>
+                      </select>
+                    </div>
+                    <div>SEVERITY</div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="Severity_Minor">
+                      <label class="form-check-label" for="defaultCheck1">
+                        Minor
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="Severity_Moderate">
+                      <label class="form-check-label" for="defaultCheck2">
+                        Moderate
+                      </label>
+                    </div>
+                    <div class="form-check form-check-inline2">
+                      <input class="form-check-input" type="checkbox" value="" id="Severity_Severe">
+                      <label class="form-check-label" for="defaultCheck3">
+                        Severe
+                      </label>
+                    </div>
+                    <div class="form-check form-check-inline2">
+                      <input class="form-check-input" type="checkbox" value="" id="Severity_Extreme" checked>
+                      <label class="form-check-label" for="defaultCheck4">
+                        Extreme
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <!-- TODO: WFS Menu in die Karte als Control integrieren -->
-      <div class="row">
-        <div id="button_div" class="col-4">
-          <button type="button" onclick="show_wfs_changes()">change Warnings</button>
-          <from id="Selection_Severity">
-            Minor <input type="checkbox" id="Severity_Minor" checked />
-            Moderate <input type="checkbox" id="Severity_Moderate" checked />
-            Severe <input type="checkbox" id="Severity_Severe" checked />
-            Extreme<input type="checkbox" id="Severity_Extreme" checked />
-          </from>
-        </div>
-        <div>
-          <select id="wfs_selection_box">
-            <option>All</option>
-            <option>storm/wind</option>
-            <option>thunderstorm</option>
-            <option>fog</option>
-            <option>rain</option>
-            <option>snowfall</option>
-            <option>frost</option>
-            <option>glazed frost</option>
-          </select>
         </div>
       </div>
     </div>
@@ -171,7 +208,7 @@
   <script src="/javascripts/betterwms.js"></script>
   <script src="/javascripts/URLparameters.js"></script>
   <script src="/javascripts/cookies.js"></script>
-  <script src="/javascripts/wfs.js"></script>
+  <script src="/javascripts/dwd.js"></script>
   <script src="/javascripts/map.js"></script>
   <script src="/javascripts/index.js"></script>
 
