@@ -27,7 +27,10 @@
     "express-session": "^1.16.2",
     "express-validator": "^5.1.1",
     "flag-icon-css": "^3.4.5",
+    "flickr-sdk": "^3.9.0",
+    "fs": "0.0.1-security",
     "http-errors": "~1.6.3",
+    "https": "^1.0.0",
     "jquery": "^3.4.1",
     "jsnlog": "^2.29.0",
     "jsnlog-nodejs": "^2.29.0",
@@ -36,10 +39,14 @@
     "leaflet-draw": "^1.0.4",
     "leaflet-extra-markers": "^1.1.0",
     "mdbootstrap": "^4.9.0",
+    "moment": "^2.24.0",
     "mongoose": "^5.8.0",
     "morgan": "~1.9.1",
+    "node-cache": "^5.1.0",
+    "node-instagram": "^4.3.0",
     "open-iconic": "^1.1.1",
     "popper.js": "^1.16.0",
+    "request": "^2.88.0",
     "twit": "^2.2.11"
   },
   "devDependencies": {
@@ -47,6 +54,7 @@
     "chai-http": "^4.3.0",
     "jsdoc": "^3.6.3",
     "mocha": "^6.2.0",
+    "newman": "^4.5.7",
     "nodemon": "^1.19.4"
   },
   "repository": {

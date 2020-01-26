@@ -5,6 +5,10 @@
   padding-bottom: 5px;
 }
 
+#navbarSupportedContent{
+  background-color: white;
+}
+
 #logo {
   height: 40px;
   padding-top: 0px;
@@ -60,4 +64,11 @@ border-radius: 5px;
 
 .footer-elem {
   color: black;
+}
+
+.spinner-border{
+  margin-right: 10px;
+}
+.carousel-item{
+  background-color: yellow;
 }
