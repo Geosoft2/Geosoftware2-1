@@ -17,6 +17,7 @@ var session = require('express-session');
 var JL = require('jsnlog').JL;
 var jsnlog_nodejs = require('jsnlog-nodejs').jsnlog_nodejs;
 var mongoose = require('mongoose');
+var request = require('request');
 
 var tokens = require('./config/tokens.js');
 var dbconfig = require('./config/database');
@@ -109,6 +110,7 @@ app.get('*', function (req, res, next) {
 
 // route files
 app.use('/', require('./routes/index'));
+//app.use('/auth/instagram', require('./routes/instagram'));
 app.use('/impressum', require('./routes/impressum'));
 app.use('/doku', require('./routes/doku'));
 app.use('/api', require('./routes/api'));

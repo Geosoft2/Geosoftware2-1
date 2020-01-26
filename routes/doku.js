@@ -6,10 +6,11 @@
 const express = require('express');
 const router = express.Router();
 
-const DokuController = require('../controllers/doku');
-
-
 // renders the documentation page
-router.get('/', DokuController.getDoku);
+router.get('/', (req, res) => {
+    res.render('doku', {
+      title: 'Documentation'
+      });
+  });
 
 module.exports = router;
