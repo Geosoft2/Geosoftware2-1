@@ -20,6 +20,7 @@
     "cookie": "^0.4.0",
     "cookie-parser": "~1.4.4",
     "d3-geo": "^1.11.9",
+    "d3-polygon": "^1.0.6",
     "debug": "~2.6.9",
     "ejs": "~2.6.1",
     "express": "~4.16.1",
@@ -37,11 +38,13 @@
     "leaflet-extra-markers": "^1.1.0",
     "mdbootstrap": "^4.9.0",
     "mongoose": "^5.8.0",
+    "mongoose-geojson-schema": "^2.1.5",
     "morgan": "~1.9.1",
     "node-cache": "^5.1.0",
     "open-iconic": "^1.1.1",
     "popper.js": "^1.16.0",
-    "twit": "^2.2.11"
+    "twit": "^2.2.11",
+    "wfs": "^1.1.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",

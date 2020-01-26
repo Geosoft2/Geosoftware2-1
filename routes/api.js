@@ -17,11 +17,16 @@ router.get('/', APIController.getApi) //Default Route -> render API documentatio
 // API routes for Version 1.0
 router.get('/v1', APIController.getV1);
 
-router.get('/v1/twitter', APIController.getV1twitter);
+router.post('/v1/twitter/init', APIController.postV1TwitterInit);
 
-//router.get('/v1/instagram', APIController.getV1instagram);
+router.get('/v1/twitter/tweets', APIController.getV1TwitterTweets);
 
-router.get('/v1/dwd', APIController.getV1dwd);
-router.get('/v1/mapbox', APIController.getV1mapbox);
+router.post('/v1/dwd/events/init', APIController.postV1DWDEventsInit);
+
+router.get('/v1/dwd/events/warnings', APIController.getV1DWDEventsWarnings);
+
+//router.get('/v1/dwd/radar', APIController.getV1dwdradar);
+
+//router.get('/v1/mapbox/:style/:tilesize/:scale', APIController.getV1mapbox);
 
 module.exports = router;

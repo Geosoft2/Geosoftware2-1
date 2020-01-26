@@ -32,7 +32,7 @@ app.set('view engine', 'ejs');
 app.use('/', express.static(__dirname + '/public'));
 
 //import cache middleware
-const cache = require('./middlewares/cache') 
+const cache = require('./middlewares/cache')
 
 // make packages available for client using statics
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
@@ -42,7 +42,6 @@ app.use('/popper', express.static(__dirname + '/node_modules/popper.js/dist'));
 app.use('/open-iconic', express.static(__dirname + '/node_modules/open-iconic/font'));
 app.use("/leaflet", express.static(__dirname + "/node_modules/leaflet/dist"));
 app.use("/leaflet-control-geocoder", express.static(__dirname + "/node_modules/leaflet-control-geocoder/dist"));
-app.use('/turf', express.static(__dirname + '/node_modules/@turf/turf'));
 app.use('/config', express.static(__dirname + '/config'));
 app.use('/jsnlog', express.static(__dirname + "/node_modules/jsnlog"));
 app.use('/fontawesome', express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free'));
@@ -50,7 +49,7 @@ app.use("/leaflet-draw", express.static(__dirname + "/node_modules/leaflet-draw/
 app.use("/flag-icon-css", express.static(__dirname + "/node_modules/flag-icon-css"));
 app.use("/bootstrap-select", express.static(__dirname + "/node_modules/bootstrap-select/dist"));
 app.use('/leaflet-extra-markers', express.static(__dirname + "/node_modules/leaflet-extra-markers/dist"));
-app.use('/d3-geo', express.static(__dirname + '/node_modules/d3-geo/dist'));
+
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
@@ -130,29 +129,8 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-async function connectDatabase() {
-  mongoose.connection.on("connecting", () => {
-    console.log("Connecting MongoDB database ...");
-  });
-
-  mongoose.connection.on("connected", () => {
-    console.log("MongoDB database connected!");
-  });
-
-  mongoose.connection.on("disconnected", () => {
-    console.log("MongoDB database disconnected!");
-  });
-
-  mongoose.connection.on("error", (error) => {
-    console.log("MongoDB connection error!", error);
-  });
-  // connect to MongoDB
-  connectMongoDB();
-  //mongoose.connect(dbconfig.dbdocker, { useNewUrlParser: true, useUnifiedTopology: true })
-    //.catch(error => console.log(error));
-  
-  
-};
+// connect to MongoDB
+connectMongoDB();
 
 /**
  * function to get a connection to the Database
@@ -167,32 +145,24 @@ function connectMongoDB() {
       useCreateIndex: true,
       autoReconnect: true
     }).then(db => {
-      console.log('Connected to MongoDB (databasename: "'+db.connections[0].name+'") on host "'+db.connections[0].host+'" and on port "'+db.connections[0].port+'""');
+      console.log('Connected to MongoDB (databasename: "' + db.connections[0].name + '") on host "' + db.connections[0].host + '" and on port "' + db.connections[0].port + '""');
     }).catch(async err => {
-      console.log('Connection to '+dbconfig.dbdocker+' failed, try to connect to '+dbconfig.dblocalhost);
+      console.log('Connection to ' + dbconfig.dbdocker + ' failed, try to connect to ' + dbconfig.dblocalhost);
       // set up "local" mongoose connection
       await mongoose.connect(dbconfig.dblocalhost, {
         useNewUrlParser: true,
         useCreateIndex: true,
         autoReconnect: true
       }).then(db => {
-        console.log('Connected to MongoDB (databasename: "'+db.connections[0].name+'") on host "'+db.connections[0].host+'" and on port "'+db.connections[0].port+'""');
+        console.log('Connected to MongoDB (databasename: "' + db.connections[0].name + '") on host "' + db.connections[0].host + '" and on port "' + db.connections[0].port + '""');
       }).catch(err2 => {
-        console.log('Error at MongoDB-connection with Docker: '+err);
-        console.log('Error at MongoDB-connection with Localhost: '+err2);
+        console.log('Error at MongoDB-connection with Docker: ' + err);
+        console.log('Error at MongoDB-connection with Localhost: ' + err2);
         console.log('Retry to connect in 3 seconds');
         setTimeout(connectMongoDB, 3000); // retry until db-server is up
       });
     });
   })();
 }
-
-async function clearUpDatabase() {
-  /* tweetModel.deleteMany({})
-    .catch(error => console.log(error)); */
-}
-connectMongoDB();
-//connectDatabase();
-clearUpDatabase();
 
 module.exports = app;
