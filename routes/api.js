@@ -32,13 +32,10 @@ router.delete("/v1/instagram/:user", (req, res) => {
 */
 
 router.get('/v1/flickr/public', flickrController.getPublic);
-//router.get('/v1/flickr/group/:group_id', flickrController.getGroup);
-router.get('/v1/flickr', flickrController.loadPhotos);
-router.get('/v1/flickr/test', flickrController.test);
-//router.get('v1/flickr/showphotos/:area/:group', flickrController.showPhotos);
+router.get('/v1/flickr', flickrController.loadPhotos)
 
 
-router.get('/v1/dwd', APIController.getV1dwd);
-router.get('/v1/mapbox', APIController.getV1mapbox);
+router.get('/v1/dwd', APIController.getV1dwd)
+router.get('/v1/mapbox', APIController.getV1mapbox)
 
 module.exports = router;
