@@ -232,29 +232,29 @@ function initMap() {
         "Satellite": satellite
     };
 
-    // Warnungs-Layer vom DWD-Geoserver - betterWms fügt Möglichkeiten zur GetFeatureInfo hinzu
-    var warnlayer = L.tileLayer.betterWms("https://maps.dwd.de/geoproxy_warnungen/service/", {
-        layers: 'Warnungen_Landkreise',
-        // eigene Styled Layer Descriptor (SLD) können zur alternativen Anzeige der Warnungen genutzt werden (https://docs.geoserver.org/stable/en/user/styling/sld/reference/)
-        //sld: 'https://eigenerserver/alternativer.sld',
-        format: 'image/png',
-        transparent: true,
-        opacity: 0.8,
-        attribution: 'Warndaten: &copy; <a href="https://www.dwd.de">DWD</a>'
-    }).addTo(map);
+    
 
-    // CQL_FILTER können benutzt werden um angezeigte Warnungen zu filtern (https://docs.geoserver.org/stable/en/user/tutorials/cql/cql_tutorial.html)
-    // Filterung kann auf Basis der verschiedenen properties der Warnungen erfolgen (bspw. EC_II, EC_GROUP, DESCRIPTION ... ) siehe https://www.dwd.de/DE/wetter/warnungen_aktuell/objekt_einbindung/einbindung_karten_geowebservice.pdf
-    // warnlayer.setParams({CQL_FILTER:"DESCRIPTION LIKE '%Sturm%'"});
-    // Filter können zur Laufzeit, z.B. über Nutzereingaben angepasst werden
-    //delete warnlayer.wmsParams.CQL_FILTER;
-    //warnlayer.redraw();
+    L.control.layers(baseMaps).addTo(map);
+    // Einfügen der Legende auf der Karte
+    var legend = L.control({position: 'bottomleft'});
 
-    var overlayMaps = {
-        "DWD Warnings": warnlayer
-    };
+    legend.onAdd = function (map) {
 
-    L.control.layers(baseMaps, overlayMaps).addTo(map);
+    var div = L.DomUtil.create('div', 'info legend'),
+    labels = ['<strong>Severity</strong>'],
+   categories = ['Minor', 'Moderate', 'Severe', 'Extreme'];
+
+    for (var i = 0; i < categories.length; i++) {
+      //console.log(getColor(categories[i] + 1));
+      div.innerHTML +=labels.push(
+            '<i style="background:' + getColor(categories[i] ) + '; opacity:0.4"></i> ' +
+            categories[i]);
+          }
+          div.innerHTML = labels.join('<br>');
+          return div;
+        };
+
+    legend.addTo(map);
 
     var drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
@@ -324,44 +324,52 @@ function getWFSLayer() {
         SrsName: 'EPSG:4326'
     };
 
-var parameters = L.Util.extend(defaultParameters);
-var URL = owsrootUrl + L.Util.getParamString(parameters);
+    var parameters = L.Util.extend(defaultParameters);
+    var URL = owsrootUrl + L.Util.getParamString(parameters);
 
-  WFSLayer = null;
-var ajax = $.ajax({
-  url : URL,
-  dataType : 'jsonp',
-  jsonpCallback : 'getJson',
-  success : function (response) {
-      set_output(response);
-      //response=filter_wfs_output(response);
-      // muss noch weiter bearbeitet werden. Idee: den Startpunkt der Karte abhängig von dem
-      // wfs output zu machen. zoom() funktion steht in wfs.js
-      if (response != null) {
-          console.log(response.features.length);
-          //console.log(output);
+    WFSLayer = null;
+    var ajax = $.ajax({
+      url : URL,
+      dataType : 'jsonp',
+      jsonpCallback : 'getJson',
+      success : function (response) {
+        set_output(response);
+        if (response != null) {
           var filtered_response= new Array();
-          var counter=0;
+          var filtered_response_nd=new Array();
+          var counter_all=0;
+          var counter_nd=0;
+          var double=0;
           for (var i =0; i<output.features.length; i++) {
             var filter_feature=filter_wfs_output(output.features[i]);
-            //console.log(filter_feature);
             if (filter_feature != null) {
-              filtered_response[counter]=filter_feature;
-              counter++;
+              filtered_response[counter_all]=filter_feature;
+              counter_all++;
+              filtered_response_nd=filter_severity_map(filter_feature, filtered_response_nd);
             }
           }
           console.log(filtered_response);
+          console.log(filtered_response_nd);
       }
 
-      WFSLayer = L.geoJson(filtered_response, {
+      WFSLayer = L.geoJson(filtered_response_nd, {
           style: setStyles, // setStyles function steht unten im Dokument.
           onEachFeature: function (feature, layer) {
               //popupOptions = {maxWidth: 200};
-              layer.bindPopup(feature.properties.EVENT+"<br><br>"+"VON: "+feature.properties.EFFECTIVE+"<br>Bis voraussichtlich: "+feature.properties.EXPIRES+"<br><br>"+feature.properties.EC_II);
-
+              var index= filtered_response_nd.indexOf(feature);
+              var photo=getSymbol(feature);
+              var feature_both_start=feature.properties.EFFECTIVE;
+              var cut=feature_both_start.indexOf('T',0);
+              var feature_date_part_start=feature_both_start.slice(0,cut);
+              var feature_time_part_start=feature_both_start.slice(cut+1,feature_both_start.length-1);
+              var feature_both_end=feature.properties.EXPIRES;
+              cut=feature_both_end.indexOf('T',0);
+              var feature_date_part_end=feature_both_end.slice(0,cut);
+              var feature_time_part_end=feature_both_end.slice(cut+1,feature_both_end.length-1);
+              layer.bindPopup(photo[0]+" "+photo[1]+"<br><br>"+"Severity: "+feature.properties.SEVERITY+"<br><br>"+"from: "+feature_date_part_start+", "+feature_time_part_start+"<br>to: "+feature_date_part_end+", "+feature_time_part_end+"<br><br>"
+                              +"district: "+feature.properties.AREADESC+"<br><br>"+"(timestamp: "+feature_date_part_start+", "+feature_time_part_start+")");
           }
       }).addTo(map);
-
   }
 }).responseText;
 }
@@ -374,156 +382,20 @@ var ajax = $.ajax({
 
 };*/
 
-// Funktion um die einzelnen Landkreise farblich korrekt darzustellen. Die Farbe ist anhängig
-// vom Stärkegrad des Unwetters. Gelb steht für minor, orange für moderate, rot für severe
-// und violett für Extreme
-function setStyles(feature) {
-
-  //console.log(feature.properties.SEVERITY);
-
-  if (feature.properties.SEVERITY == "Minor") {
-        return {
-            stroke: true,
-            weight: 1,
-            color: '#A4A4A4',
-            fillColor: '#F4D03F',
-            fillOpacity: 0.2,
-        };
-      }
-  if (feature.properties.SEVERITY == "Moderate") {
-        return {
-            stroke: true,
-            weight: 0.5,
-            color: '#A4A4A4',
-            fillColor: '#D35400',
-            fillOpacity: 0.2
-        };
-  }
-
-  if (feature.properties.SEVERITY == "Severe") {
-      return {
-          stroke: true,
-          weight: 0.5,
-          color: '#A4A4A4',
-          fillColor: '#C0392B',
-          fillOpacity: 0.2
-      };
-  }
-
-  if (feature.properties.SEVERITY == "Extreme") {
-      return {
-          stroke: true,
-          weight: 0.5,
-          color: '#A4A4A4',
-          fillColor: '#7D3C98',
-          fillOpacity: 0.2
-      };
-    }
-}
-
-function filter_wfs_output (response) {
-  var e=document.getElementById('wfs_selection_box');
-  var selectedOption=e.options[e.selectedIndex].text;
-  //console.log(selectedOption);
-
-
-
-  if (selectedOption=="All") {
-    return filter_dwdoutput_severity(response);
-  }
-
-  if (selectedOption=="storm/wind") {
-    //if (response.properties.EVENT=="STURM" || response.properties.EVENT=="STURMBÖEN" || response.properties.EVENT=="WINDBÖEN" || response.properties.EVENT=="SCHWERE STURMBÖEN" || response.properties.EVENT=="ORKANARTIGE BÖEN" || response.properties.EVENT=="ORKANBÖEN" || response.properties.EVENT=="EXTREME ORKANBÖEN" ) {
-    if (response.properties.EC_II==13 || response.properties.EC_II==51 || response.properties.EC_II==52 || response.properties.EC_II==53 || response.properties.EC_II==54 || response.properties.EC_II==55 || response.properties.EC_II==56 || response.properties.EC_II==57 || response.properties.EC_II==58){
-      return filter_dwdoutput_severity(response);
-    }
-  }
-
-  if (selectedOption=="thunderstorm") {
-    if (response.properties.EVENT=="GEWITTER" || response.properties.EVENT=="STARKES GEWITTER" || response.properties.EVENT=="SCHWERES GEWITTER mit EXTREMEN ORKANBÖEN" ) {
-      return filter_dwdoutput_severity(response);
-    }
-  }
-
-  if (selectedOption=="fog") {
-    if (response.properties.EVENT=="NEBEL") {
-      return filter_dwdoutput_severity(response);
-    }
-  }
-
-  if (selectedOption=="rain") {
-    if (response.properties.EVENT=="DAUERREGEN" || response.properties.EVENT=="STARKREGEN" || response.properties.EVENT=="HEFTIGER STARKREGEN" || response.properties.EVENT=="ERGIEBIGER DAUERREGEN" || response.properties.EVENT=="EXTREM HEFTIGER STARKREGEN" ) {
-      return filter_dwdoutput_severity(response);
-    }
-  }
-
-  if (selectedOption=="snowfall") {
-    if (response.properties.EVENT=="STARKER SCHNEEFALL" || response.properties.EVENT=="EXTREM STARKER SCHNEEFALL" || response.properties.EVENT=="STARKE SCHNEEVERWEHUNG" || response.properties.EVENT=="EXTREM STARKE SCHNEEVERWEHUNG" ) {
-      return filter_dwdoutput_severity(response);
-    }
-  }
-
-  if (selectedOption=="frost") {
-    if (response.properties.EVENT=="FROST" || response.properties.EVENT=="STRENGER FROST") {
-      return filter_dwdoutput_severity(response);
-    }
-  }
-
-  if (selectedOption=="glazed frost") {
-
-    if (response.properties.EVENT=="GLÄTTE" || response.properties.EVENT=="GLATTEIS") {
-      return filter_dwdoutput_severity(response);
-    }
-  }
-
-
-
-}
-
-
-function filter_dwdoutput_severity (response) {
-  if (document.getElementById("Severity_Minor").checked == true) {
-      if (response.properties.SEVERITY == "Minor") {
-        return response;
-      }
-  }
-
-  if (document.getElementById("Severity_Moderate").checked==true) {
-      if (response.properties.SEVERITY == "Moderate") {
-        return response;
-      }
-  }
-
-  if (document.getElementById("Severity_Severe").checked==true) {
-    if (response.properties.SEVERITY == "Severe") {
-      return response;
-    }
-  }
-
-  if (document.getElementById("Severity_Extreme").checked==true) {
-    if (response.properties.SEVERITY == "Extreme") {
-      return response;
-    }
-  }
-  else {
-      return null;
-    }
-}
-
-
-
 function extendMap() {
     //Button, um Startansicht zu speichern
     var saveviewControl = L.Control.extend({
         options: {
-            position: "bottomleft"
+            position: "topleft"
         },
         onAdd: () => {
-            var container = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
+          //var
+             var container = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
 
             container.innerHTML = '<i class="far fa-save"></i>';
             container.style.width = '30px';
             container.style.height = '30px';
+            container.title="save the current mapview";
 
             container.onclick = () => {
                 saveCookie();
@@ -531,6 +403,15 @@ function extendMap() {
             return container;
         }
     });
-
     map.addControl(new saveviewControl);
 }
+
+
+function getColor(d) {
+
+        return d === 'Minor'  ? "#F4D03F" :
+               d === 'Moderate'  ? "#D35400" :
+               d === 'Severe' ? "#C0392B" :
+               d === 'Extreme' ? "#7D3C98" :
+                            "#2E2EFE";
+    }
