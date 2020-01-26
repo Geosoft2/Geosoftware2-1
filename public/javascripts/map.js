@@ -6,7 +6,7 @@
 
 /**
 * @desc Geosoftware 2;
-* apllication for changing the cursor
+* apllication for starting the map
 */
 
 var map = L.map('mapdiv');
@@ -24,95 +24,100 @@ function get_output() {
     return output;
 }
 
-initMap();
-extendMap();
+    //start the functions needed to load the map, dwd data and
+    initMap();
+    extendMap();
+    getWFSLayer();
+
+//TODO: ordnung halten und sowas an die richtige stelle schieben
+$(".err_mess").on("mouseenter", function(){
+    $(".err_mess").stop(true, true);
+    $(".err_mess").delay(0).fadeIn(0);
+});
+$(".err_mess").on("mouseleave", function(){
+    $(".err_mess").delay(0).fadeOut(3000);
+});
 
 /**
 * @desc create map
 */
 function initMap() {
+    //get all params send by URL
+    var urlParam = getAllUrlParams();
+
+    //default parameters if there are no saved neither in the url nor the cookies
     var startpoint = [51.26524, 9.72767];
     var zoomLevel = 6;
-    var urlParam = getAllUrlParams();
+    //TODO: bbox nicht in die URL und twittersearch vielleicht auch nicht
+    //TODO: die BBOX dafür aber dennoch zwischenspeichern und eventuell jedes mal mit einladen
     var bbox = [];
     var twittersearch = "";
+    //TODO: wenn diese false sind sind die beiden deaktiviert wenn auf true gesetzt wird dann aktiviert
+    var twitter = false;
+    var instagram = false;
 
-    //BBox
-    if (urlParam.bbox !== undefined && urlParam.bbox !== "") {
-        try {
-            //TODO Bedingung für bbox checken und hier ergänzen
-            //if (urlParam.bbox){
-            bbox = urlParam.bbox;
-            //}
-            /**
-            else{
-
-                $("#message").append("<div class='alert alert-danger' role='alert'>invalid BBox - please check the <a href='/doku'>documentation</a></div>");
-            }
-            */
-        }
-        catch (err) {
-            $("#message").append("<div class='alert alert-danger col-12' role='alert'>" + err.message + "</div>");
-        }
-    }
-    else {
-    }
-
+    //ZOOMLEVEL
+    //check if there is a saved zoomlevel in the URL?
     if (urlParam.zoomlevel !== undefined && urlParam.zoomlevel !== "") {
         try {
             if (urlParam.zoomlevel >= 0 && urlParam.zoomlevel <= 18) {
                 zoomLevel = urlParam.zoomlevel;
             }
             else {
-                $("#message").append("<div class='alert alert-danger col-12' role='alert' >invalid zoomlevel - please check the <a href='/doku'>documentation</a></div>");
+                giveErrorMessage("invalid zoomlevel - please check the <a href='/doku'>documentation</a>")
             }
         }
         catch (err) {
-            $("#message").append("<div class='alert alert-danger col-12' role='alert'>" + err.message + "</div>");
+            giveError(err);
         }
     }
+    //or is there else a zoomlevel saved in the cookies?
     else {
         var cookieZoomLevel = getCookie("zoomlevel");
         if (cookieZoomLevel != "") {
             zoomLevel = cookieZoomLevel;
         }
     }
+
+    //CENTERPOINT
+    //is there a centerpoint given in the URL?
     if (urlParam.centerpoint !== undefined && urlParam.centerpoint !== "") {
         try {
             startpoint = JSON.parse(urlParam.centerpoint);
         }
         catch (err) {
-            $("#message").append("<div class='alert alert-danger col-12' role='alert'>" + err.message + "</div>");
+            giveError(err);
+            console.log(err);
         }
     }
+    //or is there elsse a centerpoint in the cookies?
     else {
-
         if (getCookie("startX") != "" && getCookie("startY") != "") {
             try {
                 startpoint = [getCookie("startX"), getCookie("startY")];
             }
             catch (err) {
-                $("#message").append("<div class='alert alert-danger col-12' role='alert'>" + err.message + "</div>");
-
+                giveError(err);
             }
         }
     }
-    //twittersearch
+
+    //TWITTERSEARCH
+    //is there a twittersearch in the URL?
     if (urlParam.twittersearch !== undefined && urlParam.twittersearch !== "") {
         try {
             twittersearch = urlParam.twittersearch;
         }
         catch (err) {
-            $("#message").append("<div class='alert alert-danger col-12' role='alert'>" + err.message + "</div>");
+            giveError(err);
         }
-
-
     }
-    getWFSLayer();
 
-    //TODO es mnüssen noch der Searchbegriff und die BBox an die entsprechenden Stellen weitergeleitet werden
-    //TODO twittersearch als Cookie speichern
-    //TODO Bbox entweder in die Datenbank oder auch als Cookie
+
+
+    //TODO: es mnüssen noch der Searchbegriff und die BBox an die entsprechenden Stellen weitergeleitet werden
+    //TODO: twittersearch als Cookie speichern??? Muss nicht unbedingt sein oder?
+    //TODO: Bbox entweder in die Datenbank oder auch als Cookie
 
     // setting connection to wfs server with a ajax call
     /*  var owsrootUrl = 'https://maps.dwd.de/geoserver/dwd/ows';
@@ -155,13 +160,7 @@ function initMap() {
       }).responseText;*/
 
     map.on('load', function () {
-        //TODO if (wenn keine Bbox im Bbox Layer eingezeichnet wurde, dann soll der neue Ausschnitt hier als Bbox für Twitter dienen){
-        var bbox = map.getBounds();
-        document.cookie = "bboxsouthWest_lat=" + bbox._southWest.lat;
-        document.cookie = "bboxsouthWest_lng=" + bbox._southWest.lng;
-        document.cookie = "bboxnorthEast_lat=" + bbox._northEast.lat;
-        document.cookie = "bboxnorthEast_lng=" + bbox._northEast.lng;
-        // }
+        saveBboxtoCookies();
     });
 
     //add the set values to the current URL
@@ -179,17 +178,7 @@ function initMap() {
             justReq = newURL.split("?")[1];
             stateObj = { foo: justReq };
             history.pushState(stateObj, "test", "?" + justReq);
-
-            //TODO if (wenn keine Bbox im Bbox Layer eingezeichnet wurde, dann soll der neue Ausschnitt hier als Bbox für Twitter dienen){
-            var bbox = map.getBounds();
-            document.cookie = "bboxsouthWest_lat=" + bbox._southWest.lat;
-            document.cookie = "bboxsouthWest_lng=" + bbox._southWest.lng;
-            document.cookie = "bboxnorthEast_lat=" + bbox._northEast.lat;
-            document.cookie = "bboxnorthEast_lng=" + bbox._northEast.lng;
-            //console.log(bbox);
-            // }
-
-
+            saveBboxtoCookies();
         })
         .on('moveend', function () {
             var currentCenter = map.getCenter();
@@ -199,32 +188,25 @@ function initMap() {
             stateObj = { foo: justReq };
             history.pushState(stateObj, "test", "?" + justReq);
 
-            //TODO if (wenn keine Bbox im Bbox Layer eingezeichnet wurde, dann soll der neue Ausschnitt hier als Bbox für Twitter dienen){
-            var bbox = map.getBounds();
-            document.cookie = "bboxsouthWest_lat=" + bbox._southWest.lat;
-            document.cookie = "bboxsouthWest_lng=" + bbox._southWest.lng;
-            document.cookie = "bboxnorthEast_lat=" + bbox._northEast.lat;
-            document.cookie = "bboxnorthEast_lng=" + bbox._northEast.lng;
-            //console.log(bbox);
-            // }
+            saveBboxtoCookies();
         });
 
-    var mapbox_accessToken = 'pk.eyJ1IjoibWdhZG8wMSIsImEiOiJjazQxaHZvZTcwMWdqM2RvYmF4eWRzZ2diIn0.z3YweqsFFX-KbTYMRmz_AA';
+      var mapbox_accessToken = 'pk.eyJ1IjoibWdhZG8wMSIsImEiOiJjazQxaHZvZTcwMWdqM2RvYmF4eWRzZ2diIn0.z3YweqsFFX-KbTYMRmz_AA';
 
-    var light = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        accessToken: mapbox_accessToken
-    }).addTo(map);
+      var light = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
+          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+          accessToken: mapbox_accessToken
+      }).addTo(map);
 
-    var dark = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        accessToken: mapbox_accessToken
-    });
+      var dark = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
+          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+          accessToken: mapbox_accessToken
+      });
 
-    var satellite = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        accessToken: mapbox_accessToken
-    });
+      var satellite = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
+          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+          accessToken: mapbox_accessToken
+      });
 
     var baseMaps = {
         "Light": light,
@@ -232,11 +214,23 @@ function initMap() {
         "Satellite": satellite
     };
 
-    
+    // Warnungs-Layer vom DWD-Geoserver - betterWms fügt Möglichkeiten zur GetFeatureInfo hinzu
+    var radarlayer = L.tileLayer.betterWms("https://maps.dwd.de/geoserver/dwd/ows", {
+        layers: 'dwd:RX-Produkt',
+        request: 'GetMap',
+        format: 'image/png',
+        transparent: true,
+        opacity: 0.6,
+        attribution: 'Radardaten: &copy; <a href="https://www.dwd.de">DWD</a>'
+    }).addTo(map);
 
     L.control.layers(baseMaps).addTo(map);
     // Einfügen der Legende auf der Karte
     var legend = L.control({position: 'bottomleft'});
+
+    var overlayMaps = {
+        "DWD rain radar": radarlayer
+    };
 
     legend.onAdd = function (map) {
 
@@ -274,6 +268,8 @@ function initMap() {
     });
 
     map.addControl(drawControl);
+    //TODO: diese vielleicht bei den cookies unter eingenen Werten speicher, dann kann man prüfen, obn diese auf 0 stehen oder nicht.
+    //TODO: wenn das Polygon geläscht wird soll die BBOX dieser WErte dann auf 0 gesetzt werden und die aktuelle BBox des Ansichtsfensters aktualisiert werden
     map.on(L.Draw.Event.CREATED, function (e) {
         drawnItems.clearLayers();
         var layer = e.layer;
@@ -383,7 +379,7 @@ function getWFSLayer() {
 };*/
 
 function extendMap() {
-    //Button, um Startansicht zu speichern
+    //Button, to save personal default view
     var saveviewControl = L.Control.extend({
         options: {
             position: "topleft"
@@ -415,3 +411,16 @@ function getColor(d) {
                d === 'Extreme' ? "#7D3C98" :
                             "#2E2EFE";
     }
+/**
+*function that saves the new mapextension as the last bbox, if there is no Bbox drawn
+*
+*
+*/
+function saveBboxtoCookies(){
+    //TODO: if (wenn keine Bbox im Bbox Layer eingezeichnet wurde, dann soll der neue Ausschnitt hier als Bbox für Twitter dienen){
+    var bbox = map.getBounds();
+    document.cookie = "bboxsouthWest_lat=" + bbox._southWest.lat;
+    document.cookie = "bboxsouthWest_lng=" + bbox._southWest.lng;
+    document.cookie = "bboxnorthEast_lat=" + bbox._northEast.lat;
+    document.cookie = "bboxnorthEast_lng=" + bbox._northEast.lng;
+}

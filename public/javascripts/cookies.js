@@ -17,38 +17,36 @@
 //eventuell die BBox des Users
 //
 
-/** function to get the current expansion of the map and save it as a cookie
-**/
+/**
+ * function to get the current expansion of the map and save it as a cookie
+ * @author Lukas, Constantin, Max, Christin 
+ */
 function saveCookie(){
     var currentZoom = map.getZoom();
     var currentCenter = map.getCenter();
-    //TODO diese Parameter können noch in der URL gespeichert werden
+    //TODO: diese Parameter können noch in der URL gespeichert werden
     var currentSearch;
     //is twitter activated or not? Default is true, but the User can set it false so it is deactivated
-    //TODO der default ist hier ja relativ egal weil die Werte aus der aktuellen Anzeige genommen werden
-    //TODO oim Endeffekt können auch alle Werte aus der URL genommen werden da diese sich ja bei jeder Änderung ändern soll
+    //TODO: der default ist hier ja relativ egal weil die Werte aus der aktuellen Anzeige genommen werden
+    //TODO: oim Endeffekt können auch alle Werte aus der URL genommen werden da diese sich ja bei jeder Änderung ändern soll
     var twitter = true;
-
-    //TODO console.log noch entfernen
-    console.log(currentCenter);
-    console.log(currentCenter.lat);
-    console.log(currentZoom);
 
     document.cookie = "startX=" + currentCenter.lat;
     document.cookie = "startY=" + currentCenter.lng;
-    document.cookie = "zoomlevel=" + currentZoom ;
-    document.cookie = "twitter=" + "test";
-    //TODO hier müssen dann auch noch die anderen Parameter gespeichert werden können und in die URL kommen
-    var newRequest = ["centerpoint=[" + currentCenter.lat + "," + currentCenter.lng + "]", "zoomlevel=" + currentZoom];
+    document.cookie = "zoomlevel=" + currentZoom ; 
+    //log the saved values
+    console.log("View set with Centerpoint: " +  currentCenter + "and Zoomlevel: " + currentZoom);
+    //document.cookie = "twitter=" + "test";
+    //TODO: hier müssen dann auch noch die anderen Parameter gespeichert werden können und in die URL kommen
 
+    var newRequest = ["centerpoint=[" + currentCenter.lat + "," + currentCenter.lng + "]", "zoomlevel=" + currentZoom];
     var newURL = buildUrl(newRequest);
-    console.log(newURL);
 
     //window.location.href = newURL;
     var justReq = newURL.split("?")[1];
     var stateObj = {foo: justReq};
     history.pushState(stateObj, "Cookie-Update", "?" + justReq);
-    $("#message").append("<div class='alert alert-secondary col-12' role='alert' style='margin-top:5px'>" + "Your current view has saved  as your personal view" + "</div>");
+    giveSuccessMessage("Your current view has saved  as your personal view");
 
 }
 

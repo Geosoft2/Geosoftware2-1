@@ -1,7 +1,10 @@
 $(document).ready(() => {
     requestTweets();
 });
-
+var url = window.location.href;
+var arr = url.split("/");
+var host = arr[0] + "//" + arr[2];
+//TODO: das ist ein test TODO
 function requestTweets() {
     $("#btn_tweetrequest").on("click", async () => {
 
@@ -9,45 +12,17 @@ function requestTweets() {
         var query = twitter_default;
         query.q = $("#keyword_input").val();
         query.lang = $("#language_select").val();
-        //evtl noch result type
 
         await $.ajax({
             type: 'POST',
-            url: 'http://localhost:3000/twitterapi',
+            url: 'http://localhost:3000/api/v1/twitter',
             data: query,
             dataType: 'json',
             encode: true
         }).done(function (data) {
             console.log('Success: Data from Twitter received');
-        }).fail(function (xhr, status, error) {
-            console.log('Error: ' + error);
-        });
-
-
-        //Streaming API
-        /*  var query = {
-             track: $("#keyword_input").val(),
-             bbox: default_bbox
-         };
- 
-         await $.ajax({
-             type: 'POST',
-             url: 'http://localhost:3000/twitterapi',
-             data: query,
-             dataType: 'json',
-             encode: true
-         }).done(function (data) {
-             console.log('Success: Data from Twitter received');
-         }).fail(function (xhr, status, error) {
-             console.log('Error: ' + error);
-         }); */
-
-        $.ajax({
-            type: 'GET',
-            url: 'http://localhost:3000/tweetdb',
-        }).done(function (data) {
-            console.log('Success: Tweets from the database received');
-            filterTweets(data);
+            console.log(data);
+            //filterTweets(data);
         }).fail(function (xhr, status, error) {
             console.log('Error: ' + error);
         });
@@ -200,3 +175,135 @@ function toJSON(tweet) {
         place: JSON.parse(tweet.place)
     };
 }
+
+
+/**
+ * function to link the user to the instagram authentification
+ */
+/*
+function instagramAuthentic(){
+    window.location.href = "/auth/instagram";
+}
+*/
+
+/**
+ * function to get all Flickr photos in Germany and show them on the map
+ */
+function flickrGetPublic(){
+    document.cookie = "flickr_groupID=" + "public"
+    giveLoadMessage("Flickr is loading", "flickr")
+    axios.get('/api/v1/flickr/public')
+    .then(function (response) {
+    console.log("dieseshier", response)
+    drawFlickrToMap(response)
+    drawFlickrToUI(response)
+    //drawFlickrToMap(response)
+    //$(document).ready(() => {
+    $(".flickr").delay(0).fadeOut(0) 
+    //});
+    giveSuccessMessage("Flickr photos have successfully been loaded.")
+    console.log("res", response)
+  })
+  .catch(function (error) {
+    $(".flickr").delay(0).fadeOut(0)
+    giveErrorMessage("An error with Flickr has been occured. Try again.")
+    console.log(error)
+  })
+  .finally(function () {
+    // always executed
+  });
+}
+
+
+
+/**
+ *function to get all Flickr photos in the Salus Solution Group and show them on the map
+ */
+function flickrGetGroup(){
+    document.cookie = "flickr_groupID=" + "14643952@N25";
+    giveLoadMessage("Flickr is loading", "flickr");
+    axios.get('/api/v1/flickr/public?group_id=14643952@N25')
+    .then(function (response) {
+        console.log("dieseshier", response)
+        drawFlickrToMap(response)
+        drawFlickrToUI(response)
+        //drawFlickrToMap(response)
+        //$(document).ready(() => {
+        $(".flickr").delay(0).fadeOut(0) 
+        //});
+        giveSuccessMessage("Flickr photos have successfully been loaded.")
+        console.log("res", response)
+      })
+      .catch(function (error) {
+        $(".flickr").delay(0).fadeOut(0)
+        giveErrorMessage("An error with Flickr has been occured. Try again.")
+        console.log(error)
+      })
+      .finally(function () {
+        // always executed
+      });
+    }
+
+/**
+ * 
+ * @param {JSON} flickr 
+ */
+function drawFlickrToUI(flickr) {
+    jQuery(window).load(function() {
+        $('.carousel').carousel('pause'); 
+    });
+    var first = flickr.data[0].photo_id;
+    flickr.data.forEach((pic) => {
+        //console.log(pic);
+        var pic_id = pic.photo_id;
+        
+        //var pic_html = '<div class="flickr carousel-item" id="' + pic_id + '"><a href='+pic.url +'>Hallo Welt dies ist ein Link zum Bild</a></div>';
+        //$("#flickr_carousel_inner").append(pic_html);
+        $("#flickr-carousel-inner").append('<div class="carousel-item"><a href="'+pic.url +'" target="_blank">'+pic.title+'</a></div>')
+        //var tweet_dom = $("#" + pic_id)[0];
+        //twttr.widgets.createTweet(tweet_id, tweet_dom, widget_config);
+    });
+
+    $(".carousel-item").first().addClass("active");
+};
+
+/**
+ * 
+ * @param {JSON} flickrpic 
+ */
+function drawFlickrToMap(flickrpic) {
+    console.log('flickrpic:', flickrpic);
+    
+    var flickrIcon = L.ExtraMarkers.icon({
+        markerColor: 'black',
+        prefix: 'fab',
+        icon: 'fa-flickr',
+        iconColor: 'white'
+    });
+
+    var flickrselectedIcon = L.ExtraMarkers.icon({
+        markerColor: 'yellow',
+        prefix: 'fab',
+        icon: 'fa-flickr',
+        iconColor: 'white'
+    });
+   var flickrmarkergroup = L.featureGroup()
+   .addEventListener("click", (e) => {
+       flickrmarkergroup.eachLayer((marker) => {
+           marker.setIcon(flickrIcon);
+       });
+
+       e.layer.setIcon(flickrselectedIcon);
+   })
+   .addTo(map);
+
+   flickrpic.data.forEach((t) => {
+        if (t.latitude != null && t.longitude) {
+       var marker = L.marker([t.latitude,t.longitude], { icon: flickrIcon, alt: "marker" })
+                    .bindPopup(""+t.title+t.user_name);
+
+       flickrmarkergroup.addLayer(marker);
+   }
+});
+
+};
