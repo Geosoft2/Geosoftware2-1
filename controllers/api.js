@@ -87,7 +87,7 @@ exports.getV1TwitterTweets = async (req, res) => {
   await warnings.forEach((w) => {
     geometries.push(w.geometry);
   });
-
+/*
   var tweets = [];
 
   await geometries.forEach(async (g) => {
@@ -101,9 +101,28 @@ exports.getV1TwitterTweets = async (req, res) => {
 
     tweets.push(query);
   });
-
+*/
+  var tweets = await Promise.all(geometries(async(geom) => await pushToTweetArray(geom)));
+  //hier mal schauen ob das so passt also der packt jetzt alle Promisses in eine Variable 
+  console.log("tweetsPromises:", tweets)
+  //denke dann musst du dir da noch die Teile rausholen und in ein Array packen und dann sollte das fluppen...vielleicht
   res.send(tweets);
 };
+
+async function pushToTweetArray (geom){
+   var tweet
+  var query = await TweetModel.find({
+      location: {
+        $geoWithin: {
+          $geometry: geom
+        }
+      }
+    }).catch(error => console.log(error))
+  //oder eben das tweets Array global außerhalb der funktionen inizialisieren und dann kannst du hier auch wieder da reinpushen und von oben aufrufen
+  //aber weiß nicht ob das klappen würde
+  //tweets.push(query);
+    return tweet
+}
 
 exports.postV1DWDEventsInit = async (req, res) => {
   var result = null;
