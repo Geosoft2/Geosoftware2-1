@@ -1,4 +1,4 @@
 module.exports = {
-    dblocalhost: 'mongodb://localhost:27017/tweetdb',
-    dbdocker: 'mongodb://mongo/tweetdb'
-};
+    dblocalhost: 'mongodb://localhost:27017/salussolutions',
+    dbdocker: 'mongodb://mongo/salussolutions'
+};  

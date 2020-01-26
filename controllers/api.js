@@ -7,7 +7,6 @@ var Twit = require('twit'); //twit library to access the Twitter API
 
 //Import config files
 var Tokens = require('../config/tokens.js'); //Access Tokens
-
 //Import Models
 var TweetModel = require('../models/tweet.js'); //MongoDB Schema definition to save tweets
 
@@ -77,9 +76,8 @@ exports.getV1twitter = (req, res) => {
 //};
 
 exports.getV1dwd = (req, res) => {
-
+//TODO: die cache lebenszeit für dwd daten auf 5 minuten stellen da laut doc die daten nicht enger aktuallisiert werden
 };
-
 exports.getV1mapbox = (req, res) => {
   const https = require('https')
   const options = {

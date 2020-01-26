@@ -2,16 +2,14 @@
 // jshint node: true
 "use strict";
 
-
 const express = require('express');
 const router = express.Router();
 
-const ImpressumController = require('../controllers/impressum');
-
-
-// renders the imprint (dt.: Impressum) page, access without authorization
-router.get('/', ImpressumController.getImpressum);
-
-
+//@description function to render the imprint (Impressum of the application)
+router.get('/', (req, res) => {
+    res.render('impressum', {
+      title: 'Impressum'
+      });
+  });
 
 module.exports = router;

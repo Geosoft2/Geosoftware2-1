@@ -36,3 +36,10 @@ main {
 .footer-elem {
   color: black;
 }
+
+.spinner-border{
+  margin-right: 10px;
+}
+.carousel-item{
+  background-color: yellow;
+}
