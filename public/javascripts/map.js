@@ -3,7 +3,6 @@
 // jshint esversion: 6
 "use strict";
 
-
 /**
 * @desc Geosoftware 2;
 * apllication for starting the map
@@ -24,17 +23,16 @@ function get_output() {
     return output;
 }
 
-    //start the functions needed to load the map, dwd data and
-    initMap();
-    extendMap();
-    getWFSLayer();
+//start the functions needed to load the map, dwd data and
+initMap();
+extendMap();
 
 //TODO: ordnung halten und sowas an die richtige stelle schieben
-$(".err_mess").on("mouseenter", function(){
+$(".err_mess").on("mouseenter", function () {
     $(".err_mess").stop(true, true);
     $(".err_mess").delay(0).fadeIn(0);
 });
-$(".err_mess").on("mouseleave", function(){
+$(".err_mess").on("mouseleave", function () {
     $(".err_mess").delay(0).fadeOut(3000);
 });
 
@@ -191,22 +189,32 @@ function initMap() {
             saveBboxtoCookies();
         });
 
-      var mapbox_accessToken = 'pk.eyJ1IjoibWdhZG8wMSIsImEiOiJjazQxaHZvZTcwMWdqM2RvYmF4eWRzZ2diIn0.z3YweqsFFX-KbTYMRmz_AA';
+    /* $.ajax({
+        type: 'GET',
+        url: 'http://localhost:3000/api/v1/mapbox/dark/256/1',
+    }).done(function (data) {
+        console.log('Success: Tile from Mapbox received.');
+        console.log(typeof (data));
+    }).fail(function (xhr, status, error) {
+        console.log('Error: ' + error);
+    }); */
 
-      var light = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
-          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-          accessToken: mapbox_accessToken
-      }).addTo(map);
+    const mapbox_accessToken = 'pk.eyJ1IjoibWdhZG8wMSIsImEiOiJjazQxaHZvZTcwMWdqM2RvYmF4eWRzZ2diIn0.z3YweqsFFX-KbTYMRmz_AA';
 
-      var dark = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
-          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-          accessToken: mapbox_accessToken
-      });
+    var light = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        accessToken: mapbox_accessToken
+    }).addTo(map);
 
-      var satellite = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
-          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-          accessToken: mapbox_accessToken
-      });
+    var dark = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        accessToken: mapbox_accessToken
+    });
+
+    var satellite = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        accessToken: mapbox_accessToken
+    });
 
     var baseMaps = {
         "Light": light,
@@ -294,7 +302,7 @@ function initMap() {
         .addTo(map);
 }
 
-function getWFSLayer() {
+/* function getWFSLayer() {
     var owsrootUrl = 'https://maps.dwd.de/geoserver/dwd/ows';
 
     var defaultParameters = {
@@ -307,47 +315,48 @@ function getWFSLayer() {
         SrsName: 'EPSG:4326'
     };
 
-var parameters = L.Util.extend(defaultParameters);
-var URL = owsrootUrl + L.Util.getParamString(parameters);
+    var parameters = L.Util.extend(defaultParameters);
+    var URL = owsrootUrl + L.Util.getParamString(parameters);
 
-  WFSLayer = null;
-var ajax = $.ajax({
-  url : URL,
-  dataType : 'jsonp',
-  jsonpCallback : 'getJson',
-  success : function (response) {
-      set_output(response);
-      //response=filter_wfs_output(response);
-      // muss noch weiter bearbeitet werden. Idee: den Startpunkt der Karte abhängig von dem
-      // wfs output zu machen. zoom() funktion steht in wfs.js
-      if (response != null) {
-          console.log(response.features.length);
-          //console.log(output);
-          var filtered_response= new Array();
-          var counter=0;
-          for (var i =0; i<output.features.length; i++) {
-            var filter_feature=filter_wfs_output(output.features[i]);
-            //console.log(filter_feature);
-            if (filter_feature != null) {
-              filtered_response[counter]=filter_feature;
-              counter++;
+    WFSLayer = null;
+    var ajax = $.ajax({
+        url: URL,
+        dataType: 'jsonp',
+        jsonpCallback: 'getJson',
+        success: function (response) {
+            console.log(response);
+            set_output(response);
+            //response=filter_wfs_output(response);
+            // muss noch weiter bearbeitet werden. Idee: den Startpunkt der Karte abhängig von dem
+            // wfs output zu machen. zoom() funktion steht in wfs.js
+            if (response != null) {
+                //console.log(response.features.length);
+                //console.log(output);
+                var filtered_response = new Array();
+                var counter = 0;
+                for (var i = 0; i < output.features.length; i++) {
+                    var filter_feature = filter_wfs_output(output.features[i]);
+                    //console.log(filter_feature);
+                    if (filter_feature != null) {
+                        filtered_response[counter] = filter_feature;
+                        counter++;
+                    }
+                }
+                //console.log(filtered_response);
             }
-          }
-          console.log(filtered_response);
-      }
 
-      WFSLayer = L.geoJson(filtered_response, {
-          style: setStyles, // setStyles function steht unten im Dokument.
-          onEachFeature: function (feature, layer) {
-              //popupOptions = {maxWidth: 200};
-              layer.bindPopup(feature.properties.EVENT+"<br><br>"+"VON: "+feature.properties.EFFECTIVE+"<br>Bis voraussichtlich: "+feature.properties.EXPIRES+"<br><br>"+feature.properties.EC_II);
+            WFSLayer = L.geoJson(filtered_response, {
+                style: setStyles, // setStyles function steht unten im Dokument.
+                onEachFeature: function (feature, layer) {
+                    //popupOptions = {maxWidth: 200};
+                    layer.bindPopup(feature.properties.EVENT + "<br><br>" + "VON: " + feature.properties.EFFECTIVE + "<br>Bis voraussichtlich: " + feature.properties.EXPIRES + "<br><br>" + feature.properties.EC_II);
 
-          }
-      }).addTo(map);
+                }
+            }).addTo(map);
 
-  }
-}).responseText;
-}
+        }
+    }).responseText;
+} */
 
 
 /*function setPopup (feature, layer) {
@@ -362,9 +371,9 @@ var ajax = $.ajax({
 // und violett für Extreme
 function setStyles(feature) {
 
-  //console.log(feature.properties.SEVERITY);
+    //console.log(feature.properties.SEVERITY);
 
-  if (feature.properties.SEVERITY == "Minor") {
+    if (feature.properties.SEVERITY == "Minor") {
         return {
             stroke: true,
             weight: 1,
@@ -372,8 +381,8 @@ function setStyles(feature) {
             fillColor: '#F4D03F',
             fillOpacity: 0.2,
         };
-      }
-  if (feature.properties.SEVERITY == "Moderate") {
+    }
+    if (feature.properties.SEVERITY == "Moderate") {
         return {
             stroke: true,
             weight: 0.5,
@@ -381,83 +390,83 @@ function setStyles(feature) {
             fillColor: '#D35400',
             fillOpacity: 0.2
         };
-  }
+    }
 
-  if (feature.properties.SEVERITY == "Severe") {
-      return {
-          stroke: true,
-          weight: 0.5,
-          color: '#A4A4A4',
-          fillColor: '#C0392B',
-          fillOpacity: 0.2
-      };
-  }
+    if (feature.properties.SEVERITY == "Severe") {
+        return {
+            stroke: true,
+            weight: 0.5,
+            color: '#A4A4A4',
+            fillColor: '#C0392B',
+            fillOpacity: 0.2
+        };
+    }
 
-  if (feature.properties.SEVERITY == "Extreme") {
-      return {
-          stroke: true,
-          weight: 0.5,
-          color: '#A4A4A4',
-          fillColor: '#7D3C98',
-          fillOpacity: 0.2
-      };
+    if (feature.properties.SEVERITY == "Extreme") {
+        return {
+            stroke: true,
+            weight: 0.5,
+            color: '#A4A4A4',
+            fillColor: '#7D3C98',
+            fillOpacity: 0.2
+        };
     }
 }
 
-function filter_wfs_output (response) {
-  var e=document.getElementById('wfs_selection_box');
-  var selectedOption=e.options[e.selectedIndex].text;
-  //console.log(selectedOption);
+function filter_wfs_output(response) {
+    var e = document.getElementById('wfs_selection_box');
+    var selectedOption = e.options[e.selectedIndex].text;
+    //console.log(selectedOption);
 
-//TODO:: das kann man doch noch alles auslagern und n bisschen vereinfachen oder?
+    //TODO:: das kann man doch noch alles auslagern und n bisschen vereinfachen oder?
 
-  if (selectedOption=="All") {
-    return filter_dwdoutput_severity(response);
-  }
-
-  if (selectedOption=="storm/wind") {
-    //if (response.properties.EVENT=="STURM" || response.properties.EVENT=="STURMBÖEN" || response.properties.EVENT=="WINDBÖEN" || response.properties.EVENT=="SCHWERE STURMBÖEN" || response.properties.EVENT=="ORKANARTIGE BÖEN" || response.properties.EVENT=="ORKANBÖEN" || response.properties.EVENT=="EXTREME ORKANBÖEN" ) {
-    if (response.properties.EC_II==13 || response.properties.EC_II==51 || response.properties.EC_II==52 || response.properties.EC_II==53 || response.properties.EC_II==54 || response.properties.EC_II==55 || response.properties.EC_II==56 || response.properties.EC_II==57 || response.properties.EC_II==58){
-      return filter_dwdoutput_severity(response);
+    if (selectedOption == "All") {
+        return filter_dwdoutput_severity(response);
     }
-  }
 
-  if (selectedOption=="thunderstorm") {
-    if (response.properties.EVENT=="GEWITTER" || response.properties.EVENT=="STARKES GEWITTER" || response.properties.EVENT=="SCHWERES GEWITTER mit EXTREMEN ORKANBÖEN" ) {
-      return filter_dwdoutput_severity(response);
+    if (selectedOption == "storm/wind") {
+        //if (response.properties.EVENT=="STURM" || response.properties.EVENT=="STURMBÖEN" || response.properties.EVENT=="WINDBÖEN" || response.properties.EVENT=="SCHWERE STURMBÖEN" || response.properties.EVENT=="ORKANARTIGE BÖEN" || response.properties.EVENT=="ORKANBÖEN" || response.properties.EVENT=="EXTREME ORKANBÖEN" ) {
+        if (response.properties.EC_II == 13 || response.properties.EC_II == 51 || response.properties.EC_II == 52 || response.properties.EC_II == 53 || response.properties.EC_II == 54 || response.properties.EC_II == 55 || response.properties.EC_II == 56 || response.properties.EC_II == 57 || response.properties.EC_II == 58) {
+            return filter_dwdoutput_severity(response);
+        }
     }
-  }
 
-  if (selectedOption=="fog") {
-    if (response.properties.EVENT=="NEBEL") {
-      return filter_dwdoutput_severity(response);
+    if (selectedOption == "thunderstorm") {
+        if (response.properties.EVENT == "GEWITTER" || response.properties.EVENT == "STARKES GEWITTER" || response.properties.EVENT == "SCHWERES GEWITTER mit EXTREMEN ORKANBÖEN") {
+            return filter_dwdoutput_severity(response);
+        }
     }
-  }
 
-  if (selectedOption=="rain") {
-    if (response.properties.EVENT=="DAUERREGEN" || response.properties.EVENT=="STARKREGEN" || response.properties.EVENT=="HEFTIGER STARKREGEN" || response.properties.EVENT=="ERGIEBIGER DAUERREGEN" || response.properties.EVENT=="EXTREM HEFTIGER STARKREGEN" ) {
-      return filter_dwdoutput_severity(response);
+    if (selectedOption == "fog") {
+        if (response.properties.EVENT == "NEBEL") {
+            return filter_dwdoutput_severity(response);
+        }
     }
-  }
 
-  if (selectedOption=="snowfall") {
-    if (response.properties.EVENT=="STARKER SCHNEEFALL" || response.properties.EVENT=="EXTREM STARKER SCHNEEFALL" || response.properties.EVENT=="STARKE SCHNEEVERWEHUNG" || response.properties.EVENT=="EXTREM STARKE SCHNEEVERWEHUNG" ) {
-      return filter_dwdoutput_severity(response);
+    if (selectedOption == "rain") {
+        if (response.properties.EVENT == "DAUERREGEN" || response.properties.EVENT == "STARKREGEN" || response.properties.EVENT == "HEFTIGER STARKREGEN" || response.properties.EVENT == "ERGIEBIGER DAUERREGEN" || response.properties.EVENT == "EXTREM HEFTIGER STARKREGEN") {
+            return filter_dwdoutput_severity(response);
+        }
     }
-  }
 
-  if (selectedOption=="frost") {
-    if (response.properties.EVENT=="FROST" || response.properties.EVENT=="STRENGER FROST") {
-      return filter_dwdoutput_severity(response);
+    if (selectedOption == "snowfall") {
+        if (response.properties.EVENT == "STARKER SCHNEEFALL" || response.properties.EVENT == "EXTREM STARKER SCHNEEFALL" || response.properties.EVENT == "STARKE SCHNEEVERWEHUNG" || response.properties.EVENT == "EXTREM STARKE SCHNEEVERWEHUNG") {
+            return filter_dwdoutput_severity(response);
+        }
     }
-  }
 
-  if (selectedOption=="glazed frost") {
-
-    if (response.properties.EVENT=="GLÄTTE" || response.properties.EVENT=="GLATTEIS") {
-      return filter_dwdoutput_severity(response);
+    if (selectedOption == "frost") {
+        if (response.properties.EVENT == "FROST" || response.properties.EVENT == "STRENGER FROST") {
+            return filter_dwdoutput_severity(response);
+        }
     }
-  }
+
+    if (selectedOption == "glazed frost") {
+
+        if (response.properties.EVENT == "GLÄTTE" || response.properties.EVENT == "GLATTEIS") {
+            return filter_dwdoutput_severity(response);
+        }
+    }
 
 
 
@@ -468,32 +477,32 @@ function filter_wfs_output (response) {
  * function to 
  * @param {*} response 
  */
-function filter_dwdoutput_severity (response) {
-  if (document.getElementById("Severity_Minor").checked == true) {
-      if (response.properties.SEVERITY == "Minor") {
-        return response;
-      }
-  }
-
-  if (document.getElementById("Severity_Moderate").checked==true) {
-      if (response.properties.SEVERITY == "Moderate") {
-        return response;
-      }
-  }
-
-  if (document.getElementById("Severity_Severe").checked==true) {
-    if (response.properties.SEVERITY == "Severe") {
-      return response;
+function filter_dwdoutput_severity(response) {
+    if (document.getElementById("Severity_Minor").checked == true) {
+        if (response.properties.SEVERITY == "Minor") {
+            return response;
+        }
     }
-  }
 
-  if (document.getElementById("Severity_Extreme").checked==true) {
-    if (response.properties.SEVERITY == "Extreme") {
-      return response;
+    if (document.getElementById("Severity_Moderate").checked == true) {
+        if (response.properties.SEVERITY == "Moderate") {
+            return response;
+        }
     }
-  }
-  else {
-      return null;
+
+    if (document.getElementById("Severity_Severe").checked == true) {
+        if (response.properties.SEVERITY == "Severe") {
+            return response;
+        }
+    }
+
+    if (document.getElementById("Severity_Extreme").checked == true) {
+        if (response.properties.SEVERITY == "Extreme") {
+            return response;
+        }
+    }
+    else {
+        return null;
     }
 }
 
@@ -532,7 +541,7 @@ function extendMap() {
 *
 *
 */
-function saveBboxtoCookies(){
+function saveBboxtoCookies() {
     //TODO: if (wenn keine Bbox im Bbox Layer eingezeichnet wurde, dann soll der neue Ausschnitt hier als Bbox für Twitter dienen){
     var bbox = map.getBounds();
     document.cookie = "bboxsouthWest_lat=" + bbox._southWest.lat;

@@ -1,62 +1,101 @@
 $(document).ready(() => {
-    requestTweets();
+    setInterval(() => {
+        initTweets();
+    }, interval * 1000);
+    initDWDWarnings();
+    getTweets();
 });
+
 var url = window.location.href;
 var arr = url.split("/");
 var host = arr[0] + "//" + arr[2];
-//TODO: das ist ein test TODO
-function requestTweets() {
-    $("#btn_tweetrequest").on("click", async () => {
 
-        //Search API
-        var query = twitter_default;
-        query.q = $("#keyword_input").val();
-        query.lang = $("#language_select").val();
+function initTweets() {
+    $.ajax({
+        type: 'POST',
+        url: 'http://localhost:3000/api/v1/twitter/init',
+    }).fail(function (xhr, status, error) {
+        console.log('Error: ' + error);
+    });
+};
 
-        await $.ajax({
-            type: 'POST',
-            url: 'http://localhost:3000/api/v1/twitter',
-            data: query,
+function getTweets() {
+    $("#btn_tweetrequest").on("click", () => {
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:3000/api/v1/twitter/tweets',
             dataType: 'json',
             encode: true
         }).done(function (data) {
-            console.log('Success: Data from Twitter received');
-            console.log(data);
+            console.log('Success: Tweets loaded from MongoDB.');
             //filterTweets(data);
+            console.log(data);
         }).fail(function (xhr, status, error) {
             console.log('Error: ' + error);
         });
     });
 };
 
-function filterTweets(tweets) {
-    var polygons = getPolygonsInBbox();
-
-    var filteredtweets = [];
-
-    tweets.forEach((t, index) => {
-        tweets[index] = toJSON(t);
-
-        /* var inside = false;
-        var i = 0;
-        //TODO: Laufzeit problematisch
-        while ((!inside) && (i < polygons.length)) {
-            if (tweetInPolygon(tweet, polygons[i])) {
-                filteredtweets.push(tweet);
-                inside = true;
-            }
-        } */
-
-        t = tweets[index];
-
-        if (t.geo != null) {
-            filteredtweets.push(t);
-        }
+async function initDWDWarnings() {
+    await $.ajax({
+        type: 'POST',
+        url: 'http://localhost:3000/api/v1/dwd/events/init',
+    }).fail(function (xhr, status, error) {
+        console.log('Error: ' + error);
     });
 
-    drawTweetsToMap(filteredtweets);
-    drawTweetsToUI(filteredtweets);
+    getDWDWarnings();
 };
+
+function getDWDWarnings() {
+    $.ajax({
+        type: 'GET',
+        url: 'http://localhost:3000/api/v1/dwd/events/warnings',
+        dataType: 'json',
+        encode: true
+    }).done(function (data) {
+        console.log('Success: Warnings loaded from MongoDB.');
+        drawWarningsToMap(data);
+    }).fail(function (xhr, status, error) {
+        console.log('Error: ' + error);
+    });
+};
+
+function drawWarningsToMap(warnings) {
+    WFSLayer = L.geoJson(warnings, {
+        style: setStyles,
+        onEachFeature: function (feature, layer) {
+            //popupOptions = {maxWidth: 200};
+            layer.bindPopup(feature.properties.EVENT + "<br><br>" + "VON: " + feature.properties.EFFECTIVE + "<br>Bis voraussichtlich: " + feature.properties.EXPIRES);
+        }
+    }).addTo(map);
+};
+
+/* function filterTweets(tweets) {
+    var polygons = getPolygonsInBbox();
+    var multipolygon = turf.multiPolygon(polygons).geometry;
+
+    console.log(JSON.stringify(multipolygon));
+
+    map.addLayer(L.geoJSON(multipolygon));
+
+    var filteredtweets = [];
+    var geo = [];
+
+    tweets.forEach((t) => {
+        var tweet = tweetToJSON(t);
+        if (tweet.geo != null) {
+            geo.push(tweet);
+        };
+    });
+
+    geo.forEach((tweet) => {
+         console.log(turf.booleanPointInPolygon(tweet.geo, multipolygon));
+     }); 
+
+    drawTweetsToMap(filteredtweets);
+    drawTweetsToUI(filteredtweets); 
+}; */
 
 function getPolygonsInBbox() {
     var bboxsouthWest_lat = parseFloat(getCookie("bboxsouthWest_lat"));
@@ -109,21 +148,9 @@ function getPolygonsInBbox() {
     return polygonswithinbbox;
 };
 
-//TODO: Ueberpruefe, ob Tweet im Polygon liegt
-function tweetInPolygon(tweet, polygon) {
-    if (tweet.geo != null) {
-        return d3.geoContains(polygon, tweet.geo);
-    } else {
-        if (tweet.place != null) {
-            //console.log(tweet.place);
-        }
-    }
-};
-
 function drawTweetsToUI(tweets) {
     var first = tweets[0].id_str;
     tweets.forEach((tweet) => {
-        console.log(tweet);
         var tweet_id = tweet.id_str;
         var tweet_html = '<div class="tweet carousel-item" id="' + tweet_id + '"></div>';
         $("#tweet_carousel_inner").append(tweet_html);
@@ -168,10 +195,23 @@ function drawTweetsToMap(tweets) {
     });
 };
 
-function toJSON(tweet) {
+function tweetToJSON(tweet) {
     return {
         id: JSON.parse(tweet.id),
         geo: JSON.parse(tweet.geo),
         place: JSON.parse(tweet.place)
     };
-}
+};
+
+/* function mergePolygons(polygons) {
+    var result = {
+        "type": "MultiPolygon",
+        "coordinates": []
+    };
+
+    polygons.forEach((p) => {
+        result.coordinates.push(p.coordinates);
+    });
+
+    return result;
+}; */

@@ -5,7 +5,9 @@ var default_bbox = {
     ne_lat: "55.2267508737"
 };
 
-var twitter_default = {
+var interval = 10; //seconds
+
+exports.twitter_query = {
     q: "",
     geocode: "51.158627,10.445921,400km", //("LNG,LAT,RADIUS") Mittelpunkt Deutschlands 
     lang: "",

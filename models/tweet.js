@@ -2,14 +2,18 @@
 // jshint node: true
 "use strict";
 
-const mongoose = require('mongoose');
+//Import modules
+const Mongoose = require('mongoose');
+const GeoJSON = require('mongoose-geojson-schema');
 
-const tweetSchema = new mongoose.Schema({
+//Create new database schema to store tweets
+const tweetSchema = new Mongoose.Schema({
     id: String,
-    geo: String,
-    place: String
+    location: Mongoose.Schema.Types.Mixed,
+    text: String,
+    language: String,
+    date: Date
 });
 
-const tweetModel = mongoose.model("TweetModel", tweetSchema);
-
-module.exports = tweetModel;
+//Export the database model
+module.exports = Mongoose.model("tweet", tweetSchema);
