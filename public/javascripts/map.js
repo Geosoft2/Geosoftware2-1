@@ -320,6 +320,7 @@ function getWFSLayer() {
         SrsName: 'EPSG:4326'
     };
 
+<<<<<<< Updated upstream
     var parameters = L.Util.extend(defaultParameters);
     var URL = owsrootUrl + L.Util.getParamString(parameters);
 
@@ -346,6 +347,24 @@ function getWFSLayer() {
           }
           console.log(filtered_response);
           console.log(filtered_response_nd);
+=======
+var parameters = L.Util.extend(defaultParameters);
+var URL = owsrootUrl + L.Util.getParamString(parameters);
+
+  WFSLayer = null;
+var ajax = $.ajax({
+  url : URL,
+  dataType : 'jsonp',
+  jsonpCallback : 'getJson',
+  success : function (response) {
+      set_output(response);
+      //response=filter_wfs_output(response);
+      // muss noch weiter bearbeitet werden. Idee: den Startpunkt der Karte abhängig von dem
+      // wfs output zu machen. zoom() funktion steht in wfs.js
+      if (response != null) {
+          startpoint=zoom();
+          console.log(response);
+>>>>>>> Stashed changes
       }
 
       WFSLayer = L.geoJson(filtered_response_nd, {
