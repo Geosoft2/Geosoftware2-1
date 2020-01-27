@@ -224,7 +224,7 @@ function initMap() {
 
     // Warnungs-Layer vom DWD-Geoserver - betterWms fügt Möglichkeiten zur GetFeatureInfo hinzu
     var radarlayer = L.tileLayer.betterWms("https://maps.dwd.de/geoserver/dwd/ows", {
-        layers: 'dwd:RX-Produkt',
+        layers: 'dwd:FX-Produkt',
         request: 'GetMap',
         format: 'image/png',
         transparent: true,
