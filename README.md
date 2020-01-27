@@ -1,5 +1,5 @@
 # Geosoftware 2 Project
-Project development of the course Geosoftware 2 by Lukas, Christin, Constantin and Max
+Project development of the course Geosoftware 2 by Lukas, Max, Constantin and Christin
 
 ## GitHub Repository
 [GeosoftwareProject](https://github.com/Leverkusen/Geosoftware2)
@@ -10,7 +10,7 @@ Project development of the course Geosoftware 2 by Lukas, Christin, Constantin a
 ``git clone https://github.com/Leverkusen/Geosoftware2``
 
 2. Create your own API-Tokens by getting registered on the websites below
-   * Beispiel OpenWeatherMap (https://openweathermap.org)
+   * For example FlickrAPI (https://www.flickr.com/services/apps/create/)
 
 3. Create the file ``token.js`` with the following content in the ``config`` folder:
 
@@ -28,12 +28,11 @@ if(typeof exports == "undefined"){
 // tokens tokens tokens...
 exports.token = {
    secretSession: "your individual string", //for example "abc"
-   OPENWEATHERMAP_TOKEN: "your openweathermap token"
-};
+   flickr_app_key: "your flickr app token"
+}
 ```
 
 ## Starting with Docker:
-
 1. install Docker on your local machine
 2. ensure that the data folder is shared
 3. open shell and navigate to folder ``Geosoftware2``
@@ -41,7 +40,7 @@ exports.token = {
 
 
 ## Starting without Docker:
-1. install [Node.js v10.xx](https://nodejs.org/en/) and [MongoDB v4.xx](https://www.mongodb.com/download-center/community?) on your local machine
+1. install [Node.js](https://nodejs.org/en/) and [MongoDB](https://www.mongodb.com/download-center/community?) on your local machine
 2. open shell and create MongoDB
    * on Windows: ``"C:\Program Files\MongoDB\Server\4.2\bin\mongod.exe" --dbpath="C:\path_to_GeosoftwareProject\data"``
    * possible troubleshoot: use the downloaded ``data`` folder instead of the cloned folder
@@ -67,6 +66,7 @@ the generated HTML pages of the JSDoc documentation are located in [``JSDoc``](.
 ## Authors
 
    * Lukas B.
-   * Constantin
-   * Christin
    * Max
+   * Constantin
+   
+   * Christin
