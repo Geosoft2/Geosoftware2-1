@@ -4,6 +4,7 @@
 "use strict";
 
 
+
 /**
 * @desc Geosoftware 2;
 * apllication for starting the map
@@ -25,18 +26,10 @@ function get_output() {
 }
 
     //start the functions needed to load the map, dwd data and
+    var controlLayers;
     initMap();
     extendMap();
     getWFSLayer();
-
-//TODO: ordnung halten und sowas an die richtige stelle schieben
-$(".err_mess").on("mouseenter", function(){
-    $(".err_mess").stop(true, true);
-    $(".err_mess").delay(0).fadeIn(0);
-});
-$(".err_mess").on("mouseleave", function(){
-    $(".err_mess").delay(0).fadeOut(3000);
-});
 
 /**
 * @desc create map
@@ -172,6 +165,7 @@ function initMap() {
 
     map.setView(startpoint, zoomLevel)
         .on('zoomend', function () {
+            //update the URL in browser
             var currentCenter = map.getCenter();
             newRequest = ["centerpoint=[" + currentCenter.lat + "," + currentCenter.lng + "]", "zoomlevel=" + map.getZoom()];
             newURL = buildUrl(newRequest);
@@ -179,16 +173,24 @@ function initMap() {
             stateObj = { foo: justReq };
             history.pushState(stateObj, "test", "?" + justReq);
             saveBboxtoCookies();
+
+            //TODO: hier noch die flickr Anfrage updaten dass ich neuen bereich ein Knopf ersheint um diese zu updaten
+            //if(getCookie("groupID")!=inactive)
+            //TODO: zuvor muss der Button entfernt werden um ihn dann neu einzuladen
+            //oder checken ob er schon existiert
+            reloadSocialMedia();
         })
         .on('moveend', function () {
+            //update the URL in browser
             var currentCenter = map.getCenter();
             newRequest = ["centerpoint=[" + currentCenter.lat + "," + currentCenter.lng + "]", "zoomlevel=" + map.getZoom()];
             newURL = buildUrl(newRequest);
             justReq = newURL.split("?")[1];
             stateObj = { foo: justReq };
             history.pushState(stateObj, "test", "?" + justReq);
-
             saveBboxtoCookies();
+            //TODO: ebenso wie bei Zoomend
+            reloadSocialMedia();
         });
 
       var mapbox_accessToken = 'pk.eyJ1IjoibWdhZG8wMSIsImEiOiJjazQxaHZvZTcwMWdqM2RvYmF4eWRzZ2diIn0.z3YweqsFFX-KbTYMRmz_AA';
@@ -232,9 +234,7 @@ function initMap() {
     // Einfügen der Legende auf der Karte
     var legend = L.control({position: 'bottomleft'});
 
-    var overlayMaps = {
-        "DWD rain radar": radarlayer
-    };
+  
 
     legend.onAdd = function (map) {
 
@@ -417,8 +417,49 @@ function getColor(d) {
                             "#2E2EFE";
     }
 /**
-*function that saves the new mapextension as the last bbox, if there is no Bbox drawn
-*
+ * function to add a button for reloading the current socialmedia points
+ * @private
+ *
+ */
+function reloadSocialMedia() {
+    //Button, to save personal default view
+    var socialMediaControl = L.Control.extend({
+        options: {
+            position: "topleft"
+        },
+        onAdd: () => {
+            var updatecontainer = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom')
+
+            updatecontainer.innerHTML = '<i class="far fa-exclamation-circle"></i>';
+            updatecontainer.style.width = '30px';
+            updatecontainer.style.height = '30px';
+            updatecontainer.onclick = () => {
+                updatecontainer.remove(container)
+                //TODO: Button entfernen
+                //controlLayers.removeLayer()
+                /*var flickrGroup = getCookie("flickr_groupID");
+                if (flickrGroup == "public"){
+                    axios.get('/api/v1/flickr/group/14643952@N25')
+                }
+                else{
+                    if(flickrGroup == "false")
+                }
+                console.log("Socialmedia ius getting updated");
+                */
+            map.on("moveend", () => {
+                updatecontainer.remove(updatecontainer);
+            })
+            }
+            return updatecontainer;
+        }
+    });
+    //controlLayers.addOverlay(socialMediaControl,"socialMediaControl")
+    map.addControl(new socialMediaControl);
+}
+
+/**
+*@description this saves the new mapextension as the last bbox, if there is no Bbox drawn
+*@private
 *
 */
 function saveBboxtoCookies(){
@@ -428,4 +469,15 @@ function saveBboxtoCookies(){
     document.cookie = "bboxsouthWest_lng=" + bbox._southWest.lng;
     document.cookie = "bboxnorthEast_lat=" + bbox._northEast.lat;
     document.cookie = "bboxnorthEast_lng=" + bbox._northEast.lng;
+}
+
+/**
+ * @description change the activated element in map parallel to the shown element in the carousel
+ * @private
+ */
+function changeActive(){
+    var lat = $(".active").attr("lat")
+    var lon = $(".active").attr("lon")
+    map.fireEvent('click', "[51.147158,13.817316]")
+    //console.log('id:', id)
 }
