@@ -40,15 +40,15 @@ app.use('/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist')
 app.use('/mdbootstrap', express.static(__dirname + '/node_modules/mdbootstrap'));
 app.use('/popper', express.static(__dirname + '/node_modules/popper.js/dist'));
 app.use('/open-iconic', express.static(__dirname + '/node_modules/open-iconic/font'));
-app.use("/leaflet", express.static(__dirname + "/node_modules/leaflet/dist"));
-app.use("/leaflet-control-geocoder", express.static(__dirname + "/node_modules/leaflet-control-geocoder/dist"));
+app.use("/leaflet", express.static(__dirname + '/node_modules/leaflet/dist'));
+app.use("/leaflet-control-geocoder", express.static(__dirname + '/node_modules/leaflet-control-geocoder/dist'));
 app.use('/config', express.static(__dirname + '/config'));
-app.use('/jsnlog', express.static(__dirname + "/node_modules/jsnlog"));
+app.use('/jsnlog', express.static(__dirname + '/node_modules/jsnlog'));
 app.use('/fontawesome', express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free'));
-app.use("/leaflet-draw", express.static(__dirname + "/node_modules/leaflet-draw/dist"));
-app.use("/flag-icon-css", express.static(__dirname + "/node_modules/flag-icon-css"));
-app.use("/bootstrap-select", express.static(__dirname + "/node_modules/bootstrap-select/dist"));
-app.use('/leaflet-extra-markers', express.static(__dirname + "/node_modules/leaflet-extra-markers/dist"));
+app.use('/leaflet-draw', express.static(__dirname + '/node_modules/leaflet-draw/dist'));
+app.use('/bootstrap-select', express.static(__dirname + '/node_modules/bootstrap-select/dist'));
+app.use('/leaflet-extra-markers', express.static(__dirname + '/node_modules/leaflet-extra-markers/dist'));
+app.use('/turf', express.static(__dirname + '/node_modules/@turf/turf'));
 
 
 app.use(bodyParser.json({ limit: '50mb' }));
