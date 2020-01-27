@@ -28,8 +28,7 @@ function getTweets() {
             encode: true
         }).done(function (data) {
             console.log('Success: Tweets loaded from MongoDB.');
-            //filterTweets(data);
-            console.log(data);
+            filterTweets(data);
         }).fail(function (xhr, status, error) {
             console.log('Error: ' + error);
         });
@@ -61,43 +60,7 @@ function getDWDWarnings() {
     });
 };
 
-function drawWarningsToMap(warnings) {
-    WFSLayer = L.geoJson(warnings, {
-        style: setStyles,
-        onEachFeature: function (feature, layer) {
-            //popupOptions = {maxWidth: 200};
-            layer.bindPopup(feature.properties.EVENT + "<br><br>" + "VON: " + feature.properties.EFFECTIVE + "<br>Bis voraussichtlich: " + feature.properties.EXPIRES);
-        }
-    }).addTo(map);
-};
-
-/* function filterTweets(tweets) {
-    var polygons = getPolygonsInBbox();
-    var multipolygon = turf.multiPolygon(polygons).geometry;
-
-    console.log(JSON.stringify(multipolygon));
-
-    map.addLayer(L.geoJSON(multipolygon));
-
-    var filteredtweets = [];
-    var geo = [];
-
-    tweets.forEach((t) => {
-        var tweet = tweetToJSON(t);
-        if (tweet.geo != null) {
-            geo.push(tweet);
-        };
-    });
-
-    geo.forEach((tweet) => {
-         console.log(turf.booleanPointInPolygon(tweet.geo, multipolygon));
-     }); 
-
-    drawTweetsToMap(filteredtweets);
-    drawTweetsToUI(filteredtweets); 
-}; */
-
-function getPolygonsInBbox() {
+function filterTweets(tweets) {
     var bboxsouthWest_lat = parseFloat(getCookie("bboxsouthWest_lat"));
     var bboxsouthWest_lng = parseFloat(getCookie("bboxsouthWest_lng"));
     var bboxnorthEast_lat = parseFloat(getCookie("bboxnorthEast_lat"));
@@ -115,37 +78,26 @@ function getPolygonsInBbox() {
         ]]
     };
 
-    var dwd = output.features;
-    var polygons = [];
+    var filteredTweets = [];
 
-    dwd.forEach((polygon) => {
-        if (polygon.geometry.type == "MultiPolygon") {
-            polygon.geometry.coordinates.forEach((c) => {
-                c.forEach((coordinates) => {
-                    var poly = {
-                        "type": "Polygon",
-                        "coordinates": [coordinates]
-                    };
-
-                    polygons.push(poly);
-                });
-            });
-        } else {
-            if (polygon.geometry.type == "Polygon") {
-                polygons.push(polygon.geometry);
-            }
+    tweets.forEach((tweet) => {
+        if (turf.booleanContains(bbox, tweet.location)) {
+            filteredTweets.push(tweet);
         }
     });
 
-    var polygonswithinbbox = [];
+    drawTweetsToMap(filteredTweets);
+    //drawTweetsToUI(filteredTweets);
+};
 
-    polygons.forEach((p) => {
-        if (turf.booleanContains(bbox, p)) {
-            polygonswithinbbox.push(p);
+function drawWarningsToMap(warnings) {
+    WFSLayer = L.geoJson(warnings, {
+        style: setStyles,
+        onEachFeature: function (feature, layer) {
+            //popupOptions = {maxWidth: 200};
+            layer.bindPopup(feature.properties.EVENT + "<br><br>" + "VON: " + feature.properties.EFFECTIVE + "<br>Bis voraussichtlich: " + feature.properties.EXPIRES);
         }
-    });
-
-    return polygonswithinbbox;
+    }).addTo(map);
 };
 
 function drawTweetsToUI(tweets) {
@@ -187,31 +139,8 @@ function drawTweetsToMap(tweets) {
         .addTo(map);
 
     tweets.forEach((t) => {
-        if (t.geo != null) {
-            var marker = L.marker(t.geo.coordinates, { icon: defaultIcon, alt: "marker" })
-
-            markergroup.addLayer(marker);
-        }
+        var latlng = [t.location.coordinates[1], t.location.coordinates[0]];
+        var marker = L.marker(latlng, { icon: defaultIcon, alt: "marker" });
+        markergroup.addLayer(marker);
     });
 };
-
-function tweetToJSON(tweet) {
-    return {
-        id: JSON.parse(tweet.id),
-        geo: JSON.parse(tweet.geo),
-        place: JSON.parse(tweet.place)
-    };
-};
-
-/* function mergePolygons(polygons) {
-    var result = {
-        "type": "MultiPolygon",
-        "coordinates": []
-    };
-
-    polygons.forEach((p) => {
-        result.coordinates.push(p.coordinates);
-    });
-
-    return result;
-}; */
