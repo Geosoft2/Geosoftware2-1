@@ -40,13 +40,13 @@ exports.getPublic = (req, res)=>{
     group_id: group
   }).then(function (response) {
     for (var i = 0; i < response.body.photos.photo.length; i++) {
-      var photoElement = response.body.photos.photo[i];
+      var photoElement = response.body.photos.photo[i]
       flickr.photos.getInfo({
         photo_id: photoElement.id
       }).then( function (response) {
-        var p = response.body.photo;  
+        var p = response.body.photo 
         //save the data of a photo in the Database
-        _replaceOne(
+        flickrModel.replaceOne(
           {photo_id: p.id},
           {photo_id: p.id,
           title: p.title._content,
@@ -59,7 +59,7 @@ exports.getPublic = (req, res)=>{
           grou_id: group,
           timestamp: p.dates.taken},
           { upsert: true }, function (err, photo) {
-        if (err) return handleError(err);
+        if (err) return handleError(err)
       });
     
       });
@@ -68,25 +68,25 @@ exports.getPublic = (req, res)=>{
       try {
         const now = new Date();
         var older_than = moment().subtract(12, 'hours').toDate();
-        console.log("now",older_than);
-        _find({timestamp:{$lt: older_than}}).remove().exec()
+        console.log("now",older_than)
+        flickrModel.find({timestamp:{$lt: older_than}}).remove().exec()
           .then((RemoveStatus) => {
-            console.log("Documents Removed Successfully");
+            console.log("Documents Removed Successfully")
            })
            .catch((err) => {
             console.error('something error');
-            console.error(err);
+            console.error(err)
            });
-        _find({}).limit(50).exec(function (err, results) {
-          res.header("Content-Type",'application/json');
-          res.send(JSON.stringify(results, null, 4));
+        flickrModel.find({}).limit(50).exec(function (err, results) {
+          res.header("Content-Type",'application/json')
+          res.send(JSON.stringify(results, null, 4))
       });    
       } catch (err) {
         throw err;
       }
       })
     .catch(function (err) {
-      console.error('ERROR', err);
+      console.error('ERROR', err)
     });
     //TODO: wenn es Updates gab in der Datenbank dann wird auchnoch die nächste seite der API abgerufen
     /*
@@ -111,7 +111,7 @@ else{
       }).then( function (response) {
         var p = response.body.photo;
         //save the data of a photo in the Database
-        _replaceOne(
+        flickrModel.replaceOne(
           {photo_id: p.id},
           {photo_id: p.id,
           title: p.title._content,
@@ -135,7 +135,7 @@ else{
         const now = new Date()
         var older_than = moment().subtract(12, 'hours').toDate()
         console.log("now",older_than)
-        _find({timestamp:{$lt: older_than}}).remove().exec()
+        flickrModel.find({timestamp:{$lt: older_than}}).remove().exec()
           .then((RemoveStatus) => {
             console.log("Documents Removed Successfully");
            })
@@ -152,13 +152,13 @@ else{
              // [bbox]
            //]
         if (group!=""){
-          _find({group_id: group}).limit(50).exec(function (err, results) {
+          flickrModule.find({group_id: group}).limit(50).exec(function (err, results) {
             res.header("Content-Type",'application/json')
             res.send(JSON.stringify(results, null, 4))
           });    
         }
         else{
-          _find({}).limit(50).exec(function (err, results) {
+          flickrModel.find({}).limit(50).exec(function (err, results) {
             res.header("Content-Type",'application/json')
             res.send(JSON.stringify(results, null, 4))
           });    
@@ -170,10 +170,9 @@ else{
     .catch(function (err) {
       console.error('ERROR', err)
     });
-}
-  
-    
+}    
 } 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * 
@@ -182,25 +181,32 @@ else{
  */
 async function loadPhotos (req, res){
   //for flickr API
-  var reload = req.query.reload
+  var relo = req.query.reload
+  if (relo == "true"){var reload = true}
+  else{var reload = false}
+  console.log('reload:', reload)
   //for loading from DB
-  var keyword = ""
+  var keyword
   if (req.query.keyword != undefined){keyword = req.query.keyword}
+  else{keyword=""}
   var bbox = req.query.bbox
   //for both
   var group_id
   if (req.query.group_id != undefined){group_id = req.query.group_id}
   else{group_id = ""}
-  var allUpdated
-  if (reload = true){
-    const foundPictures = groupOrNot(group_id)
+  if (reload === true){
+    console.log('tesdt:')
+    const foundPictures = await groupOrNot(group_id)
     const photosFound = await foundPictures
-    const allSaved = await Promise.all(photosFound.body.photos.photo.map(async(pic) => await eachPic(pic, group_id)));
-    allUpdated = await removeOldPhotos(allSaved)
+    const allSaved = await Promise.all(photosFound.body.photos.photo.map(async(pic) => await eachPic(pic, group_id)))
+    var allUpdated = await removeOldPhotos(allSaved)
   }
   const readyToLoad = await allUpdated
-  var loadedPictures = await loadDataDB(readyToLoad)
-  res.send(loadedPictures)
+  //var loadedPictures = await loadDataDB(readyToLoad, group_id)
+  
+  var picturesKey = await filterOrNot(readyToLoad, keyword, group_id)
+  var returnPics = picturesKey
+  res.send(returnPics)
 }
 exports.loadPhotos = loadPhotos
 
@@ -296,7 +302,7 @@ async function getPictureDetails(req){
  */
 async function removeOldPhotos(ready){
   try{
-    var older_than = moment().subtract(24, 'hours').toDate()
+    var older_than = moment().subtract(48, 'hours').toDate()
         console.log("now",older_than)
         var removed = flickrModel.find({timestamp:{$lt: older_than}}).remove().exec()
         return removed
@@ -306,16 +312,48 @@ async function removeOldPhotos(ready){
     return err
   }
 }
+
+
+async function filterOrNot(callback, keyword, group_id){
+  var key = keyword
+  console.log('key:', key)
+  var group = group_id
+  console.log('group:', group)
+    if (key !="" && key!=undefined){
+      var picturesKey = await flickrModel.find({'$and':[{group_id: group},{'$or': [{"title": {'$regex' : '.*' + keyword + '.*'}},{"description": {'$regex' : '.*' + keyword + '.*'}}]}]}).exec()
+      console.log('dies:')
+    }
+     else {
+       var picturesKey = await flickrModel.find({group_id: group}).limit(50).exec()
+       console.log('das:')
+     }
+     return picturesKey
+}
+
 /**
  * 
  * @param {callback} ready 
  */
-async function loadDataDB (ready){
+async function loadDataDB (group_id){
+  var keyw = keyword
+  var group = group_id
+  //console.log(group)
   try {
-    const loadedPictures = flickrModel.find({}).limit(50).exec()
+    //TODO: the filtering of the group is right now not possible
+    const loadedPictures = flickrModel.find({group_id: group}).limit(250).exec()
     return loadedPictures
   } catch (err) {
-    console.error('Data could not be deleted. There has been an ERROR occured', err);
+    console.error('Data could not be loaded. There has been an ERROR occured', err);
     throw err
   }
+}
+/**
+ * 
+ * @param {*} keyword 
+ */
+async function keywordFilter (keyword){
+  var key = keyword
+  var filterdPics = await flickrModel.find({'$or': [{"title": {'$regex' : '.*' + keyword + '.*'}},{"description": {'$regex' : '.*' + keyword + '.*'}}]})
+  //TODO: hier die funtkion ergänzen die die Bilder auf das keyword filtert
+  return filterdPics
 }
