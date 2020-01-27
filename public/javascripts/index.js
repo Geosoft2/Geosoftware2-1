@@ -193,7 +193,7 @@ function instagramAuthentic(){
 function flickrGetPublic(reload){
     document.cookie = "flickr_groupID=" + "public"
     giveLoadMessage("Flickr is loading", "flickr")
-    axios.get('/api/v1/flickr/public?bbox="5.98865807458, 47.3024876979, 15.0169958839, 54.983104153"&reload="'+reload+'"')
+    axios.get('/api/v1/flickr?bbox="5.98865807458, 47.3024876979, 15.0169958839, 54.983104153"&reload="'+reload+'"')
     .then(function (response) {
     drawFlickrToMap(response)
     drawFlickrToUI(response)
@@ -223,7 +223,7 @@ function flickrGetPublic(reload){
 function flickrGetGroup(reload){
     document.cookie = "flickr_groupID=" + "14643952@N25";
     giveLoadMessage("Flickr is loading", "flickr");
-    axios.get('/api/v1/flickr/public?group_id=14643952@N25&bbox="5.98865807458, 47.3024876979, 15.0169958839, 54.983104153"&reload="'+reload+'"')
+    axios.get('/api/v1/flickr?group_id=14643952@N25&bbox="5.98865807458, 47.3024876979, 15.0169958839, 54.983104153"&reload="'+reload+'"')
     .then(function (response) {
         drawFlickrToMap(response)
         drawFlickrToUI(response)
