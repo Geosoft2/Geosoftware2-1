@@ -329,31 +329,3 @@ async function filterOrNot(callback, keyword, group_id){
      }
      return picturesKey
 }
-
-/**
- * 
- * @param {callback} ready 
- */
-async function loadDataDB (group_id){
-  var keyw = keyword
-  var group = group_id
-  //console.log(group)
-  try {
-    //TODO: the filtering of the group is right now not possible
-    const loadedPictures = flickrModel.find({group_id: group}).limit(250).exec()
-    return loadedPictures
-  } catch (err) {
-    console.error('Data could not be loaded. There has been an ERROR occured', err);
-    throw err
-  }
-}
-/**
- * 
- * @param {*} keyword 
- */
-async function keywordFilter (keyword){
-  var key = keyword
-  var filterdPics = await flickrModel.find({'$or': [{"title": {'$regex' : '.*' + keyword + '.*'}},{"description": {'$regex' : '.*' + keyword + '.*'}}]})
-  //TODO: hier die funtkion ergänzen die die Bilder auf das keyword filtert
-  return filterdPics
-}

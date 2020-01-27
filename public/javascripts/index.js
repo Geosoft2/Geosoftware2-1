@@ -144,7 +144,6 @@ function drawTweetsToMap(tweets) {
         markergroup.addLayer(marker);
     });
 };
-
 /**
  * function to link the user to the instagram authentification
  */
@@ -158,28 +157,28 @@ function instagramAuthentic(){
  * function to get all Flickr photos in Germany and show them on the map
  * @param {boolean} reload should the system reload the FlickrAPI or not {true, false}
  */
-function flickrGetPublic(reload) {
+function flickrGetPublic(reload){
     document.cookie = "flickr_groupID=" + "public"
-    giveLoadMessage("Flickr is loading", "flickr")
-    axios.get('/api/v1/flickr?bbox="5.98865807458, 47.3024876979, 15.0169958839, 54.983104153"&reload="' + reload + '"')
-        .then(function (response) {
-            drawFlickrToMap(response)
-            drawFlickrToUI(response)
-            //drawFlickrToMap(response)
-            //$(document).ready(() => {
-            $(".flickr").delay(0).fadeOut(0)
-            //});
-            giveSuccessMessage("Flickr photos have successfully been loaded.")
-            console.log("res", response)
-        })
-        .catch(function (error) {
-            $(".flickr").delay(0).fadeOut(0)
-            giveErrorMessage("An error with Flickr has been occured. Try again.")
-            console.log(error)
-        })
-        .finally(function () {
-            // always executed
-        });
+    giveLoadMessage("Flickr is loading", "flickr")    
+    axios.get('/api/v1/flickr?reload='+reload)
+    .then(function (response) {
+    drawFlickrToMap(response)
+    drawFlickrToUI(response)
+    //drawFlickrToMap(response)
+    //$(document).ready(() => {
+    $(".flickr").delay(0).fadeOut(0) 
+    //});
+    giveSuccessMessage("Flickr photos have successfully been loaded.")
+    console.log("res", response)
+  })
+  .catch(function (error) {
+    $(".flickr").delay(0).fadeOut(0)
+    giveErrorMessage("An error with Flickr has been occured. Try again.")
+    console.log(error)
+  })
+  .finally(function () {
+    // always executed
+  });
 }
 
 
@@ -188,29 +187,29 @@ function flickrGetPublic(reload) {
  *function to get all Flickr photos in the Salus Solution Group and show them on the map
  *@param {boolean} reload should the system reload the FlickrAPI or not {true, false}
  */
-function flickrGetGroup(reload) {
+function flickrGetGroup(reload){
     document.cookie = "flickr_groupID=" + "14643952@N25";
     giveLoadMessage("Flickr is loading", "flickr");
-    axios.get('/api/v1/flickr?group_id=14643952@N25&bbox="5.98865807458, 47.3024876979, 15.0169958839, 54.983104153"&reload="' + reload + '"')
-        .then(function (response) {
-            drawFlickrToMap(response)
-            drawFlickrToUI(response)
-            //drawFlickrToMap(response)
-            //$(document).ready(() => {
-            $(".flickr").delay(0).fadeOut(0)
-            //});
-            giveSuccessMessage("Flickr photos have successfully been loaded.")
-            console.log("res", response)
-        })
-        .catch(function (error) {
-            $(".flickr").delay(0).fadeOut(0)
-            giveErrorMessage("An error with Flickr connection has been occured. Try again later.")
-            console.log(error)
-        })
-        .finally(function () {
-            // always executed
-        });
-}
+    axios.get('/api/v1/flickr?group_id=14643952@N25&reload='+reload)
+    .then(function (response) {
+        drawFlickrToMap(response)
+        drawFlickrToUI(response)
+        //drawFlickrToMap(response)
+        //$(document).ready(() => {
+        $(".flickr").delay(0).fadeOut(0) 
+        //});
+        giveSuccessMessage("Flickr photos have successfully been loaded.")
+        console.log("res", response)
+      })
+      .catch(function (error) {
+        $(".flickr").delay(0).fadeOut(0)
+        console.log(error)
+        giveErrorMessage("An error with Flickr connection has been occured. Try again later.")
+      })
+      .finally(function () {
+        // always executed
+      });
+    }
 
 /**
  * 
@@ -220,10 +219,10 @@ function drawFlickrToUI(flickr) {
     $('.carousel').carousel('pause')
     flickr.data.forEach((pic) => {
         var pic_id = pic.photo_id
-
+        
         //var pic_html = '<div class="flickr carousel-item" id="' + pic_id + '"><a href='+pic.url +'>Hallo Welt dies ist ein Link zum Bild</a></div>';
         //$("#flickr_carousel_inner").append(pic_html);
-        $("#flickr-carousel-inner").append('<div class="carousel-item" id="' + pic_id + '" lat="' + pic.latitude + '" lon="' + pic.longitude + '"><a href="' + pic.url + '" target="_blank">' + pic.title + '</a></div>')
+        $("#flickr-carousel-inner").append('<div class="carousel-item" id="' + pic_id + '" lat="'+pic.latitude+'" lon="'+pic.longitude+'"><a href="'+pic.url +'" target="_blank">'+pic.title+'</a></div>')
         //var tweet_dom = $("#" + pic_id)[0];
         //twttr.widgets.createTweet(tweet_id, tweet_dom, widget_config);
     });
@@ -240,7 +239,7 @@ function drawFlickrToUI(flickr) {
  */
 function drawFlickrToMap(flickrpic) {
     console.log('flickrpic:', flickrpic);
-
+    
     var flickrIcon = L.ExtraMarkers.icon({
         markerColor: 'black',
         prefix: 'fab',
@@ -254,28 +253,28 @@ function drawFlickrToMap(flickrpic) {
         icon: 'fa-flickr',
         iconColor: 'white'
     });
-    var flickrmarkergroup = L.featureGroup()
-        .addEventListener("click", (e) => {
-            flickrmarkergroup.eachLayer((marker) => {
-                marker.setIcon(flickrIcon)
-            });
-            e.layer.setIcon(flickrselectedIcon)
-            var id = e.layer.options.myCustomId
-            $(".active").removeClass("active")
-            $("#" + id).addClass("active")
+   var flickrmarkergroup = L.featureGroup()
+   .addEventListener("click", (e) => {
+       flickrmarkergroup.eachLayer((marker) => {
+           marker.setIcon(flickrIcon)
+       });
+       e.layer.setIcon(flickrselectedIcon)
+       var id =  e.layer.options.myCustomId
+       $(".active").removeClass("active")
+       $("#"+ id).addClass("active")
+       
+   })
+   .addTo(map)
 
-        })
-        .addTo(map)
-
-    flickrpic.data.forEach((t) => {
+   flickrpic.data.forEach((t) => {
         if (t.latitude != null && t.longitude) {
-            var marker = L.marker([t.latitude, t.longitude], { icon: flickrIcon, alt: "marker", myCustomId: t.photo_id })
-                .bindPopup("" + t.title + t.user_name + t.latitude + ' ' + t.longitude)
-            //marker.id = t.photo_id
+       var marker = L.marker([t.latitude,t.longitude], { icon: flickrIcon, alt: "marker", myCustomId: t.photo_id})
+                    .bindPopup(""+t.title+t.user_name + t.latitude + ' '+ t.longitude)
+        //marker.id = t.photo_id
 
-            flickrmarkergroup.addLayer(marker)
-        }
-    });
+       flickrmarkergroup.addLayer(marker)
+   }
+});
 
 };
 
