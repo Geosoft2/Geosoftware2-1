@@ -50,6 +50,7 @@ app.use('/leaflet-draw', express.static(__dirname + '/node_modules/leaflet-draw/
 app.use('/bootstrap-select', express.static(__dirname + '/node_modules/bootstrap-select/dist'));
 app.use('/leaflet-extra-markers', express.static(__dirname + '/node_modules/leaflet-extra-markers/dist'));
 app.use('/turf', express.static(__dirname + '/node_modules/@turf/turf'));
+app.use('/axios', express.static(__dirname + '/node_modules/axios/dist'));
 
 
 app.use(bodyParser.json({ limit: '50mb' }));
