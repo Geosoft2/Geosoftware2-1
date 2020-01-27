@@ -33,9 +33,16 @@ main {
   text-align: right;
 }
 
+
+
 #dwd_change {
   height: 50vh;
 }
+
+#exchange_filter {
+  margin-bottom: 30px;
+}
+
 
 .info {
 padding: 6px 8px;
