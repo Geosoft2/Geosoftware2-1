@@ -3,8 +3,6 @@
 // jshint esversion: 6
 "use strict";
 
-
-
 /**
 * @desc Geosoftware 2;
 * apllication for starting the map
@@ -25,11 +23,19 @@ function get_output() {
     return output;
 }
 
-    //start the functions needed to load the map, dwd data and
-    var controlLayers;
-    initMap();
-    extendMap();
-    getWFSLayer();
+//start the functions needed to load the map, dwd data and
+var controlLayers;
+initMap();
+extendMap();
+
+//TODO: ordnung halten und sowas an die richtige stelle schieben
+$(".err_mess").on("mouseenter", function () {
+    $(".err_mess").stop(true, true);
+    $(".err_mess").delay(0).fadeIn(0);
+});
+$(".err_mess").on("mouseleave", function () {
+    $(".err_mess").delay(0).fadeOut(3000);
+});
 
 /**
 * @desc create map
@@ -193,22 +199,32 @@ function initMap() {
             reloadSocialMedia();
         });
 
-      var mapbox_accessToken = 'pk.eyJ1IjoibWdhZG8wMSIsImEiOiJjazQxaHZvZTcwMWdqM2RvYmF4eWRzZ2diIn0.z3YweqsFFX-KbTYMRmz_AA';
+    /* $.ajax({
+        type: 'GET',
+        url: 'http://localhost:3000/api/v1/mapbox/dark/256/1',
+    }).done(function (data) {
+        console.log('Success: Tile from Mapbox received.');
+        console.log(typeof (data));
+    }).fail(function (xhr, status, error) {
+        console.log('Error: ' + error);
+    }); */
 
-      var light = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
-          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-          accessToken: mapbox_accessToken
-      }).addTo(map);
+    const mapbox_accessToken = 'pk.eyJ1IjoibWdhZG8wMSIsImEiOiJjazQxaHZvZTcwMWdqM2RvYmF4eWRzZ2diIn0.z3YweqsFFX-KbTYMRmz_AA';
 
-      var dark = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
-          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-          accessToken: mapbox_accessToken
-      });
+    var light = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        accessToken: mapbox_accessToken
+    }).addTo(map);
 
-      var satellite = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
-          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-          accessToken: mapbox_accessToken
-      });
+    var dark = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        accessToken: mapbox_accessToken
+    });
+
+    var satellite = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        accessToken: mapbox_accessToken
+    });
 
     var baseMaps = {
         "Light": light,
@@ -218,7 +234,7 @@ function initMap() {
 
     // Warnungs-Layer vom DWD-Geoserver - betterWms fügt Möglichkeiten zur GetFeatureInfo hinzu
     var radarlayer = L.tileLayer.betterWms("https://maps.dwd.de/geoserver/dwd/ows", {
-        layers: 'dwd:RX-Produkt',
+        layers: 'dwd:FX-Produkt',
         request: 'GetMap',
         format: 'image/png',
         transparent: true,
@@ -232,25 +248,25 @@ function initMap() {
 
     L.control.layers(baseMaps, overlayMaps).addTo(map);
     // Einfügen der Legende auf der Karte
-    var legend = L.control({position: 'bottomleft'});
+    var legend = L.control({ position: 'bottomleft' });
 
-  
+
 
     legend.onAdd = function (map) {
 
-    var div = L.DomUtil.create('div', 'info legend'),
-    labels = ['<strong>Severity</strong>'],
-   categories = ['Minor', 'Moderate', 'Severe', 'Extreme'];
+        var div = L.DomUtil.create('div', 'info legend'),
+            labels = ['<strong>Severity</strong>'],
+            categories = ['Minor', 'Moderate', 'Severe', 'Extreme'];
 
-    for (var i = 0; i < categories.length; i++) {
-      //console.log(getColor(categories[i] + 1));
-      div.innerHTML +=labels.push(
-            '<i style="background:' + getColor(categories[i] ) + '; opacity:0.4"></i> ' +
-            categories[i]);
-          }
-          div.innerHTML = labels.join('<br>');
-          return div;
-        };
+        for (var i = 0; i < categories.length; i++) {
+            //console.log(getColor(categories[i] + 1));
+            div.innerHTML += labels.push(
+                '<i style="background:' + getColor(categories[i]) + '; opacity:0.4"></i> ' +
+                categories[i]);
+        }
+        div.innerHTML = labels.join('<br>');
+        return div;
+    };
 
     legend.addTo(map);
 
@@ -311,7 +327,7 @@ function initMap() {
         .addTo(map);
 }
 
-function getWFSLayer() {
+/* function getWFSLayer() {
     var owsrootUrl = 'https://maps.dwd.de/geoserver/dwd/ows';
 
     var defaultParameters = {
@@ -323,7 +339,6 @@ function getWFSLayer() {
         format_options: 'callback:getJson',
         SrsName: 'EPSG:4326'
     };
-
 
     var parameters = L.Util.extend(defaultParameters);
     var URL = owsrootUrl + L.Util.getParamString(parameters);
@@ -390,13 +405,13 @@ function extendMap() {
             position: "topleft"
         },
         onAdd: () => {
-          //var
-             var container = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
+            //var
+            var container = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
 
             container.innerHTML = '<i class="far fa-save"></i>';
             container.style.width = '30px';
             container.style.height = '30px';
-            container.title="save the current mapview";
+            container.title = "save the current mapview";
 
             container.onclick = () => {
                 saveCookie();
@@ -410,12 +425,12 @@ function extendMap() {
 
 function getColor(d) {
 
-        return d === 'Minor'  ? "#F4D03F" :
-               d === 'Moderate'  ? "#D35400" :
-               d === 'Severe' ? "#C0392B" :
-               d === 'Extreme' ? "#7D3C98" :
-                            "#2E2EFE";
-    }
+    return d === 'Minor' ? "#F4D03F" :
+        d === 'Moderate' ? "#D35400" :
+            d === 'Severe' ? "#C0392B" :
+                d === 'Extreme' ? "#7D3C98" :
+                    "#2E2EFE";
+}
 /**
  * function to add a button for reloading the current socialmedia points
  * @private
@@ -446,9 +461,9 @@ function reloadSocialMedia() {
                 }
                 console.log("Socialmedia ius getting updated");
                 */
-            map.on("moveend", () => {
-                updatecontainer.remove(updatecontainer);
-            })
+                map.on("moveend", () => {
+                    updatecontainer.remove(updatecontainer);
+                })
             }
             return updatecontainer;
         }
@@ -462,7 +477,7 @@ function reloadSocialMedia() {
 *@private
 *
 */
-function saveBboxtoCookies(){
+function saveBboxtoCookies() {
     //TODO: if (wenn keine Bbox im Bbox Layer eingezeichnet wurde, dann soll der neue Ausschnitt hier als Bbox für Twitter dienen){
     var bbox = map.getBounds();
     document.cookie = "bboxsouthWest_lat=" + bbox._southWest.lat;
@@ -475,7 +490,7 @@ function saveBboxtoCookies(){
  * @description change the activated element in map parallel to the shown element in the carousel
  * @private
  */
-function changeActive(){
+function changeActive() {
     var lat = $(".active").attr("lat")
     var lon = $(".active").attr("lon")
     map.fireEvent('click', "[51.147158,13.817316]")
