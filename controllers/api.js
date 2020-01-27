@@ -3,16 +3,22 @@
 "use strict";
 
 //Import modules
-var Twit = require('twit'); //twit library to access the Twitter API
+const Twit = require('twit'); //twit library to access the Twitter API
+const WFS = require('wfs'); //wfs library to request data from DWD's wfs service
+const Turf = require('@turf/turf'); //turf library for geospatial filtering
 
 //Import config files
-var Tokens = require('../config/tokens.js'); //Access Tokens
+const Tokens = require('../config/tokens.js'); //Access Tokens
+const Settings = require('../config/server.js'); //Import settings
+
 //Import Models
-var TweetModel = require('../models/tweet.js'); //MongoDB Schema definition to save tweets
+const TweetModel = require('../models/tweet.js'); //MongoDB Schema definition to store tweets
+const WarningModel = require('../models/warning.js'); //MongoDB Schema definition to store dwd warnings
 
 //Define Variables
+
 //Create new twit instance
-var TwitClient = new Twit({
+const TwitClient = new Twit({
   consumer_key: Tokens.twitter_consumer_key,
   consumer_secret: Tokens.twitter_consumer_secret,
   access_token: Tokens.twitter_access_token,
@@ -34,71 +40,156 @@ exports.getV1 = (req, res) => {
 
 /**
  * @desc Requests Tweets directly from Twitter's Search API
- * @param {json} req Contains all necessary parameters for the tweet search
- * @param {json} res Contains all tweets found by the Search API
+ * @param {json} request
+ * @param {json} response
  */
-exports.getV1twitter = (req, res) => {
-  const query = req.body; //Unfiltered tweets from Twitter
-
-  TwitClient.get('search/tweets', query, dataReceived);
-
-  function dataReceived(error, data, res) {
+exports.postV1TwitterInit = (req, res) => {
+  TwitClient.get('search/tweets', Settings.twitter_query, (error, data, res) => {
     const raw = data.statuses; //Unfiltered tweets directly received from Twitter API
 
     if (raw.length == 0) { //If there are no tweets, do nothing
       console.log("No new tweets available.");
-    } else { //Else filter the tweets
-      //Filter tweets by storing only geolocated tweets (geo or place not empty)
+    } else { //Else store tweets
       raw.forEach((tweet) => {
-        if ((tweet.geo != null) || (tweet.place != null)) {
-          //TODO: STORE DATA
+        if (tweet.place != null) { //Store tweet only if it is geotagged
+          var location = null;
+          if (tweet.place.bounding_box.type == "Polygon") {
+            location = Turf.centroid(tweet.place.bounding_box); //calculate centroid of the polygon
+          } else {
+            location = tweet.place.bounding_box;
+          }
 
-          /* //Create new file for MongoDB
+          //Create new file for MongoDB
           var file = {
             id: tweet.id_str, //Tweet ID (String)
-            geo: JSON.stringify(tweet.geo), //Geo coordinates [LAT,LON]
-            place: JSON.stringify(tweet.place) //Place polygon (GeoJSON object)
+            location: location.geometry, //Location of the tweet (GeoJSON Point)
+            text: tweet.text, //Content of the tweet (String)
+            language: tweet.lang, //Language of the tweet (String)
+            date: tweet.created_at //Date of creation (Date)
           };
 
           //Add file to MongoDB
           TweetModel.create(file)
-            .catch(error => console.log("Error: Tweet could not be inserted into database. " + error)); */
+            .catch(error => console.log("Error: Tweet could not be inserted into database. " + error));
         };
       });
     };
+  });
+  res.send({}); //TODO: Send appropriate response
+};
+
+exports.getV1TwitterTweets = async (req, res) => {
+
+  var warnings = await WarningModel.find({}, { geometry: 1, _id: 0 }).exec();
+
+  var geometries = [];
+
+  await warnings.forEach((w) => {
+    geometries.push(w.geometry);
+  });
+
+  var tweets = [];
+
+  for (const polygon of geometries) {
+    var result = await getTweetsInsidePolygon(polygon);
+
+    result.forEach(elem => {
+      tweets.push(elem);
+    });
   };
 
-  //TODO: Send Tweets back to client
-};
+  res.json(tweets);
 
-//exports.getV1instagram (req, res) => {
-//
-//};
+  function getTweetsInsidePolygon(polygon) {
+    return new Promise((resolve) => {
+      var query = TweetModel.find({
+        location: {
+          $geoWithin: {
+            $geometry: polygon
+          }
+        }
+      }).catch(error => console.log(error));
 
-exports.getV1dwd = (req, res) => {
-//TODO: die cache lebenszeit für dwd daten auf 5 minuten stellen da laut doc die daten nicht enger aktuallisiert werden
-};
-exports.getV1mapbox = (req, res) => {
-  const https = require('https')
-  const options = {
-    hostname: 'https://api.mapbox.com',
-    access_token: Tokens.mapbox_accessToken,
-    path: '/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}',
-    method: 'GET'
+      resolve(query);
+    });
   }
-  const req_map = https.request(options, res_map => {
-    console.log(`statusCode: ${res_map.statusCode}`)
-
-    res_map.on('data', d => {
-      process.stdout.write(d)
-    })
-  })
-
-  req_map.on('error', error => {
-    console.error(error)
-  })
-  req_map.end()
-  res.render('doku', {
-    title: 'Documentation'
-  });
 };
+
+exports.postV1DWDEventsInit = async (req, res) => {
+  WFS.getFeature({
+    url: 'https://maps.dwd.de/geoserver/dwd/ows',
+    typeName: 'dwd:Warnungen_Landkreise',
+    service: 'WFS',
+    request: 'GetFeature',
+    format_options: 'callback:getJson',
+    SrsName: 'EPSG:4326'
+  }, async (error, res) => {
+    if (error) {
+      console.log(error)
+    } else {
+      await WarningModel.deleteMany({});
+      var warnings = res.features;
+      warnings.forEach((warning) => {
+        var file = {
+          type: warning.type,
+          id: warning.id,
+          geometry: warning.geometry,
+          geometry_name: warning.geometry_name,
+          properties: warning.properties,
+          bbox: warning.bbox
+        };
+        //Add file to MongoDB
+        WarningModel.create(file)
+          .catch(error => console.log("Error: Warning could not be inserted into database. " + error));
+      });
+    }
+  });
+  res.send();
+};
+
+exports.getV1DWDEventsWarnings = async (req, res) => {
+  let result = await WarningModel.find({}).exec();
+
+  let collection = {
+    "type": "FeatureCollection",
+    "features": result
+  };
+
+  res.json(collection);
+};
+
+exports.postV1DWDRadarInit = (req, res) => {
+  WFS.getFeature({
+    url: 'https://maps.dwd.de/geoserver/dwd/ows',
+    typeName: 'dwd:Warnungen_Landkreise',
+    service: 'WFS',
+    request: 'GetFeature',
+    format_options: 'callback:getJson',
+    SrsName: 'EPSG:4326'
+  }, async (error, res) => {
+    if (error) {
+      console.log(error)
+    } else {
+      await WarningModel.deleteMany({});
+      var warnings = res.features;
+      warnings.forEach((warning) => {
+        var file = {
+          type: warning.type,
+          id: warning.id,
+          geometry: warning.geometry,
+          geometry_name: warning.geometry_name,
+          properties: warning.properties,
+          bbox: warning.bbox
+        };
+        //Add file to MongoDB
+        WarningModel.create(file)
+          .catch(error => console.log("Error: Warning could not be inserted into database. " + error));
+      });
+    }
+  });
+  res.send();
+};
+
+exports.getV1DWDRadarPrecipitation = (req, res) => {
+
+}
