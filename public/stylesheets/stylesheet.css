@@ -33,6 +33,13 @@ main {
   text-align: right;
 }
 
+#flickr {
+  margin-top: 10px;
+}
+
+#dwd_change {
+  margin-top: 10px;
+}
 
 
 #dwd_change {
