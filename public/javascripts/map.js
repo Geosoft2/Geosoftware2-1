@@ -224,7 +224,11 @@ function initMap() {
         attribution: 'Radardaten: &copy; <a href="https://www.dwd.de">DWD</a>'
     }).addTo(map);
 
-    L.control.layers(baseMaps).addTo(map);
+    var overlayMaps = {
+        "DWD rain radar": radarlayer
+    };
+
+    L.control.layers(baseMaps, overlayMaps).addTo(map);
     // Einfügen der Legende auf der Karte
     var legend = L.control({position: 'bottomleft'});
 
@@ -320,7 +324,7 @@ function getWFSLayer() {
         SrsName: 'EPSG:4326'
     };
 
-<<<<<<< Updated upstream
+
     var parameters = L.Util.extend(defaultParameters);
     var URL = owsrootUrl + L.Util.getParamString(parameters);
 
@@ -347,27 +351,9 @@ function getWFSLayer() {
           }
           console.log(filtered_response);
           console.log(filtered_response_nd);
-=======
-var parameters = L.Util.extend(defaultParameters);
-var URL = owsrootUrl + L.Util.getParamString(parameters);
+        }
 
-  WFSLayer = null;
-var ajax = $.ajax({
-  url : URL,
-  dataType : 'jsonp',
-  jsonpCallback : 'getJson',
-  success : function (response) {
-      set_output(response);
-      //response=filter_wfs_output(response);
-      // muss noch weiter bearbeitet werden. Idee: den Startpunkt der Karte abhängig von dem
-      // wfs output zu machen. zoom() funktion steht in wfs.js
-      if (response != null) {
-          startpoint=zoom();
-          console.log(response);
->>>>>>> Stashed changes
-      }
-
-      WFSLayer = L.geoJson(filtered_response_nd, {
+          WFSLayer = L.geoJson(filtered_response_nd, {
           style: setStyles, // setStyles function steht unten im Dokument.
           onEachFeature: function (feature, layer) {
               //popupOptions = {maxWidth: 200};
@@ -381,7 +367,7 @@ var ajax = $.ajax({
               cut=feature_both_end.indexOf('T',0);
               var feature_date_part_end=feature_both_end.slice(0,cut);
               var feature_time_part_end=feature_both_end.slice(cut+1,feature_both_end.length-1);
-              layer.bindPopup(photo[0]+" "+photo[1]+"<br><br>"+"Severity: "+feature.properties.SEVERITY+"<br><br>"+"from: "+feature_date_part_start+", "+feature_time_part_start+"<br>to: "+feature_date_part_end+", "+feature_time_part_end+"<br><br>"
+              layer.bindPopup(photo[0]+" "+photo[1]+"<br><br>"+"from: "+feature_date_part_start+", "+feature_time_part_start+"<br>to: "+feature_date_part_end+", "+feature_time_part_end+"<br><br>"
                               +"district: "+feature.properties.AREADESC+"<br><br>"+"(timestamp: "+feature_date_part_start+", "+feature_time_part_start+")");
           }
       }).addTo(map);

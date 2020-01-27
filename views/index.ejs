@@ -33,14 +33,14 @@
         <div class="col-sm-3" id="interaction">
           <div class="col" id="col_socialmedia">
             <div class="col" id="twitter">
-              <div class="col">
-                <div class="col text-center">
-                  <span class="text-info"><i class="fab fa-twitter-square fa-4x"></i></span>
-                </div>
-              </div>
               <div class="row">
                 <div class="col">
-                  <button class="btn btn-outline-info" id="btn_tweetrequest">Get Tweets</button>
+                  <div class="col text-center">
+                    <span class="text-info"><i class="fab fa-twitter-square fa-3x"></i></span>
+                  </div>
+                </div>
+                <div class="col" id="twitter_button">
+                  <button class="btn-xs btn-outline-info" id="btn_tweetrequest">Get Tweets</button>
                 </div>
                 <div class="col">
                   <a data-toggle="collapse" href="#twitter_filter"><span class="text-info"><i
@@ -133,7 +133,7 @@
                       class="fas fa-sliders-h fa-2x" style="color:#000000;"></i></span></a>
                 </div>
               </div>
-              <div class="row">
+              <div class="row" id="severity_exchange">
                 <div class="col">
                   <div class="collapse" id="exchange_filter">
                     <div class="input-group">
@@ -192,6 +192,7 @@
   <script src="/turf/turf.min.js"></script>
   <script src="/jquery/jquery.min.js"></script>
   <script src="/javascripts/jquery-eu-cookie-law-popup.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="/popper/umd/popper.min.js"></script>
   <script src="/bootstrap/js/bootstrap.min.js"></script>
   <script src="/mdbootstrap/js/mdb.min.js"></script>
