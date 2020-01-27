@@ -25,7 +25,9 @@ router.post('/v1/dwd/events/init', APIController.postV1DWDEventsInit);
 
 router.get('/v1/dwd/events/warnings', APIController.getV1DWDEventsWarnings);
 
-//router.get('/v1/dwd/radar', APIController.getV1dwdradar);
+router.post('/v1/dwd/radar/init', APIController.postV1DWDRadarInit);
+
+router.get('/v1/dwd/radar/precipitation', APIController.getV1DWDRadarPrecipitation);
 
 //router.get('/v1/mapbox/:style/:tilesize/:scale', APIController.getV1mapbox);
 

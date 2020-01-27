@@ -115,23 +115,7 @@ exports.getV1TwitterTweets = async (req, res) => {
   }
 };
 
-async function pushToTweetArray(geom) {
-  var tweet
-  var query = await TweetModel.find({
-    location: {
-      $geoWithin: {
-        $geometry: geom
-      }
-    }
-  }).catch(error => console.log(error))
-  //oder eben das tweets Array global außerhalb der funktionen inizialisieren und dann kannst du hier auch wieder da reinpushen und von oben aufrufen
-  //aber weiß nicht ob das klappen würde
-  //tweets.push(query);
-  return tweet
-}
-
 exports.postV1DWDEventsInit = async (req, res) => {
-  var result = null;
   WFS.getFeature({
     url: 'https://maps.dwd.de/geoserver/dwd/ows',
     typeName: 'dwd:Warnungen_Landkreise',
@@ -174,6 +158,38 @@ exports.getV1DWDEventsWarnings = async (req, res) => {
   res.json(collection);
 };
 
-exports.getV1dwdradar = (req, res) => {
-
+exports.postV1DWDRadarInit = (req, res) => {
+  WFS.getFeature({
+    url: 'https://maps.dwd.de/geoserver/dwd/ows',
+    typeName: 'dwd:Warnungen_Landkreise',
+    service: 'WFS',
+    request: 'GetFeature',
+    format_options: 'callback:getJson',
+    SrsName: 'EPSG:4326'
+  }, async (error, res) => {
+    if (error) {
+      console.log(error)
+    } else {
+      await WarningModel.deleteMany({});
+      var warnings = res.features;
+      warnings.forEach((warning) => {
+        var file = {
+          type: warning.type,
+          id: warning.id,
+          geometry: warning.geometry,
+          geometry_name: warning.geometry_name,
+          properties: warning.properties,
+          bbox: warning.bbox
+        };
+        //Add file to MongoDB
+        WarningModel.create(file)
+          .catch(error => console.log("Error: Warning could not be inserted into database. " + error));
+      });
+    }
+  });
+  res.send();
 };
+
+exports.getV1DWDRadarPrecipitation = (req, res) => {
+
+}
