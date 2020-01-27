@@ -115,6 +115,21 @@ exports.getV1TwitterTweets = async (req, res) => {
   }
 };
 
+async function pushToTweetArray(geom) {
+  var tweet
+  var query = await TweetModel.find({
+    location: {
+      $geoWithin: {
+        $geometry: geom
+      }
+    }
+  }).catch(error => console.log(error))
+  //oder eben das tweets Array global außerhalb der funktionen inizialisieren und dann kannst du hier auch wieder da reinpushen und von oben aufrufen
+  //aber weiß nicht ob das klappen würde
+  //tweets.push(query);
+  return tweet
+}
+
 exports.postV1DWDEventsInit = async (req, res) => {
   var result = null;
   WFS.getFeature({
