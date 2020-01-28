@@ -13,8 +13,8 @@ var Flickr =  require('flickr-sdk')
 var flickr = new Flickr(Tokens.flickr_app_key)
 
 //Import Models
+var WarningModel = require('../models/warning.js');
 var flickrModel = require('../models/flickr.js'); //MongoDB Schema definition to save flickr
-//import flickrGroupModel from '../models/flickr_group.js'; //MongoDB Schema definition to save flickr
 
 /**
  * @desc function to get the latest flickr photos
@@ -182,18 +182,19 @@ else{
 async function loadPhotos (req, res){
   //for flickr API
   var relo = req.query.reload
-  if (relo == "true"){var reload = true}
-  else{var reload = false}
+    if (relo == "true"){var reload = true}
+    else{var reload = false}
   console.log('reload:', reload)
   //for loading from DB
   var keyword
-  if (req.query.keyword != undefined){keyword = req.query.keyword}
-  else{keyword=""}
-  var bbox = req.query.bbox
+    if (req.query.keyword != undefined){keyword = req.query.keyword}
+    else{keyword=""}
+  var location_filter = req.query.location_filter
   //for both
   var group_id
-  if (req.query.group_id != undefined){group_id = req.query.group_id}
-  else{group_id = ""}
+    if (req.query.group_id != undefined){group_id = req.query.group_id}
+    else{group_id = ""}
+
   if (reload === true){
     console.log('tesdt:')
     const foundPictures = await groupOrNot(group_id)
@@ -202,10 +203,17 @@ async function loadPhotos (req, res){
     var allUpdated = await removeOldPhotos(allSaved)
   }
   const readyToLoad = await allUpdated
-  //var loadedPictures = await loadDataDB(readyToLoad, group_id)
-  
   var picturesKey = await filterOrNot(readyToLoad, keyword, group_id)
   var returnPics = picturesKey
+  /*
+  if(location_filter=undefined){
+    var returnPics = picturesKey
+  }
+  else{
+    var warnings = await WarningModel.find({}, { geometry: 1, _id: 0 }).exec()
+    var returnPics = await dwdFilter(warnings, picturesKey ,location_filter)
+  }
+  */
   res.send(returnPics)
 }
 exports.loadPhotos = loadPhotos
@@ -254,13 +262,18 @@ async function publicReqFlickr(){
  */
 async function saveToDB(req, group_id){
         var group = group_id
-        var p = req.body.photo;  
+        var p = req.body.photo;
+        var point = {"type": "Point", "coordinates": [p.location.longitude, p.location.latitude]}  
         //save the data of a photo in the Database
         var picsaved = flickrModel.replaceOne(
             {photo_id: p.id},
             {photo_id: p.id,
+            secret: p.secret,
+            server:p.server,
+            farm:p.farm,
             title: p.title._content,
             description: p.description._content,
+            location: point,
             latitude: p.location.latitude, 
             longitude: p.location.longitude,
             url: p.urls.url[0]._content,
@@ -329,3 +342,47 @@ async function filterOrNot(callback, keyword, group_id){
      }
      return picturesKey
 }
+
+async function dwdFilter (dwdlayer, points, filter){
+  if (filter == "dwd"){
+      
+    var geometries = [];
+    await warnings.forEach((w) => {
+      geometries.push(w.geometry);
+    });
+
+    var flickr = [];
+    for (const polygon of geometries) {
+      var result = await getTweetsInsidePolygon(polygon);
+
+      result.forEach(elem => {
+        flickr.push(elem);
+      });
+    };
+
+    return flickr
+
+    function getTweetsInsidePolygon(polygon) {
+      return new Promise((resolve) => {
+        var query = flickrModel.find({
+          location: {
+            $geoWithin: {
+              $geometry: polygon
+            }
+          }
+        }).catch(error => console.log(error));
+
+        resolve(query);
+      })
+    }
+    
+  }
+}
+
+
+
+
+
+
+
+
