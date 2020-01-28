@@ -8,7 +8,10 @@ const express = require('express'); //Express
 //Import controllers
 const APIController = require('../controllers/api.js');
 //const instagramController = require('../controllers/instagram.js');
-const flickrController = require('../controllers/flickr.js');
+const FlickrController = require('../controllers/flickr.js');
+const TwitterController = require('../controllers/twitter.js');
+const DWDController = require('../controllers/dwd.js');
+
 //Define Variables
 const router = express.Router();
 
@@ -30,21 +33,18 @@ router.delete("/v1/instagram/:user", (req, res) => {
 });
 */
 
-router.get('/v1/flickr/public', flickrController.getPublic);
-router.get('/v1/flickr', flickrController.loadPhotos)
+router.get('/v1/flickr', FlickrController.loadPhotos)
 
-router.post('/v1/twitter/init', APIController.postV1TwitterInit);
+router.post('/v1/twitter/init', TwitterController.requestTweets);
 
-router.get('/v1/twitter/tweets', APIController.getV1TwitterTweets);
+router.get('/v1/twitter/tweets', TwitterController.loadTweets);
 
-router.post('/v1/dwd/events/init', APIController.postV1DWDEventsInit);
+router.post('/v1/dwd/events/init', DWDController.requestDWDWarnings);
 
-router.get('/v1/dwd/events/warnings', APIController.getV1DWDEventsWarnings);
+router.get('/v1/dwd/events/warnings', DWDController.loadDWDWarnings);
 
-router.post('/v1/dwd/radar/init', APIController.postV1DWDRadarInit);
+router.post('/v1/dwd/radar/init', DWDController.requestDWDPrecipitation);
 
-router.get('/v1/dwd/radar/precipitation', APIController.getV1DWDRadarPrecipitation);
-
-//router.get('/v1/mapbox/:style/:tilesize/:scale', APIController.getV1mapbox);
+router.get('/v1/dwd/radar/precipitation', DWDController.loadDWDPrecipitation);
 
 module.exports = router;

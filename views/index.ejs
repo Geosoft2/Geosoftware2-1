@@ -52,43 +52,19 @@
                   <div class="collapse" id="twitter_filter">
                     <div class="input-group">
                       <div class="input-group-prepend">
-                        <label class="input-group-text" for="keyword_input"><i class="fas fa-search"></i></label>
+                        <label class="input-group-text" for="twitter_keyword"><i class="fas fa-search"></i></label>
                       </div>
-                      <input class="form-control" id="keyword_input" placeholder="keywords">
-                    </div>
-                    <div class="input-group">
-                      <div class="input-group-prepend">
-                        <label class="input-group-text" for="language_select"><i class="fas fa-globe"></i></label>
+                      <input class="form-control" id="twitter_keyword" placeholder="keywords">
+                      <div id="tweet_carousel" class="carousel slide" data-interval="false">
+                        <a class="carousel-control-prev" href="#tweet_carousel" role="button" data-slide="prev">
+                          <span class="carousel-control-prev-icon"></span>
+                        </a>
+                        <a class="carousel-control-next" href="#tweet_carousel" role="button" data-slide="next">
+                          <span class="carousel-control-next-icon"></span>
+                        </a>
+                        <div class="carousel-inner" id="tweet_carousel_inner">
+                        </div>
                       </div>
-                      <select class="browser-default custom-select" id="language_select">
-                        <option selected>All</option>
-                        <option value="en">English</option>
-                        <option value="de">German</option>
-                      </select>
-                    </div>
-                    <div class="input-group">
-                      <div class="input-group-prepend">
-                        <label class="input-group-text" for="type_select"><i class="fas fa-poll"></i></label>
-                      </div>
-                      <select class="browser-default custom-select" id="type_select">
-                        <option value="recent" selected>recent</option>
-                        <option value="popular">popular</option>
-                        <option value="mixed">mixed</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <div id="tweet_carousel" class="carousel slide" data-interval="false">
-                    <a class="carousel-control-prev" href="#tweet_carousel" role="button" data-slide="prev">
-                      <span class="carousel-control-prev-icon"></span>
-                    </a>
-                    <a class="carousel-control-next" href="#tweet_carousel" role="button" data-slide="next">
-                      <span class="carousel-control-next-icon"></span>
-                    </a>
-                    <div class="carousel-inner" id="tweet_carousel_inner">
                     </div>
                   </div>
                 </div>
