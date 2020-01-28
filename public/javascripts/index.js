@@ -228,11 +228,12 @@ function drawFlickrToUI(flickr) {
     $('.carousel').carousel('pause')
     flickr.data.forEach((pic) => {
         var pic_id = pic.photo_id
-        console.log(pic);
+
         //var pic_html = '<div class="flickr carousel-item" id="' + pic_id + '"><a href='+pic.url +'>Hallo Welt dies ist ein Link zum Bild</a></div>';
         //$("#flickr_carousel_inner").append(pic_html);
         $("#flickr-carousel-inner").append('<div class="carousel-item" id="' + pic_id + '" lat="'+pic.latitude+'" lon="'+pic.longitude+'"><a href="'+pic.url +'" target="_blank">'+pic.title+'</a>'
-        +'<img src="https://farm'+pic.farm+'.staticflickr.com/'+pic.server+'/'+pic_id+'_'+pic.secret+'_q.jpg" alt="'+pic.title+'">'+"</div>")
+        +'<img src="https://farm'+pic.farm+'.staticflickr.com/'+pic.server+'/'+pic_id+'_'+pic.secret+'_m.jpg" alt="'+pic.title+'">'
+        +'</div>')
         //var tweet_dom = $("#" + pic_id)[0];
         //twttr.widgets.createTweet(tweet_id, tweet_dom, widget_config);
     });
