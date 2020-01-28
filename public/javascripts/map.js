@@ -319,7 +319,10 @@ function initMap() {
         .addTo(map);
 }
 
-/* function getWFSLayer() {
+/**
+ * 
+ */
+function getWFSLayer() {
     var owsrootUrl = 'https://maps.dwd.de/geoserver/dwd/ows';
 
     var defaultParameters = {
@@ -336,11 +339,12 @@ function initMap() {
     var URL = owsrootUrl + L.Util.getParamString(parameters);
 
     WFSLayer = null;
-    var ajax = $.ajax({
-      url : URL,
-      dataType : 'jsonp',
-      jsonpCallback : 'getJson',
-      success : function (response) {
+    var ajax =  $.ajax({
+        type: 'GET',
+        url: 'http://localhost:3000/api/v1/dwd/events/warnings',
+        dataType: 'json',
+        encode: true
+    }).done(function (response) {
         set_output(response);
         if (response != null) {
           var filtered_response= new Array();
@@ -378,10 +382,11 @@ function initMap() {
                               +"district: "+feature.properties.AREADESC+"<br><br>"+"(timestamp: "+feature_date_part_start+", "+feature_time_part_start+")");
           }
       }).addTo(map);
-  }
-}).responseText;
+  }).fail(function (xhr, status, error) {
+    console.log('Error: ' + error);
+});
+//.responseText;
 }
-
 
 /*function setPopup (feature, layer) {
     console.log(layer);
