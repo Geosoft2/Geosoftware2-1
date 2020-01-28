@@ -14,11 +14,18 @@ var startpoint;
 var WFSLayer;
 var marker;
 
-// setting the wfs input in var output to work with it locally
+/**
+*@desc function to set the dwd output into the variable output
+*@param x is the dwd output
+*/
 function set_output(x) {
     output = x;
 };
 
+/**
+*@desc function to get the dwd output from the variable output
+*@return variable output
+*/
 function get_output() {
     return output;
 }
@@ -99,53 +106,6 @@ function initMap() {
             giveError(err);
         }
     }
-
-
-
-    //TODO: es mnüssen noch der Searchbegriff und die BBox an die entsprechenden Stellen weitergeleitet werden
-    //TODO: twittersearch als Cookie speichern??? Muss nicht unbedingt sein oder?
-    //TODO: Bbox entweder in die Datenbank oder auch als Cookie
-
-    // setting connection to wfs server with a ajax call
-    /*  var owsrootUrl = 'https://maps.dwd.de/geoserver/dwd/ows';
-      var defaultParameters = {
-          service: 'WFS',
-          version: '2.0',
-          request: 'GetFeature',
-          typeName: 'dwd:Warnungen_Landkreise',
-          outputFormat: 'text/javascript',
-          format_options: 'callback:getJson',
-          SrsName: 'EPSG:4326'
-      };
-
-      var parameters = L.Util.extend(defaultParameters);
-      var URL = owsrootUrl + L.Util.getParamString(parameters);
-
-      var WFSLayer = null;
-      var ajax = $.ajax({
-          url: URL,
-          dataType: 'jsonp',
-          jsonpCallback: 'getJson',
-          success: function (response) {
-              set_output(response);
-              // muss noch weiter bearbeitet werden. Idee: den Startpunkt der Karte abhängig von dem
-              // wfs output zu machen. zoom() funktion steht in wfs.js
-              if (response != null) {
-                  startpoint = zoom();
-              }
-
-              WFSLayer = L.geoJson(response, {
-                  style: setStyles, // setStyles function steht unten im Dokument.
-                  onEachFeature: function (feature, layer) {
-                      //popupOptions = {maxWidth: 200};
-                      layer.bindPopup(feature.properties.EVENT + "<br><br>" + "VON: " + feature.properties.EFFECTIVE + "<br>Bis voraussichtlich: " + feature.properties.EXPIRES);
-
-                  }
-              }).addTo(map);
-              return response;
-          }
-      }).responseText;*/
-
     map.on('load', function () {
         saveBboxtoCookies();
     });
@@ -227,11 +187,9 @@ function initMap() {
     };
 
     L.control.layers(baseMaps, overlayMaps).addTo(map);
+
     // Einfügen der Legende auf der Karte
     var legend = L.control({ position: 'bottomleft' });
-
-
-
     legend.onAdd = function (map) {
 
         var div = L.DomUtil.create('div', 'info legend'),
@@ -308,10 +266,13 @@ function initMap() {
 }
 
 /**
- * 
- */
-function getWFSLayer() {
-    
+*@desc function which is called after the user pushes the "change Warnings"-button
+* an ajax call is set to get the information from the DWD Geoserver. A style function is called
+* to display the warnlayers into the map and set the popups for each warnlayer
+*
+*/
+ function getWFSLayer() {
+ 
     WFSLayer = null;
     var ajax =  $.ajax({
         type: 'GET',
@@ -327,11 +288,11 @@ function getWFSLayer() {
           var counter_nd=0;
           var double=0;
           for (var i =0; i<output.features.length; i++) {
-            var filter_feature=filter_wfs_output(output.features[i]);
+            var filter_feature=filter_wfs_output(output.features[i]); //this function is described in dwd.js
             if (filter_feature != null) {
               filtered_response[counter_all]=filter_feature;
               counter_all++;
-              filtered_response_nd=filter_severity_map(filter_feature, filtered_response_nd);
+              filtered_response_nd=filter_severity_map(filter_feature, filtered_response_nd); //this function is described in dwd.js
             }
           }
           console.log(filtered_response);
@@ -339,11 +300,10 @@ function getWFSLayer() {
         }
 
           WFSLayer = L.geoJson(filtered_response_nd, {
-          style: setStyles, // setStyles function steht unten im Dokument.
-          onEachFeature: function (feature, layer) {
-              //popupOptions = {maxWidth: 200};
+          style: setStyles, // this function is described in dwd.js. It is used for choosing the right color for the warnlayers on the map
+          onEachFeature: function (feature, layer) { //this function is for the layout of each warnlayer-popup
               var index= filtered_response_nd.indexOf(feature);
-              var photo=getSymbol(feature);
+              var photo=getSymbol(feature); // function to show the right event symbol in the popup
               var feature_both_start=feature.properties.EFFECTIVE;
               var cut=feature_both_start.indexOf('T',0);
               var feature_date_part_start=feature_both_start.slice(0,cut);
@@ -394,9 +354,10 @@ function extendMap() {
 }
 
 /**
- * @description this function gives the colors for the legend of the weather data
- * @param {*} d 
- */
+*@desc function to get the right color for the legend on the map. It is called in the initMap(), where the legend is build
+*@param d a severity_category
+*@return the right color depending on severity
+*/
 function getColor(d) {
 
     return d === 'Minor' ? "#F4D03F" :

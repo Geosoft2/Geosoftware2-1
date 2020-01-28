@@ -18,9 +18,9 @@ var flickrModel = require('../models/flickr.js'); //MongoDB Schema definition to
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
- * 
- * @param {*} req 
- * @param {*} res 
+ *
+ * @param {*} req
+ * @param {*} res
  */
 async function loadPhotos (req, res){
   //for flickr API
@@ -62,8 +62,8 @@ async function loadPhotos (req, res){
 exports.loadPhotos = loadPhotos
 
 /**
- * 
- * @param {String} group_id 
+ *
+ * @param {String} group_id
  */
 async function groupOrNot(group_id){
   var group = group_id
@@ -75,11 +75,11 @@ async function groupOrNot(group_id){
   }
   return foundPictures
  }
- 
+
 
 /**
- * 
- * @param {Stirng} group_id 
+ *
+ * @param {Stirng} group_id
  */
 async function groupReqFlickr(group_id){
   var group = group_id
@@ -100,12 +100,12 @@ async function publicReqFlickr(){
 }
 /**
  * @description this saves Flickr photos to the database
- * @param {*} request 
+ * @param {*} request
  */
 async function saveToDB(req, group_id){
         var group = group_id
         var p = req.body.photo;
-        var point = {"type": "Point", "coordinates": [p.location.longitude, p.location.latitude]}  
+        var point = {"type": "Point", "coordinates": [p.location.longitude, p.location.latitude]}
         //save the data of a photo in the Database
         var picsaved = flickrModel.replaceOne(
             {photo_id: p.id},
@@ -116,7 +116,7 @@ async function saveToDB(req, group_id){
             title: p.title._content,
             description: p.description._content,
             location: point,
-            latitude: p.location.latitude, 
+            latitude: p.location.latitude,
             longitude: p.location.longitude,
             url: p.urls.url[0]._content,
             user_id: p.owner.nsid,
@@ -131,8 +131,8 @@ async function saveToDB(req, group_id){
         return saved
 }
 /**
- * 
- * @param {JSON} photosFound 
+ *
+ * @param {JSON} photosFound
  */
 async function eachPic(pic, group_id){
     var group = group_id
@@ -142,18 +142,18 @@ async function eachPic(pic, group_id){
     return savedPic
 }
 /**
- * 
- * @param {JSON} req 
+ *
+ * @param {JSON} req
  */
 async function getPictureDetails(req){
     const res = flickr.photos.getInfo({
       photo_id: req.id
     })
     return res
-} 
+}
 /**
- * 
- * @param {callback} ready 
+ *
+ * @param {callback} ready
  */
 async function removeOldPhotos(ready){
   try{
