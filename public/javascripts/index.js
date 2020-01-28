@@ -10,6 +10,7 @@ $(document).ready(() => {
         axios.get('/api/v1/flickr?reload=true')
     }, interval * 300000)//300000=5 minutes 
     getTweets()
+    initDWDWarnings()
 });
 
 var url = window.location.href;
