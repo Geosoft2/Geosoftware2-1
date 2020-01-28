@@ -31,13 +31,38 @@ main {
 
 #interaction {
   text-align: right;
+  margin-bottom: 15px;
 }
 
+#flickr {
+  margin-top: 10px;
+}
 
+#flickr_collapse {
+  margin-top: 5px;
+}
+
+#twitter_collapse {
+  margin-top: 5px;
+}
+
+#severity_collapse {
+  margin-top: 5px;
+}
 
 #dwd_change {
-  height: 50vh;
+  margin-top: 10px;
 }
+
+#severity_filter {
+  margin-bottom: 25px;
+}
+
+#app {
+  margin-bottom: 30px;
+}
+
+
 
 #exchange_filter {
   margin-bottom: 30px;
