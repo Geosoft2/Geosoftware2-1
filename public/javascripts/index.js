@@ -1,9 +1,16 @@
 $(document).ready(() => {
     setInterval(() => {
-        initTweets();
-    }, interval * 1000);
-    initDWDWarnings();
-    getTweets();
+        initTweets()
+    }, interval * 10000)
+    setInterval(() => {
+        initDWDWarnings()
+    }, interval * 480000)//480000=8 minutes -> the interval dwd data is updatet
+    setInterval(() => {
+        axios.get('/api/v1/flickr?group_id=14643952@N25&reload=true')
+        axios.get('/api/v1/flickr?reload=true')
+    }, interval * 300000)//300000=5 minutes 
+    getTweets()
+    initDWDWarnings()
 });
 
 var url = window.location.href;
@@ -222,7 +229,9 @@ function drawFlickrToUI(flickr) {
         
         //var pic_html = '<div class="flickr carousel-item" id="' + pic_id + '"><a href='+pic.url +'>Hallo Welt dies ist ein Link zum Bild</a></div>';
         //$("#flickr_carousel_inner").append(pic_html);
-        $("#flickr-carousel-inner").append('<div class="carousel-item" id="' + pic_id + '" lat="'+pic.latitude+'" lon="'+pic.longitude+'"><a href="'+pic.url +'" target="_blank">'+pic.title+'</a></div>')
+        $("#flickr-carousel-inner").append('<div class="carousel-item" id="' + pic_id + '" lat="'+pic.latitude+'" lon="'+pic.longitude+'"><a href="'+pic.url +'" target="_blank">'+pic.title+'</a>'
+        +'<img src="https://farm'+pic.farm+'.staticflickr.com/'+pic.server+'/'+pic_id+'_'+pic.secret+'_m.jpg" alt="'+pic.title+'">'
+        +'</div>')
         //var tweet_dom = $("#" + pic_id)[0];
         //twttr.widgets.createTweet(tweet_id, tweet_dom, widget_config);
     });

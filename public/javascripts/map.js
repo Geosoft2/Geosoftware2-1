@@ -179,12 +179,6 @@ function initMap() {
             stateObj = { foo: justReq };
             history.pushState(stateObj, "test", "?" + justReq);
             saveBboxtoCookies();
-
-            //TODO: hier noch die flickr Anfrage updaten dass ich neuen bereich ein Knopf ersheint um diese zu updaten
-            //if(getCookie("groupID")!=inactive)
-            //TODO: zuvor muss der Button entfernt werden um ihn dann neu einzuladen
-            //oder checken ob er schon existiert
-            reloadSocialMedia();
         })
         .on('moveend', function () {
             //update the URL in browser
@@ -195,8 +189,6 @@ function initMap() {
             stateObj = { foo: justReq };
             history.pushState(stateObj, "test", "?" + justReq);
             saveBboxtoCookies();
-            //TODO: ebenso wie bei Zoomend
-            reloadSocialMedia();
         });
 
     /* $.ajax({
@@ -431,46 +423,6 @@ function getColor(d) {
             d === 'Severe' ? "#C0392B" :
                 d === 'Extreme' ? "#7D3C98" :
                     "#2E2EFE";
-}
-/**
- * function to add a button for reloading the current socialmedia points
- * @private
- *
- */
-function reloadSocialMedia() {
-    //Button, to save personal default view
-    var socialMediaControl = L.Control.extend({
-        options: {
-            position: "topleft"
-        },
-        onAdd: () => {
-            var updatecontainer = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom')
-
-            updatecontainer.innerHTML = '<i class="far fa-exclamation-circle"></i>';
-            updatecontainer.style.width = '30px';
-            updatecontainer.style.height = '30px';
-            updatecontainer.onclick = () => {
-                updatecontainer.remove(container)
-                //TODO: Button entfernen
-                //controlLayers.removeLayer()
-                /*var flickrGroup = getCookie("flickr_groupID");
-                if (flickrGroup == "public"){
-                    axios.get('/api/v1/flickr/group/14643952@N25')
-                }
-                else{
-                    if(flickrGroup == "false")
-                }
-                console.log("Socialmedia ius getting updated");
-                */
-                map.on("moveend", () => {
-                    updatecontainer.remove(updatecontainer);
-                })
-            }
-            return updatecontainer;
-        }
-    });
-    //controlLayers.addOverlay(socialMediaControl,"socialMediaControl")
-    map.addControl(new socialMediaControl);
 }
 
 /**
