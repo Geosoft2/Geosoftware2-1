@@ -25,6 +25,8 @@ main {
   overflow: auto;
 }
 
+
+
 #mapdiv {
   height: 87vh;
 }
@@ -61,7 +63,6 @@ main {
 #app {
   margin-bottom: 30px;
 }
-
 
 
 #exchange_filter {

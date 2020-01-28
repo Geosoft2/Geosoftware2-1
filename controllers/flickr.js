@@ -18,7 +18,7 @@ var flickrModel = require('../models/flickr.js'); //MongoDB Schema definition to
 
 /**
  * @desc function to get the latest flickr photos
- * @param {json} req 
+ * @param {json} req
  * @param {json} res Contains all flickr photos found
  */
 exports.getPublic = (req, res)=>{
@@ -44,14 +44,14 @@ exports.getPublic = (req, res)=>{
       flickr.photos.getInfo({
         photo_id: photoElement.id
       }).then( function (response) {
-        var p = response.body.photo 
+        var p = response.body.photo
         //save the data of a photo in the Database
         flickrModel.replaceOne(
           {photo_id: p.id},
           {photo_id: p.id,
           title: p.title._content,
           description: p.description._content,
-          latitude: p.location.latitude, 
+          latitude: p.location.latitude,
           longitude: p.location.longitude,
           url: p.urls.url[0]._content,
           user_id: p.owner.nsid,
@@ -61,7 +61,7 @@ exports.getPublic = (req, res)=>{
           { upsert: true }, function (err, photo) {
         if (err) return handleError(err)
       });
-    
+
       });
       };
      }).then(function (){
@@ -80,7 +80,7 @@ exports.getPublic = (req, res)=>{
         flickrModel.find({}).limit(50).exec(function (err, results) {
           res.header("Content-Type",'application/json')
           res.send(JSON.stringify(results, null, 4))
-      });    
+      });
       } catch (err) {
         throw err;
       }
@@ -116,7 +116,7 @@ else{
           {photo_id: p.id,
           title: p.title._content,
           description: p.description._content,
-          latitude: p.location.latitude, 
+          latitude: p.location.latitude,
           longitude: p.location.longitude,
           url: p.urls.url[0]._content,
           user_id: p.owner.nsid,
@@ -127,7 +127,7 @@ else{
         if (err) return handleError(err);
         // saved!
       });
-    
+
       });
       };
      }).then(function (){
@@ -155,14 +155,14 @@ else{
           flickrModule.find({group_id: group}).limit(50).exec(function (err, results) {
             res.header("Content-Type",'application/json')
             res.send(JSON.stringify(results, null, 4))
-          });    
+          });
         }
         else{
           flickrModel.find({}).limit(50).exec(function (err, results) {
             res.header("Content-Type",'application/json')
             res.send(JSON.stringify(results, null, 4))
-          });    
-        }  
+          });
+        }
       } catch (err) {
         throw err
       }
@@ -170,14 +170,14 @@ else{
     .catch(function (err) {
       console.error('ERROR', err)
     });
-}    
-} 
+}
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
- * 
- * @param {*} req 
- * @param {*} res 
+ *
+ * @param {*} req
+ * @param {*} res
  */
 async function loadPhotos (req, res){
   //for flickr API
@@ -219,8 +219,8 @@ async function loadPhotos (req, res){
 exports.loadPhotos = loadPhotos
 
 /**
- * 
- * @param {String} group_id 
+ *
+ * @param {String} group_id
  */
 async function groupOrNot(group_id){
   var group = group_id
@@ -232,11 +232,11 @@ async function groupOrNot(group_id){
   }
   return foundPictures
  }
- 
+
 
 /**
- * 
- * @param {Stirng} group_id 
+ *
+ * @param {Stirng} group_id
  */
 async function groupReqFlickr(group_id){
   var group = group_id
@@ -258,12 +258,12 @@ async function publicReqFlickr(){
 }
 /**
  * @description this saves Flickr photos to the database
- * @param {*} request 
+ * @param {*} request
  */
 async function saveToDB(req, group_id){
         var group = group_id
         var p = req.body.photo;
-        var point = {"type": "Point", "coordinates": [p.location.longitude, p.location.latitude]}  
+        var point = {"type": "Point", "coordinates": [p.location.longitude, p.location.latitude]}
         //save the data of a photo in the Database
         var picsaved = flickrModel.replaceOne(
             {photo_id: p.id},
@@ -274,7 +274,7 @@ async function saveToDB(req, group_id){
             title: p.title._content,
             description: p.description._content,
             location: point,
-            latitude: p.location.latitude, 
+            latitude: p.location.latitude,
             longitude: p.location.longitude,
             url: p.urls.url[0]._content,
             user_id: p.owner.nsid,
@@ -289,8 +289,8 @@ async function saveToDB(req, group_id){
         return saved
 }
 /**
- * 
- * @param {JSON} photosFound 
+ *
+ * @param {JSON} photosFound
  */
 async function eachPic(pic, group_id){
     var group = group_id
@@ -300,18 +300,18 @@ async function eachPic(pic, group_id){
     return savedPic
 }
 /**
- * 
- * @param {JSON} req 
+ *
+ * @param {JSON} req
  */
 async function getPictureDetails(req){
     const res = flickr.photos.getInfo({
       photo_id: req.id
     })
     return res
-} 
+}
 /**
- * 
- * @param {callback} ready 
+ *
+ * @param {callback} ready
  */
 async function removeOldPhotos(ready){
   try{
@@ -345,7 +345,7 @@ async function filterOrNot(callback, keyword, group_id){
 
 async function dwdFilter (dwdlayer, points, filter){
   if (filter == "dwd"){
-      
+
     var geometries = [];
     await warnings.forEach((w) => {
       geometries.push(w.geometry);
@@ -375,14 +375,6 @@ async function dwdFilter (dwdlayer, points, filter){
         resolve(query);
       })
     }
-    
+
   }
 }
-
-
-
-
-
-
-
-

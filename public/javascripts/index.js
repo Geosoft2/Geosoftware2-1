@@ -8,7 +8,7 @@ $(document).ready(() => {
     setInterval(() => {
         axios.get('/api/v1/flickr?group_id=14643952@N25&reload=true')
         axios.get('/api/v1/flickr?reload=true')
-    }, interval * 300000)//300000=5 minutes 
+    }, interval * 300000)//300000=5 minutes
     getTweets()
     initDWDWarnings()
 });
@@ -165,15 +165,17 @@ function instagramAuthentic(){
  * @param {boolean} reload should the system reload the FlickrAPI or not {true, false}
  */
 function flickrGetPublic(reload){
+    var keyword=document.getElementById('keyword_input_flickr').value;
+    var group=document.getElementById('flickr_select').value;
     document.cookie = "flickr_groupID=" + "public"
-    giveLoadMessage("Flickr is loading", "flickr")    
+    giveLoadMessage("Flickr is loading", "flickr")
     axios.get('/api/v1/flickr?reload='+reload)
     .then(function (response) {
     drawFlickrToMap(response)
     drawFlickrToUI(response)
     //drawFlickrToMap(response)
     //$(document).ready(() => {
-    $(".flickr").delay(0).fadeOut(0) 
+    $(".flickr").delay(0).fadeOut(0)
     //});
     giveSuccessMessage("Flickr photos have successfully been loaded.")
     console.log("res", response)
@@ -203,7 +205,7 @@ function flickrGetGroup(reload){
         drawFlickrToUI(response)
         //drawFlickrToMap(response)
         //$(document).ready(() => {
-        $(".flickr").delay(0).fadeOut(0) 
+        $(".flickr").delay(0).fadeOut(0)
         //});
         giveSuccessMessage("Flickr photos have successfully been loaded.")
         console.log("res", response)
@@ -219,19 +221,18 @@ function flickrGetGroup(reload){
     }
 
 /**
- * 
- * @param {JSON} flickr 
+ *
+ * @param {JSON} flickr
  */
 function drawFlickrToUI(flickr) {
     $('.carousel').carousel('pause')
     flickr.data.forEach((pic) => {
         var pic_id = pic.photo_id
-        
+        console.log(pic);
         //var pic_html = '<div class="flickr carousel-item" id="' + pic_id + '"><a href='+pic.url +'>Hallo Welt dies ist ein Link zum Bild</a></div>';
         //$("#flickr_carousel_inner").append(pic_html);
         $("#flickr-carousel-inner").append('<div class="carousel-item" id="' + pic_id + '" lat="'+pic.latitude+'" lon="'+pic.longitude+'"><a href="'+pic.url +'" target="_blank">'+pic.title+'</a>'
-        +'<img src="https://farm'+pic.farm+'.staticflickr.com/'+pic.server+'/'+pic_id+'_'+pic.secret+'_m.jpg" alt="'+pic.title+'">'
-        +'</div>')
+        +'<img src="https://farm'+pic.farm+'.staticflickr.com/'+pic.server+'/'+pic_id+'_'+pic.secret+'_q.jpg" alt="'+pic.title+'">'+"</div>")
         //var tweet_dom = $("#" + pic_id)[0];
         //twttr.widgets.createTweet(tweet_id, tweet_dom, widget_config);
     });
@@ -244,11 +245,11 @@ function drawFlickrToUI(flickr) {
 
 /**
  * @description this function draws the given Flickr pictures to the map
- * @param {JSON} flickrpic 
+ * @param {JSON} flickrpic
  */
 function drawFlickrToMap(flickrpic) {
     console.log('flickrpic:', flickrpic);
-    
+
     var flickrIcon = L.ExtraMarkers.icon({
         markerColor: 'black',
         prefix: 'fab',
@@ -271,14 +272,17 @@ function drawFlickrToMap(flickrpic) {
        var id =  e.layer.options.myCustomId
        $(".active").removeClass("active")
        $("#"+ id).addClass("active")
-       
+
    })
    .addTo(map)
 
    flickrpic.data.forEach((t) => {
         if (t.latitude != null && t.longitude) {
+          var cut=t.timestamp.indexOf('T',0);
+          var date=t.timestamp.slice(0, cut);
+          var time=t.timestamp.slice(cut+1,t.timestamp.indexOf('.',0));
        var marker = L.marker([t.latitude,t.longitude], { icon: flickrIcon, alt: "marker", myCustomId: t.photo_id})
-                    .bindPopup(""+t.title+t.user_name + t.latitude + ' '+ t.longitude)
+                    .bindPopup("user_name: "+t.user_name+"<br><br>" +"URL: "+"<a href='"+ t.url +"' target='_blank'>Link</a>"+ '<br><br>'+"timestamp: "+ date+", "+time)
         //marker.id = t.photo_id
 
        flickrmarkergroup.addLayer(marker)
@@ -286,4 +290,3 @@ function drawFlickrToMap(flickrpic) {
 });
 
 };
-

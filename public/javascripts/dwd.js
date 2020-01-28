@@ -1,6 +1,11 @@
 // Funktion um die einzelnen Landkreise farblich korrekt darzustellen. Die Farbe ist anhängig
 // vom Stärkegrad des Unwetters. Gelb steht für minor, orange für moderate, rot für severe
 // und violett für Extreme
+/**
+* function to fill all district layers with the right color depending on the severity of the
+* atmosphere disturbance
+* @param feature
+*/
 function setStyles(feature) {
 
   //console.log(feature.properties.SEVERITY);
