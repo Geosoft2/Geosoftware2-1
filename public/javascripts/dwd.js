@@ -1,6 +1,11 @@
 // Funktion um die einzelnen Landkreise farblich korrekt darzustellen. Die Farbe ist anhängig
 // vom Stärkegrad des Unwetters. Gelb steht für minor, orange für moderate, rot für severe
 // und violett für Extreme
+/**
+* function to fill all district layers with the right color depending on the severity of the
+* atmosphere disturbance
+* @param feature
+*/
 function setStyles(feature) {
 
   //console.log(feature.properties.SEVERITY);
@@ -240,8 +245,16 @@ function get_higher_severity(feature1, feature2) {
 
 
 function show_wfs_changes() {
-  WFSLayer.clearLayers();
-  getWFSLayer();
-  //filter_wfs_output();
+  giveLoadMessage("Weather warnings loading", "warning-mess")
+  if (WFSLayer != undefined){
+  WFSLayer.clearLayers()
+  }
+
+  getWFSLayer()
+  //TODO: it should wait for the draw to map and then change the messages but to present how it would look we did this:
+  setTimeout(() => {
+    $(".warning-mess").delay(0).fadeOut(0)
+    giveSuccessMessage("Weather data has been loaded.")
+  }, 5000)
 
 }

@@ -14,11 +14,18 @@ var startpoint;
 var WFSLayer;
 var marker;
 
-// setting the wfs input in var output to work with it locally
+/**
+*@desc function to set the dwd output into the variable output
+*@param x is the dwd output
+*/
 function set_output(x) {
     output = x;
 };
 
+/**
+*@desc function to get the dwd output from the variable output
+*@return variable output
+*/
 function get_output() {
     return output;
 }
@@ -28,17 +35,8 @@ var controlLayers;
 initMap();
 extendMap();
 
-//TODO: ordnung halten und sowas an die richtige stelle schieben
-$(".err_mess").on("mouseenter", function () {
-    $(".err_mess").stop(true, true);
-    $(".err_mess").delay(0).fadeIn(0);
-});
-$(".err_mess").on("mouseleave", function () {
-    $(".err_mess").delay(0).fadeOut(3000);
-});
-
 /**
-* @desc create map
+* @desc creates  the map load layers and also set events for moveend and zoomend on load of the index page
 */
 function initMap() {
     //get all params send by URL
@@ -47,10 +45,7 @@ function initMap() {
     //default parameters if there are no saved neither in the url nor the cookies
     var startpoint = [51.26524, 9.72767];
     var zoomLevel = 6;
-    //TODO: bbox nicht in die URL und twittersearch vielleicht auch nicht
-    //TODO: die BBOX dafür aber dennoch zwischenspeichern und eventuell jedes mal mit einladen
-    var bbox = [];
-    var twittersearch = "";
+
     //TODO: wenn diese false sind sind die beiden deaktiviert wenn auf true gesetzt wird dann aktiviert
     var twitter = false;
     var instagram = false;
@@ -111,53 +106,6 @@ function initMap() {
             giveError(err);
         }
     }
-
-
-
-    //TODO: es mnüssen noch der Searchbegriff und die BBox an die entsprechenden Stellen weitergeleitet werden
-    //TODO: twittersearch als Cookie speichern??? Muss nicht unbedingt sein oder?
-    //TODO: Bbox entweder in die Datenbank oder auch als Cookie
-
-    // setting connection to wfs server with a ajax call
-    /*  var owsrootUrl = 'https://maps.dwd.de/geoserver/dwd/ows';
-      var defaultParameters = {
-          service: 'WFS',
-          version: '2.0',
-          request: 'GetFeature',
-          typeName: 'dwd:Warnungen_Landkreise',
-          outputFormat: 'text/javascript',
-          format_options: 'callback:getJson',
-          SrsName: 'EPSG:4326'
-      };
-
-      var parameters = L.Util.extend(defaultParameters);
-      var URL = owsrootUrl + L.Util.getParamString(parameters);
-
-      var WFSLayer = null;
-      var ajax = $.ajax({
-          url: URL,
-          dataType: 'jsonp',
-          jsonpCallback: 'getJson',
-          success: function (response) {
-              set_output(response);
-              // muss noch weiter bearbeitet werden. Idee: den Startpunkt der Karte abhängig von dem
-              // wfs output zu machen. zoom() funktion steht in wfs.js
-              if (response != null) {
-                  startpoint = zoom();
-              }
-
-              WFSLayer = L.geoJson(response, {
-                  style: setStyles, // setStyles function steht unten im Dokument.
-                  onEachFeature: function (feature, layer) {
-                      //popupOptions = {maxWidth: 200};
-                      layer.bindPopup(feature.properties.EVENT + "<br><br>" + "VON: " + feature.properties.EFFECTIVE + "<br>Bis voraussichtlich: " + feature.properties.EXPIRES);
-
-                  }
-              }).addTo(map);
-              return response;
-          }
-      }).responseText;*/
-
     map.on('load', function () {
         saveBboxtoCookies();
     });
@@ -239,11 +187,9 @@ function initMap() {
     };
 
     L.control.layers(baseMaps, overlayMaps).addTo(map);
+
     // Einfügen der Legende auf der Karte
     var legend = L.control({ position: 'bottomleft' });
-
-
-
     legend.onAdd = function (map) {
 
         var div = L.DomUtil.create('div', 'info legend'),
@@ -319,28 +265,21 @@ function initMap() {
         .addTo(map);
 }
 
-/* function getWFSLayer() {
-    var owsrootUrl = 'https://maps.dwd.de/geoserver/dwd/ows';
-
-    var defaultParameters = {
-        service: 'WFS',
-        version: '2.0',
-        request: 'GetFeature',
-        typeName: 'dwd:Warnungen_Landkreise',
-        outputFormat: 'text/javascript',
-        format_options: 'callback:getJson',
-        SrsName: 'EPSG:4326'
-    };
-
-    var parameters = L.Util.extend(defaultParameters);
-    var URL = owsrootUrl + L.Util.getParamString(parameters);
-
+/**
+*@desc function which is called after the user pushes the "change Warnings"-button
+* an ajax call is set to get the information from the DWD Geoserver. A style function is called
+* to display the warnlayers into the map and set the popups for each warnlayer
+*
+*/
+ function getWFSLayer() {
+ 
     WFSLayer = null;
-    var ajax = $.ajax({
-      url : URL,
-      dataType : 'jsonp',
-      jsonpCallback : 'getJson',
-      success : function (response) {
+    var ajax =  $.ajax({
+        type: 'GET',
+        url: 'http://localhost:3000/api/v1/dwd/events/warnings',
+        dataType: 'json',
+        encode: true
+    }).done(function (response) {
         set_output(response);
         if (response != null) {
           var filtered_response= new Array();
@@ -349,11 +288,11 @@ function initMap() {
           var counter_nd=0;
           var double=0;
           for (var i =0; i<output.features.length; i++) {
-            var filter_feature=filter_wfs_output(output.features[i]);
+            var filter_feature=filter_wfs_output(output.features[i]); //this function is described in dwd.js
             if (filter_feature != null) {
               filtered_response[counter_all]=filter_feature;
               counter_all++;
-              filtered_response_nd=filter_severity_map(filter_feature, filtered_response_nd);
+              filtered_response_nd=filter_severity_map(filter_feature, filtered_response_nd); //this function is described in dwd.js
             }
           }
           console.log(filtered_response);
@@ -361,11 +300,10 @@ function initMap() {
         }
 
           WFSLayer = L.geoJson(filtered_response_nd, {
-          style: setStyles, // setStyles function steht unten im Dokument.
-          onEachFeature: function (feature, layer) {
-              //popupOptions = {maxWidth: 200};
+          style: setStyles, // this function is described in dwd.js. It is used for choosing the right color for the warnlayers on the map
+          onEachFeature: function (feature, layer) { //this function is for the layout of each warnlayer-popup
               var index= filtered_response_nd.indexOf(feature);
-              var photo=getSymbol(feature);
+              var photo=getSymbol(feature); // function to show the right event symbol in the popup
               var feature_both_start=feature.properties.EFFECTIVE;
               var cut=feature_both_start.indexOf('T',0);
               var feature_date_part_start=feature_both_start.slice(0,cut);
@@ -377,11 +315,12 @@ function initMap() {
               layer.bindPopup(photo[0]+" "+photo[1]+"<br><br>"+"from: "+feature_date_part_start+", "+feature_time_part_start+"<br>to: "+feature_date_part_end+", "+feature_time_part_end+"<br><br>"
                               +"district: "+feature.properties.AREADESC+"<br><br>"+"(timestamp: "+feature_date_part_start+", "+feature_time_part_start+")");
           }
-      }).addTo(map);
-  }
-}).responseText;
+      }).addTo(map)
+  }).fail(function (xhr, status, error) {
+    console.log('Error: ' + error);
+});
+//.responseText;
 }
-
 
 /*function setPopup (feature, layer) {
     console.log(layer);
@@ -414,7 +353,11 @@ function extendMap() {
     map.addControl(new saveviewControl);
 }
 
-
+/**
+*@desc function to get the right color for the legend on the map. It is called in the initMap(), where the legend is build
+*@param d a severity_category
+*@return the right color depending on severity
+*/
 function getColor(d) {
 
     return d === 'Minor' ? "#F4D03F" :
@@ -438,13 +381,16 @@ function saveBboxtoCookies() {
     document.cookie = "bboxnorthEast_lng=" + bbox._northEast.lng;
 }
 
+//TODO: this does not work yet, the curser of the picture in the carousel should light up on the map
 /**
  * @description change the activated element in map parallel to the shown element in the carousel
  * @private
  */
 function changeActive() {
+    "console.log('wokrs:', wokrs)"
     var lat = $(".active").attr("lat")
     var lon = $(".active").attr("lon")
-    map.fireEvent('click', "[51.147158,13.817316]")
+    //map.panTo(new L.LatLng(lat, lon))
+    map.flyTo([lat, lon]) 
     //console.log('id:', id)
 }

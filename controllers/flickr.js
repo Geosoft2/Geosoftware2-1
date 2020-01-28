@@ -18,9 +18,9 @@ var flickrModel = require('../models/flickr.js'); //MongoDB Schema definition to
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
- * 
- * @param {*} req 
- * @param {*} res 
+ *
+ * @param {*} req
+ * @param {*} res
  */
 async function loadPhotos(req, res) {
   //for flickr API
@@ -33,19 +33,20 @@ async function loadPhotos(req, res) {
   if (req.query.keyword != undefined) { keyword = req.query.keyword }
   else { keyword = "" }
   var location_filter = req.query.location_filter
+  console.log('location_filter:', location_filter)
   //for both
   var group_id
   if (req.query.group_id != undefined) { group_id = req.query.group_id }
   else { group_id = "" }
 
   if (reload === true) {
-    const foundPictures = await groupOrNot(group_id)
+    const foundPictures = await groupOrNot(group_id, location_filter)
     const photosFound = await foundPictures
     const allSaved = await Promise.all(photosFound.body.photos.photo.map(async (pic) => await eachPic(pic, group_id)))
     var allUpdated = await removeOldPhotos(allSaved)
   }
   const readyToLoad = await allUpdated
-  var picturesKey = await filterOrNot(readyToLoad, keyword, group_id)
+  var picturesKey = await filterOrNot(readyToLoad, keyword, group_id, location_filter)
   var returnPics = picturesKey
   /*
   if(location_filter=undefined){
@@ -61,8 +62,8 @@ async function loadPhotos(req, res) {
 exports.loadPhotos = loadPhotos
 
 /**
- * 
- * @param {String} group_id 
+ *
+ * @param {String} group_id
  */
 async function groupOrNot(group_id) {
   var group = group_id
@@ -77,12 +78,11 @@ async function groupOrNot(group_id) {
 
 
 /**
- * 
- * @param {Stirng} group_id 
+ *
+ * @param {Stirng} group_id
  */
 async function groupReqFlickr(group_id) {
   var group = group_id
-  //console.log('group:', group)
   var flickrpic = flickr.groups.pools.getPhotos({
     group_id: group
   })
@@ -100,14 +100,14 @@ async function publicReqFlickr() {
 }
 /**
  * @description this saves Flickr photos to the database
- * @param {*} request 
+ * @param {*} request
  */
 async function saveToDB(req, group_id) {
   var group = group_id
   var p = req.body.photo;
-  var loc = { "type": "Point", "coordinates": [p.location.longitude, p.location.latitude] };
+  var point = { "type": "Point", "coordinates": [p.location.longitude, p.location.latitude] }
   //save the data of a photo in the Database
-  var picsaved = await flickrModel.replaceOne(
+  var picsaved = flickrModel.replaceOne(
     { photo_id: p.id },
     {
       photo_id: p.id,
@@ -116,7 +116,9 @@ async function saveToDB(req, group_id) {
       farm: p.farm,
       title: p.title._content,
       description: p.description._content,
-      location: loc,
+      location: point,
+      latitude: p.location.latitude,
+      longitude: p.location.longitude,
       url: p.urls.url[0]._content,
       user_id: p.owner.nsid,
       user_name: p.owner.username,
@@ -131,8 +133,8 @@ async function saveToDB(req, group_id) {
   return saved
 }
 /**
- * 
- * @param {JSON} photosFound 
+ *
+ * @param {JSON} photosFound
  */
 async function eachPic(pic, group_id) {
   var group = group_id
@@ -142,8 +144,8 @@ async function eachPic(pic, group_id) {
   return savedPic
 }
 /**
- * 
- * @param {JSON} req 
+ *
+ * @param {JSON} req
  */
 async function getPictureDetails(req) {
   const res = flickr.photos.getInfo({
@@ -152,13 +154,12 @@ async function getPictureDetails(req) {
   return res
 }
 /**
- * 
- * @param {callback} ready 
+ *
+ * @param {callback} ready
  */
 async function removeOldPhotos(ready) {
   try {
-    var older_than = moment().subtract(48, 'hours').toDate()
-    console.log("now", older_than)
+    var older_than = moment().subtract(80, 'hours').toDate()
     var removed = flickrModel.find({ timestamp: { $lt: older_than } }).remove().exec()
     return removed
   }
@@ -168,63 +169,78 @@ async function removeOldPhotos(ready) {
   }
 }
 
-async function filterOrNot(callback, keyword, group_id) {
+
+async function filterOrNot(callback, keyword, group_id, location_filter) {
   var key = keyword
-  console.log('key:', key)
   var group = group_id
-  console.log('group:', group)
+  var loc_filter = location_filter
   if (key != "" && key != undefined) {
-    var picturesKey = await flickrModel.find({ '$and': [{ group_id: group }, { '$or': [{ "title": { '$regex': '.*' + keyword + '.*' } }, { "description": { '$regex': '.*' + keyword + '.*' } }] }] }).exec()
-    console.log('dies:')
+    if (loc_filter != undefined) {
+      var picturesKey = await dwdFilterFlickr(key, group)
+    }
+    else {
+      var picturesKey = await flickrModel.find({ '$and': [{ group_id: group }, { '$or': [{ "title": { '$regex': '.*' + keyword + '.*' } }, { "description": { '$regex': '.*' + keyword + '.*' } }] }] }).exec()
+    }
   }
   else {
-    var picturesKey = await flickrModel.find({ group_id: group }).limit(250).exec()
-    console.log('das:')
+    if (loc_filter != undefined) {
+      var picturesKey = await dwdFilterFlickr("", group)
+    }
+    else {
+      var picturesKey = await flickrModel.find({ group_id: group }).limit(50).exec()
+    }
   }
+  return picturesKey
+}
 
-  var warnings = await WarningModel.find({}, { geometry: 1, _id: 0 }).exec();
+async function dwdFilterFlickr(keyword, group_id) {
+  var key = keyword
+  var group = group_id
+  var warnings = await WarningModel.find({}, { geometry: 1, _id: 0 }).exec()
 
-  var geometries = [];
+  var picturesKey = await flickrModel.find({ '$and': [{ group_id: group }, { '$or': [{ "title": { '$regex': '.*' + key + '.*' } }, { "description": { '$regex': '.*' + keyword + '.*' } }] }] }).exec()
 
-  await warnings.forEach((w) => {
-    geometries.push(w.geometry);
-  });
+  const allGeometries = await Promise.all(warnings.map(async (w) => await geometriesEY(w)))
 
-  var pictures = [];
+  var filteredPictures = [];
+  const allInFilteredPictures = await Promise.all(allGeometries.map(async (polygon) => await gimmi(polygon)))
+  console.log('filteredPictures:', allInFilteredPictures)
+  return filteredPictures
 
-  for (const polygon of geometries) {
-    var result = await getPicturesInsidePolygon(polygon);
 
-    result.forEach(elem => {
-      pictures.push(elem);
-    });
-  };
+  return allInFilteredPictures
 
-  function getPicturesInsidePolygon(polygon) {
-    return new Promise((resolve) => {
-      var query = flickrModel.find({
-        location: {
-          $geoWithin: {
-            $geometry: polygon
-          }
-        }
-      }).catch(error => console.log(error));
-
-      resolve(query);
-    });
-  }
-
-  console.log(pictures);
-
-  return pictures;
 }
 
 
+/**
+ * 
+ * @param {array} polygon 
+ */
+async function gimmi(polygon) {
+  var result = await getTweetsInsidePolygon(polygon)
+  //console.log('result€€:', result)
+  //const allInFilteredPics = await Promise.all(result.map(async(elem) =>gimmiititit(elem)))
+  return result
+}
+/**
+ * 
+ */
+async function getTweetsInsidePolygon(polygon) {
+  var poly = polygon
+  var answer = await flickrModel.find(
+    {
+      location: {
+        $geoWithin: {
+          $geometry: poly
 
+        }
+      }
+    }).catch(error => console.log(error))
+  console.log('answer:', answer)
+  return answer
+}
 
-
-
-
-
-
-
+async function geometriesEY(w) {
+  return w.geometry
+}

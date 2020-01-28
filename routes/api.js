@@ -15,12 +15,6 @@ const DWDController = require('../controllers/dwd.js');
 //Define Variables
 const router = express.Router();
 
-//Routes
-router.get('/', APIController.getApi) //Default Route -> render API documentation
-
-// API routes for Version 1.0
-router.get('/v1', APIController.getV1);
-
 /*
 router.get('/v1/instagram/alluser', instagramController.getV1instagram);
 */
