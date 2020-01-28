@@ -319,7 +319,7 @@ function initMap() {
         .addTo(map);
 }
 
-/*
+
  function getWFSLayer() {
     var owsrootUrl = 'https://maps.dwd.de/geoserver/dwd/ows';
 
