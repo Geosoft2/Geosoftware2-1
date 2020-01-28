@@ -12,7 +12,7 @@ const flickr = new mongoose.Schema({
         "group_id":String,
         "user_name":String,
         "url": String,
-        "location": mongoose.Schema.Types.Point,
+        "location": mongoose.Schema.Types.Mixed,
         "latitude":String ,
         "longitude": String,
         "timestamp": Date,

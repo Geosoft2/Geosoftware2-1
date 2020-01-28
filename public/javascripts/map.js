@@ -28,17 +28,8 @@ var controlLayers;
 initMap();
 extendMap();
 
-//TODO: ordnung halten und sowas an die richtige stelle schieben
-$(".err_mess").on("mouseenter", function () {
-    $(".err_mess").stop(true, true);
-    $(".err_mess").delay(0).fadeIn(0);
-});
-$(".err_mess").on("mouseleave", function () {
-    $(".err_mess").delay(0).fadeOut(3000);
-});
-
 /**
-* @desc create map
+* @desc creates  the map load layers and also set events for moveend and zoomend on load of the index page
 */
 function initMap() {
     //get all params send by URL
@@ -47,10 +38,7 @@ function initMap() {
     //default parameters if there are no saved neither in the url nor the cookies
     var startpoint = [51.26524, 9.72767];
     var zoomLevel = 6;
-    //TODO: bbox nicht in die URL und twittersearch vielleicht auch nicht
-    //TODO: die BBOX dafür aber dennoch zwischenspeichern und eventuell jedes mal mit einladen
-    var bbox = [];
-    var twittersearch = "";
+
     //TODO: wenn diese false sind sind die beiden deaktiviert wenn auf true gesetzt wird dann aktiviert
     var twitter = false;
     var instagram = false;
@@ -323,21 +311,7 @@ function initMap() {
  * 
  */
 function getWFSLayer() {
-    var owsrootUrl = 'https://maps.dwd.de/geoserver/dwd/ows';
-
-    var defaultParameters = {
-        service: 'WFS',
-        version: '2.0',
-        request: 'GetFeature',
-        typeName: 'dwd:Warnungen_Landkreise',
-        outputFormat: 'text/javascript',
-        format_options: 'callback:getJson',
-        SrsName: 'EPSG:4326'
-    };
-
-    var parameters = L.Util.extend(defaultParameters);
-    var URL = owsrootUrl + L.Util.getParamString(parameters);
-
+    
     WFSLayer = null;
     var ajax =  $.ajax({
         type: 'GET',
@@ -381,7 +355,7 @@ function getWFSLayer() {
               layer.bindPopup(photo[0]+" "+photo[1]+"<br><br>"+"from: "+feature_date_part_start+", "+feature_time_part_start+"<br>to: "+feature_date_part_end+", "+feature_time_part_end+"<br><br>"
                               +"district: "+feature.properties.AREADESC+"<br><br>"+"(timestamp: "+feature_date_part_start+", "+feature_time_part_start+")");
           }
-      }).addTo(map);
+      }).addTo(map)
   }).fail(function (xhr, status, error) {
     console.log('Error: ' + error);
 });
@@ -419,7 +393,10 @@ function extendMap() {
     map.addControl(new saveviewControl);
 }
 
-
+/**
+ * @description this function gives the colors for the legend of the weather data
+ * @param {*} d 
+ */
 function getColor(d) {
 
     return d === 'Minor' ? "#F4D03F" :
@@ -443,13 +420,16 @@ function saveBboxtoCookies() {
     document.cookie = "bboxnorthEast_lng=" + bbox._northEast.lng;
 }
 
+//TODO: this does not work yet, the curser of the picture in the carousel should light up on the map
 /**
  * @description change the activated element in map parallel to the shown element in the carousel
  * @private
  */
 function changeActive() {
+    "console.log('wokrs:', wokrs)"
     var lat = $(".active").attr("lat")
     var lon = $(".active").attr("lon")
-    map.fireEvent('click', "[51.147158,13.817316]")
+    //map.panTo(new L.LatLng(lat, lon))
+    map.flyTo([lat, lon]) 
     //console.log('id:', id)
 }

@@ -26,19 +26,6 @@ const TwitClient = new Twit({
 });
 
 /**
-* @desc
-* @param {object} req request, containing information about the HTTP request
-* @param {object} res response, to send back the desired HTTP response
-*/
-exports.getApi = (req, res) => {
-
-};
-
-exports.getV1 = (req, res) => {
-
-};
-
-/**
  * @desc Requests Tweets directly from Twitter's Search API
  * @param {json} request
  * @param {json} response
@@ -102,6 +89,7 @@ exports.getV1TwitterTweets = async (req, res) => {
 
   function getTweetsInsidePolygon(polygon) {
     return new Promise((resolve) => {
+      console.log('polygonTWITTER:', polygon)
       var query = TweetModel.find({
         location: {
           $geoWithin: {

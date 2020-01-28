@@ -12,12 +12,6 @@ const flickrController = require('../controllers/flickr.js');
 //Define Variables
 const router = express.Router();
 
-//Routes
-router.get('/', APIController.getApi) //Default Route -> render API documentation
-
-// API routes for Version 1.0
-router.get('/v1', APIController.getV1);
-
 /*
 router.get('/v1/instagram/alluser', instagramController.getV1instagram);
 */
@@ -30,7 +24,6 @@ router.delete("/v1/instagram/:user", (req, res) => {
 });
 */
 
-router.get('/v1/flickr/public', flickrController.getPublic);
 router.get('/v1/flickr', flickrController.loadPhotos)
 
 router.post('/v1/twitter/init', APIController.postV1TwitterInit);
