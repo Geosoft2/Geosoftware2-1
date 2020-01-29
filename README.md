@@ -59,7 +59,7 @@ exports.token = {
 in the [test folder](/test) lays a Postman and a .jmx file. The instagram test will not run because instagram is not yet implemented
 
 ## Training data
-If there is currently no data and you want to train see our training data in the [data folder](/data). And also for Flickr you can change the period of time in the [flickr Controller](/controllers/flickr.js)
+If there is currently no data and you want to train see our training data in the [data folder](/data). And also for Flickr you can change the period of time in the [flickr Controller](/controllers/flickr.js) in the removeOldPhotos function. Set subtract(48, 'hours') for excample to subtract(80, 'hours')
 
 ## JSDoc
 the generated HTML pages of the JSDoc documentation are located in [``JSDoc``](../master/out)
@@ -69,7 +69,12 @@ the generated HTML pages of the JSDoc documentation are located in [``JSDoc``](.
 
 
 ## Task
-
+  * get the location filter for Flickr Data running
+  * map on moveende/zoomend -> update the displayed social media data
+  * if there are to many points that would be displayed do a heatmap like on [https://github.com/Leaflet/Leaflet.heat](https://github.com/Leaflet/Leaflet.heat)
+  * better error-handling
+  * keyword filter for twitter
+  * getting Instagram data 
 
 ## Authors
 
