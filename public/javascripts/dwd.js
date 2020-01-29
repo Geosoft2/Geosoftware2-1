@@ -104,7 +104,8 @@ function getSymbol (feature) {
 
 /**
 *@desc function to filter by the event of the dwd warnlayers.
-*@param response
+*@param response is the given warndistrict
+*@return goes into another function and looks which severities are activated
 */
 function filter_wfs_output (response) {
   var e=document.getElementById('wfs_selection_box');
@@ -166,7 +167,11 @@ function filter_wfs_output (response) {
 
 }
 
-
+/**
+*@desc this function checks which severity is activated and returns the warndistrict(response) if its severity is selected
+*@param one warndistrct of the whole array from the dwd
+@return nothing if its severity is not activated. Otherwise the disctrict will be returned
+*/
 function filter_dwdoutput_severity (response) {
   if (document.getElementById("Severity_Minor").checked == true) {
       if (response.properties.SEVERITY == "Minor") {
@@ -197,8 +202,10 @@ function filter_dwdoutput_severity (response) {
 }
 
 
-/*
-*
+/**
+*@desc this function searches the transfered array if the feature is already in it.
+*@param array which is looked into. feature that could possibly in the array. If not it will be added
+*@return the new array
 */
 function filter_severity_map(feature, array) {
 
@@ -218,7 +225,11 @@ function filter_severity_map(feature, array) {
 }
 
 
-
+/**
+*@desc function to compare to features(warndistricts) and their severities
+*@param two different warndistricts from the dwd array
+*@return the feature with the higher severity
+*/
 function get_higher_severity(feature1, feature2) {
   if(feature1.properties.SEVERITY==feature2.properties.SEVERITY) {
     return feature1;
@@ -250,13 +261,16 @@ function get_higher_severity(feature1, feature2) {
 
 }
 
-
+/**
+*@desc function that is called if the user pushes the "change warnings"- button
+*
+*
+*/
 function show_wfs_changes() {
   giveLoadMessage("Weather warnings loading", "warning-mess")
   if (WFSLayer != undefined){
   WFSLayer.clearLayers()
   }
-
   getWFSLayer()
   //TODO: it should wait for the draw to map and then change the messages but to present how it would look we did this:
   setTimeout(() => {
