@@ -135,10 +135,10 @@ function initMap() {
             var keyword = getCookie("flickr_keyword")
 
             var flickr_active = getCookie("flickr")
-            console.log('flickr_active:', flickr_active)
+
             if (flickr_active!=0){
-                console.log("yewah")
-                axios.get('/api/v1/flickr?grpu_id='+group_id+'&keyword='+keyword+'&bbox=['+bboxSW_lng+','+bboxSW_lat+','+bboxNE_lng+','+bboxNE_lat+']')
+
+                axios.get('/api/v1/flickr?goup_id='+group_id+'&keyword='+keyword+'&bbox=['+bboxSW_lng+','+bboxSW_lat+','+bboxNE_lng+','+bboxNE_lat+']')
                 .then(function (response) {
                     console.log('response:', response)
                     drawFlickrToMap(response)
@@ -178,9 +178,9 @@ function initMap() {
             var keyword = getCookie("flickr_keyword")
 
             var flickr_active = getCookie("flickr")
-            console.log('flickr_active:', flickr_active)
+
             if (flickr_active!=0){
-                console.log("yewah")
+
                 axios.get('/api/v1/flickr?group_id='+group_id+'&keyword='+keyword+'&bbox=['+bboxSW_lng+','+bboxSW_lat+','+bboxNE_lng+','+bboxNE_lat+']')
                 .then(function (response) {
                     console.log('response:', response)
@@ -201,12 +201,8 @@ function initMap() {
                     filterTweets(data)
                 })
             }
+        })
 
-
-            
-            
-
-        });
 
     const mapbox_accessToken = 'pk.eyJ1IjoibWdhZG8wMSIsImEiOiJjazQxaHZvZTcwMWdqM2RvYmF4eWRzZ2diIn0.z3YweqsFFX-KbTYMRmz_AA';
 
@@ -330,8 +326,12 @@ function initMap() {
  function getWFSLayer() {
  
     WFSLayer = null;
-    axios.get('/api/v1/dwd/events/warnings')
-    .then(function (response) {
+    var ajax =  $.ajax({
+        type: 'GET',
+        url: 'http://localhost:3000/api/v1/dwd/events/warnings',
+        dataType: 'json',
+        encode: true
+    }).done(function (response) {
         set_output(response);
         if (response != null) {
           var filtered_response= new Array();
@@ -366,9 +366,10 @@ function initMap() {
                               +"district: "+feature.properties.AREADESC+"<br><br>"+"(timestamp: "+feature_date_part_start+", "+feature_time_part_start+")");
           }
       }).addTo(map)
-  })
+  }).fail(function (xhr, status, error) {
+    console.log('Error: ' + error);
+});
 }
-
 
 /**
 *@desc function to draw a button on the map that saves the current map view as a default view
@@ -523,7 +524,7 @@ function drawTweetsToMap(tweets) {
             e.layer.setIcon(selectedIcon);
         })
         .addTo(map);
-        console.log('tweets:', tweets)
+
     tweets.data.forEach((t) => {
         var latlng = [t.location.coordinates[1], t.location.coordinates[0]];
         var marker = L.marker(latlng, { icon: defaultIcon, alt: "marker" });
