@@ -59,7 +59,8 @@ exports.token = {
 in the [test folder](/test) lays a Postman and a .jmx file. The instagram test will not run because instagram is not yet implemented
 
 ## Training data
-If there is currently no data and you want to train see our training data in the [data folder](/data)
+If there is currently no data and you want to train see our training data in the [data folder](/data). And also for Flickr you can change the period of time in the [flickr Controller](/controller/flicker.js)
+
 ## JSDoc
 the generated HTML pages of the JSDoc documentation are located in [``JSDoc``](../master/out)
 
