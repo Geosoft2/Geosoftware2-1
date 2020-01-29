@@ -181,7 +181,7 @@ function initMap() {
             console.log('flickr_active:', flickr_active)
             if (flickr_active!=0){
                 console.log("yewah")
-                axios.get('/api/v1/flickr?grpu_id='+group_id+'&keyword='+keyword+'&bbox=['+bboxSW_lng+','+bboxSW_lat+','+bboxNE_lng+','+bboxNE_lat+']')
+                axios.get('/api/v1/flickr?group_id='+group_id+'&keyword='+keyword+'&bbox=['+bboxSW_lng+','+bboxSW_lat+','+bboxNE_lng+','+bboxNE_lat+']')
                 .then(function (response) {
                     console.log('response:', response)
                     drawFlickrToMap(response)
