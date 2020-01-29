@@ -27,8 +27,15 @@ if(typeof exports == "undefined"){
 
 // tokens tokens tokens...
 exports.token = {
-   secretSession: "your individual string", //for example "abc"
-   flickr_app_key: "your flickr app token"
+    twitter_consumer_key: 'your twitter consumer key',
+    twitter_consumer_secret: 'your consumer secret',
+    twitter_access_token: 'your twitter access token',
+    twitter_access_token_secret: 'your twitter access token secret',
+    mapbox_access_token: 'your mapbox token',
+    instagram_app_id: 'the instagram app id'    [not needed right now],
+    instagram_app_secret: 'the instagram app id'    [not needed right now],
+    flickr_app_key:'the flickr app key',
+    flickr_app_secret:'3the flickr app secret'
 }
 ```
 
@@ -49,10 +56,10 @@ exports.token = {
 5. run ``npm start``
 
 ## Running tests
-1. ensure that steps 1 - 4 of [Starting without Docker](../master/README.md#starting-without-docker) are completed
-2. run ``npm test``
+in the [test folder](/test) lays a Postman and a .jmx file. The instagram test will not run because instagram is not yet implemented
 
-
+## Training data
+If there is currently no data and you want to train see our training data in the [data folder](/data)
 ## JSDoc
 the generated HTML pages of the JSDoc documentation are located in [``JSDoc``](../master/out)
 
