@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "aeccb2f4-e9ff-4cdd-8338-b58f3139f399",
+		"_postman_id": "0acc5529-4560-4bfe-9844-86e44beaa9d4",
 		"name": "API_Test",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -9,7 +9,7 @@
 			"name": "GET",
 			"item": [
 				{
-					"name": "dwd/events",
+					"name": "dwd/events/warnings",
 					"event": [
 						{
 							"listen": "test",
@@ -20,8 +20,8 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.test(\"Response time is less than 200ms\", function () {",
-									"    pm.expect(pm.response.responseTime).to.be.below(200);",
+									"pm.test(\"Response time is less than 600ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(600);",
 									"});",
 									"",
 									"pm.test(\"Response must be valid\", function () {",
@@ -38,7 +38,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/v1/dwd/events",
+							"raw": "http://localhost:3000/api/v1/dwd/events/warnings",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -48,60 +48,15 @@
 								"api",
 								"v1",
 								"dwd",
-								"events"
+								"events",
+								"warnings"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "dwd/events init",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "6c28233d-67c2-4222-8723-0b8ea4615901",
-								"exec": [
-									"pm.test(\"200 OK\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Response time is less than 200ms\", function () {",
-									"    pm.expect(pm.response.responseTime).to.be.below(200);",
-									"});",
-									"",
-									"pm.test(\"Response must be valid\", function () {",
-									"    pm.response.to.be.ok;",
-									"    pm.response.to.be.withBody;",
-									"    pm.response.to.be.json;",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/api/v1/dwd/events",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"v1",
-								"dwd",
-								"events"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "dwd/events Error",
+					"name": "dwd/events/warnings Error",
 					"event": [
 						{
 							"listen": "test",
@@ -130,7 +85,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/v1/dwd/event",
+							"raw": "http://localhost:3000/api/v1/dwd/event/warning",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -140,7 +95,8 @@
 								"api",
 								"v1",
 								"dwd",
-								"event"
+								"event",
+								"warning"
 							]
 						}
 					},
@@ -158,54 +114,8 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.test(\"Response time is less than 200ms\", function () {",
-									"    pm.expect(pm.response.responseTime).to.be.below(200);",
-									"});",
-									"",
-									"pm.test(\"Response must be valid\", function () {",
-									"    pm.response.to.be.ok;",
-									"    pm.response.to.be.withBody;",
-									"    pm.response.to.be.json;",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/api/v1/twitter/tweets",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"v1",
-								"twitter",
-								"tweets"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "twitter init",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "bb2aa1a0-5118-4b95-90af-f377f86fd0f1",
-								"exec": [
-									"pm.test(\"200 OK\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Response time is less than 200ms\", function () {",
-									"    pm.expect(pm.response.responseTime).to.be.below(200);",
+									"pm.test(\"Response time is less than 2000ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);",
 									"});",
 									"",
 									"pm.test(\"Response must be valid\", function () {",
@@ -569,6 +479,100 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "dwd/radar/precipitation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7b4d1219-fc6e-4c62-a830-0a11702e3e54",
+								"exec": [
+									"pm.test(\"200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 200ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);",
+									"});",
+									"",
+									"pm.test(\"Response must be valid\", function () {",
+									"    pm.response.to.be.ok;",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/dwd/radar/precipitation",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"dwd",
+								"radar",
+								"precipitation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dwd/radar/precipitation Error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ba7775e4-867b-457d-97b5-5dc6c7ece432",
+								"exec": [
+									"pm.test(\"500 Internal Server Error\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 200ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);",
+									"});",
+									"",
+									"pm.test(\"Response must be valid\", function () {",
+									"    pm.response.to.be.ok;",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/dwd/radar/precipitatio",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"dwd",
+								"radar",
+								"precipitatio"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -577,7 +581,7 @@
 			"name": "POST",
 			"item": [
 				{
-					"name": "twitter/:language/:keyword",
+					"name": "twitter/init",
 					"event": [
 						{
 							"listen": "test",
@@ -606,7 +610,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/v1/twitter/?:language&:keyword",
+							"raw": "http://localhost:3000/api/v1/twitter/init",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -616,24 +620,14 @@
 								"api",
 								"v1",
 								"twitter",
-								""
-							],
-							"query": [
-								{
-									"key": ":language",
-									"value": null
-								},
-								{
-									"key": ":keyword",
-									"value": null
-								}
+								"init"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "twitter/:language/:keyword Error",
+					"name": "twitter/init Error",
 					"event": [
 						{
 							"listen": "test",
@@ -662,7 +656,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/v1/twitter/?:spain&:???",
+							"raw": "http://localhost:3000/api/v1/twitter/ini",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -672,17 +666,195 @@
 								"api",
 								"v1",
 								"twitter",
-								""
+								"ini"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dwd/events/init",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "fe38c29c-27b2-482d-8645-43666b190a82",
+								"exec": [
+									"pm.test(\"200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 200ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);",
+									"});",
+									"",
+									"pm.test(\"Response must be valid\", function () {",
+									"    pm.response.to.be.ok;",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/dwd/events/init",
+							"protocol": "http",
+							"host": [
+								"localhost"
 							],
-							"query": [
-								{
-									"key": ":spain",
-									"value": null
-								},
-								{
-									"key": ":???",
-									"value": null
-								}
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"dwd",
+								"events",
+								"init"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dwd/events/init Error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3ec13fc5-3628-4899-afff-3ac3ef34e8c6",
+								"exec": [
+									"pm.test(\"500 Internal Server Error\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 200ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);",
+									"});",
+									"",
+									"pm.test(\"Response must be valid\", function () {",
+									"    pm.response.to.be.ok;",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/dwd/events/ini",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"dwd",
+								"events",
+								"ini"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dwd/radar/init",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "19aa959a-da55-4d9e-ae47-352a5de4418d",
+								"exec": [
+									"pm.test(\"200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 200ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);",
+									"});",
+									"",
+									"pm.test(\"Response must be valid\", function () {",
+									"    pm.response.to.be.ok;",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/dwd/radar/init",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"dwd",
+								"radar",
+								"init"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dwd/radar/ini Error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "19aa959a-da55-4d9e-ae47-352a5de4418d",
+								"exec": [
+									"pm.test(\"500 Internal Server Error\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 200ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);",
+									"});",
+									"",
+									"pm.test(\"Response must be valid\", function () {",
+									"    pm.response.to.be.ok;",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/dwd/radar/ini",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"dwd",
+								"radar",
+								"ini"
 							]
 						}
 					},
