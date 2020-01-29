@@ -330,12 +330,8 @@ function initMap() {
  function getWFSLayer() {
  
     WFSLayer = null;
-    var ajax =  $.ajax({
-        type: 'GET',
-        url: 'http://localhost:3000/api/v1/dwd/events/warnings',
-        dataType: 'json',
-        encode: true
-    }).done(function (response) {
+    axios.get('/api/v1/dwd/events/warnings')
+    .then(function (response) {
         set_output(response);
         if (response != null) {
           var filtered_response= new Array();
@@ -370,10 +366,9 @@ function initMap() {
                               +"district: "+feature.properties.AREADESC+"<br><br>"+"(timestamp: "+feature_date_part_start+", "+feature_time_part_start+")");
           }
       }).addTo(map)
-  }).fail(function (xhr, status, error) {
-    console.log('Error: ' + error);
-});
+  })
 }
+
 
 /**
 *@desc function to draw a button on the map that saves the current map view as a default view

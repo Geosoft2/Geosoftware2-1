@@ -33,12 +33,7 @@ var host = arr[0] + "//" + arr[2];
  * @description loads tweets and cache them in DB
  */
 function initTweets() {
-    $.ajax({
-        type: 'POST',
-        url: 'http://localhost:3000/api/v1/twitter/init',
-    }).fail(function (xhr, status, error) {
-        console.log('Error: ' + error);
-    });
+    axios.get('/api/v1/twitter/init')
 };
 
 /**
@@ -61,42 +56,22 @@ function getTweets() {
 };
 
 function clearUpTweets() {
-    $.ajax({
-        type: 'POST',
-        url: 'http://localhost:3000/api/v1/twitter/clearup',
-    }).fail(function (xhr, status, error) {
-        console.log('Error: ' + error);
-    });
+    await axios.get('/api/v1/twitter/clearup')
 };
 
 async function initDWDWarnings() {
-    await $.ajax({
-        type: 'POST',
-        url: 'http://localhost:3000/api/v1/dwd/events/init',
-    }).done(function () {
-        console.log("Warnings received.");
-        getDWDWarnings();
-    }).fail(function (xhr, status, error) {
-        console.log('Error: ' + error);
-    });
+    await axios.get('/api/v1/dwd/events/init')
 };
 
 /**
  * @description this function loads the DWD warning data from our database
  */
 function getDWDWarnings() {
-    $.ajax({
-        type: 'GET',
-        url: 'http://localhost:3000/api/v1/dwd/events/warnings',
-        dataType: 'json',
-        encode: true
-    }).done(function (data) {
+    axios.get('/api/v1/dwd/events/warnings')
+    .then(function (data) {
         console.log('Success: Warnings loaded from database.');
         drawWarningsToMap(data);
-    }).fail(function (xhr, status, error) {
-        console.log('Error: ' + error);
-    });
-};
+    })}
 
 /**
  * @description filters the tweets for the given bbox
@@ -214,5 +189,5 @@ function drawFlickrToUI(flickr) {
     });
     $(".carousel-item").first().addClass("active")
     //TODO: highlight point when the picture is active in the carousel
-};
+}
 
