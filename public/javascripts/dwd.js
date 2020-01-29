@@ -267,15 +267,15 @@ function get_higher_severity(feature1, feature2) {
 *
 */
 function show_wfs_changes() {
-  giveLoadMessage("Weather warnings loading", "warning-mess")
-  if (WFSLayer != undefined){
+    if (WFSLayer != undefined){
   WFSLayer.clearLayers()
   }
+  giveLoadMessage("Weather warnings loading", "warning-mess")
   getWFSLayer()
   //TODO: it should wait for the draw to map and then change the messages but to present how it would look we did this:
   setTimeout(() => {
     $(".warning-mess").delay(0).fadeOut(0)
     giveSuccessMessage("Weather data has been loaded.")
-  }, 5000)
+  }, 3000)
 
 }

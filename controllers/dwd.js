@@ -10,6 +10,9 @@ const WFS = require('wfs'); //wfs library to request data from DWD's wfs service
 //Import Models
 const WarningModel = require('../models/warning.js'); //MongoDB Schema definition to store dwd warnings
 
+/**
+ * @description get the warning layer from the WFS of "Deutscher Wetterdienst"
+ */
 exports.requestDWDWarnings = async (req, res) => {
     WFS.getFeature({
         url: 'https://maps.dwd.de/geoserver/dwd/ows',
@@ -42,6 +45,9 @@ exports.requestDWDWarnings = async (req, res) => {
     res.send({});
 };
 
+/**
+ * @description load the warning layer from dwd from our database
+ */
 exports.loadDWDWarnings = async (req, res) => {
     let result = await WarningModel.find({}).exec();
 
@@ -53,6 +59,9 @@ exports.loadDWDWarnings = async (req, res) => {
     res.json(collection);
 };
 
+/**
+ * @description get the  precipitation WFS layer from the "Deutschen Wertterdienst"
+ */
 exports.requestDWDPrecipitation = (req, res) => {
     WFS.getFeature({
         url: 'https://maps.dwd.de/geoserver/dwd/ows',

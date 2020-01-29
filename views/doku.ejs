@@ -7,7 +7,7 @@
 
   <meta name="author" content="Lukas, Max, Constatin, Christin" />
   <meta charset="UTF-8">
-   <link rel="icon" href="/docs/4.1/assets/img/favicons/favicon.ico">
+  <link rel="icon" href="/docs/4.1/assets/img/favicons/favicon.ico">
   <% include partials/stylesheet.ejs %>
   <link rel="stylesheet" href="stylesheets/doku.css">
 </head>
@@ -16,117 +16,153 @@
 
   <% include partials/header.ejs %>
 
-        <div class="container">
-            <h1>Application information</h1>
-            <p><strong>Note:</strong>Click on the individual sections for more information.</p>
+  <div class="container">
+    <h1>Application information</h1>
+    <p><strong>Note:</strong>Click on the individual sections for more information.</p>
 
-            <div class="panel-group" id="accordion">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse1"> <span data-feather="home"></span> Selection title</a>
-                  </h4>
-                </div>
-                <div id="collapse1" class="panel-collapse collapse in">
-                  <div class="panel-body">On this page you can get information about the used APIs. At the bottom of the page you will get information about our Cookie Policy.</div>
-                </div>
-                </div>
-            <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h4 class="panel-title">
-                      <a data-toggle="collapse" data-parent="#accordion" href="#collapse2"> <span data-feather="twitter"></span> Twitter</a>
-                    </h4>
-                  </div>
-                  <div id="collapse2" class="panel-collapse collapse  ">
-                    <div class="panel-body">All about the use of the Twitter API</div>
-                  </div>
-                </div>
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h4 class="panel-title">
-                  <a data-toggle="collapse" data-parent="#accordion" href="#collapse3"> <span data-feather="instagram"></span> Instagram</a>
-                </h4>
-              </div>
-              <div id="collapse3" class="panel-collapse collapse">
-                <div class="panel-body">
-                  <p>At this state of implementation Instagram is not available. It could be possible to connect this application with Instagram in the future.</p>
-                </div>
-              </div>
-            </div>
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h4 class="panel-title">
-                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseFlickr"> <span data-feather="camera"></span> Flickr</a>
-                </h4>
-              </div>
-              <div id="collapseFlickr" class="panel-collapse collapse">
-                <div class="panel-body">
-                <p><strong>about Flickr</strong></p>
-                <p>Flickr is a online photo plattform for sharing pictures with your friends and the worl. For more information go to <a href='https://www.flickr.com/about'>Flickr/about</a> </p>
+    <div class="panel-group" id="accordion">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse1"> <span data-feather="home"></span>
+              Selection title</a>
+          </h4>
+        </div>
+        <div id="collapse1" class="panel-collapse collapse in">
+          <div class="panel-body">On this page you can get information about the used APIs. At the bottom of the page
+            you will get information about our Cookie Policy.</div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse2"> <span data-feather="twitter"></span>
+              Twitter</a>
+          </h4>
+        </div>
+        <div id="collapse2" class="panel-collapse collapse  ">
+          <div class="panel-body">
+            <p><strong>Usage of Twitter API:</strong></p>
+            <p>Our app makes use of Twitter's Search API to get relevant tweets within locations of possible extreme
+              weather events. The tweets provide additional information, e.g. to receive warnings from people who
+              tweeted about the weather phenomenon. The map shows the exact location of relevant tweets (indicated as
+              blue markers). Clicking on a marker reveals the affiliated tweet next to the map.</p>
+            <p><strong>Data acquisition:</strong></p>
+            <ul>
+              <li>New geotagged tweets are requested every 5 seconds after the page is loaded</li>
+              <li>The requested tweets will be automatically stored in our internal database</li>
+              <li>When clicking on the 'Get Tweets' button the tweets will be loaded, geospatially filtered and
+                visualized</li>
+              <li>The database will clean up tweets older than 48 hours on startup</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse3"> <span data-feather="instagram"></span>
+              Instagram</a>
+          </h4>
+        </div>
+        <div id="collapse3" class="panel-collapse collapse">
+          <div class="panel-body">
+            <p>At this state of implementation Instagram is not available. It could be possible to connect this
+              application with Instagram in the future.</p>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFlickr"> <span
+                data-feather="camera"></span> Flickr</a>
+          </h4>
+        </div>
+        <div id="collapseFlickr" class="panel-collapse collapse">
+          <div class="panel-body">
+            <p><strong>about Flickr</strong></p>
+            <p>Flickr is a online photo plattform for sharing pictures with your friends and the worl. For more
+              information go to <a href='https://www.flickr.com/about'>Flickr/about</a> </p>
 
-                <p><strong>Usage of Flickr API</strong></p>
-                <p>This WebApp uses the <a href='https://www.flickr.com/services/api/'>Flickr API</a> to serve current geotagged pictures in Germany. At this point of development our App show only public pictures.
-                available for everyone. To keep it all smooth and relevant we provide pictures taken in the last 48h, to have a fast workflow when it's most important.
-                Furthermore there is the chance use a Flickr group like our <a href='https://www.flickr.com/groups/14643952@N25/'>Salus Solutions Flickr group</a> to get and post relevant weather pictures. With this group
-                it's possible to get a fast exchange of important data.</p>
+            <p><strong>Usage of Flickr API</strong></p>
+            <p>This WebApp uses the <a href='https://www.flickr.com/services/api/'>Flickr API</a> to serve current
+              geotagged pictures in Germany. At this point of development our App show only public pictures.
+              available for everyone. To keep it all smooth and relevant we provide pictures taken in the last 48h, to
+              have a fast workflow when it's most important.
+              Furthermore there is the chance use a Flickr group like our <a
+                href='https://www.flickr.com/groups/14643952@N25/'>Salus Solutions Flickr group</a> to get and post
+              relevant weather pictures. With this group
+              it's possible to get a fast exchange of important data.</p>
 
-                <p><strong>geographic data</strong></p>
-                <p>Example: [lat:51.964157,lon:7.627311]</p>
-                <p>The geotags of Flickr shown in Webmercator with a latitude and a longitude. </p>
-                <p>Example: [lat:51.964157,lon:7.627311]</p>
+            <p><strong>geographic data</strong></p>
+            <p>Example: [lat:51.964157,lon:7.627311]</p>
+            <p>The geotags of Flickr shown in Webmercator with a latitude and a longitude. </p>
+            <p>Example: [lat:51.964157,lon:7.627311]</p>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse_dwd"> <span
+                data-feather="umbrella"></span> Weather Data</a>
+          </h4>
+        </div>
+        <div id="collapse_dwd" class="panel-collapse collapse">
+          <div class="panel-body">
+            <p><strong>About deutscher Wetterdienst</strong></p>
+            <p>The DWD (deutscher Wetterdienst) offers the functionality to get special configured pictures via a Web
+              Mapping Service (WMS)
+              or a Web Feature Service (WFS).</p>
+            <p><strong>Usage of Geowebservice</strong></p>
+            <p>This Webapp uses the Geoserver of the DWD and the WFS to get the warn layers (<a
+                href="https://www.dwd.de/DE/wetter/warnungen_aktuell/objekt_einbindung/einbindung_karten_geowebservice.pdf?__blob=publicationFile&v=11">Geoserver_infos</a>)
+            </p>
+            <p>These layers show the rural districts of Germany.<p>
+                <p><strong>Warnlayers</strong></p>
+                <p>The warnlayers of atmosphere disturbances have four different severities which are shown on the map
+                  with different colours</p>
+                <p><u>Severity</u></p>
+                <p>Minor:
+                  <svg width="15" height="15">
+                    <rect width="15" height="15" style="fill:#F4D03F" />
+                  </svg>
+                </p>
+                <p>Moderate:
+                  <svg width="15" height="15">
+                    <rect width="15" height="15" style="fill:#D35400" />
+                  </svg>
+                </p>
+                <p>Severe:
+                  <svg width="15" height="15">
+                    <rect width="15" height="15" style="fill:#C0392B" />
+                  </svg>
+                </p>
+                <p>Extreme:
+                  <svg width="15" height="15">
+                    <rect width="15" height="15" style="fill:#7D3C98" />
+                  </svg>
+                </p>
+                <p><u>Types:</u></p>
+                <div style="text-indent:10px;">
+                  <p> The user can select certain atmosphere disturbances. The types sum up these events: </p>
                 </div>
-              </div>
-            </div>
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h4 class="panel-title">
-                  <a data-toggle="collapse" data-parent="#accordion" href="#collapse_dwd"> <span data-feather="umbrella"></span> Weather Data</a>
-                </h4>
-              </div>
-              <div id="collapse_dwd" class="panel-collapse collapse">
-                <div class="panel-body">
-                  <p><strong>About deutscher Wetterdienst</strong></p>
-                  <p>The DWD (deutscher Wetterdienst) offers the functionality to get special configured pictures via a Web Mapping Service (WMS)
-                  or a Web Feature Service (WFS).</p>
-                  <p><strong>Usage of Geowebservice</strong></p>
-                  <p>This Webapp uses the Geoserver of the DWD and the WFS to get the warn layers (<a href="https://www.dwd.de/DE/wetter/warnungen_aktuell/objekt_einbindung/einbindung_karten_geowebservice.pdf?__blob=publicationFile&v=11">Geoserver_infos</a>)
-                  </p><p>These layers show the rural districts of Germany.<p>
-                  <p><strong>Warnlayers</strong></p>
-                  <p>The warnlayers of atmosphere disturbances have four different severities which are shown on the map with different colours</p>
-                  <p><u>Severity</u></p>
-                  <p>Minor:
-                    <svg width="15" height="15">
-                      <rect width="15" height="15" style="fill:#F4D03F" />
-                    </svg>
-                  </p>
-                  <p>Moderate:
-                    <svg width="15" height="15">
-                      <rect width="15" height="15" style="fill:#D35400" />
-                    </svg>
-                  </p>
-                  <p>Severe:
-                    <svg width="15" height="15">
-                      <rect width="15" height="15" style="fill:#C0392B" />
-                    </svg>
-                  </p>
-                  <p>Extreme:
-                    <svg width="15" height="15">
-                      <rect width="15" height="15" style="fill:#7D3C98" />
-                    </svg>
-                  </p>
-                  <p><u>Types:</u></p>
-                  <div style="text-indent:10px;">
-                    <p> The user can select certain atmosphere disturbances. The types sum up these events: </p></div>
-                    <div style="text-indent:20px;">
-                    <p><u>strom/wind:</u> Böen, Sturm, Windböen, Sturmböen, schwere Sturmböen, orkanartige Böen, Orkanböen, extreme Orkanböen, Starkwind, Sturm</p>
-                    <p><u>thunderstorm:</u> Gewitter, starkes Gewitter, schweres Gewitter, schweres Gewitter mit extremen Orkanböen, schweres Gewitter mit extrem heftigem Starkregen</p>
-                    <p><u>fog:</u> Nebel</p>
-                    <p><u>rain:</u> Starkregen, heftiger Starkregen, Dauerregen, ergiebiger Dauerregen, extrem ergiebiger Dauerregen, extrem heftiger Starkregen</p>
-                    <p><u>snowfall:</u> leichter Schneefall, Schneefall, starker Schneefall, extrem starker Schneefall, Schneeverwehung, starke Schneeverwehung, extrem starke Schneeverwehung</p>
-                    <p><u>frost:</u> Frost, strenger Frost</p>
-                    <p><u>glazed frost:</u> Glätte, Glatteis </p>
-                    <p><a href="https://www.dwd.de/DE/wetter/warnungen_aktuell/objekt_einbindung/einbindung_karten_geowebservice.pdf?__blob=publicationFile&v=11">Event types of warning, p.16</a></p>
-                  </div>
+                <div style="text-indent:20px;">
+                  <p><u>strom/wind:</u> Böen, Sturm, Windböen, Sturmböen, schwere Sturmböen, orkanartige Böen,
+                    Orkanböen, extreme Orkanböen, Starkwind, Sturm</p>
+                  <p><u>thunderstorm:</u> Gewitter, starkes Gewitter, schweres Gewitter, schweres Gewitter mit extremen
+                    Orkanböen, schweres Gewitter mit extrem heftigem Starkregen</p>
+                  <p><u>fog:</u> Nebel</p>
+                  <p><u>rain:</u> Starkregen, heftiger Starkregen, Dauerregen, ergiebiger Dauerregen, extrem ergiebiger
+                    Dauerregen, extrem heftiger Starkregen</p>
+                  <p><u>snowfall:</u> leichter Schneefall, Schneefall, starker Schneefall, extrem starker Schneefall,
+                    Schneeverwehung, starke Schneeverwehung, extrem starke Schneeverwehung</p>
+                  <p><u>frost:</u> Frost, strenger Frost</p>
+                  <p><u>glazed frost:</u> Glätte, Glatteis </p>
+                  <p><a
+                      href="https://www.dwd.de/DE/wetter/warnungen_aktuell/objekt_einbindung/einbindung_karten_geowebservice.pdf?__blob=publicationFile&v=11">Event
+                      types of warning, p.16</a></p>
                 </div>
             </div>
             </div>
@@ -150,26 +186,29 @@
             </div>
       </div>
     </div>
+  </div>
 
   <% include partials/footer.ejs %>
 
-   <!-- Bootstrap core JavaScript
+  <!-- Bootstrap core JavaScript
     ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <!-- Placed at the end of the document so the pages load faster -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
-    <script src="../../assets/js/vendor/popper.min.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+  <script src="../../assets/js/vendor/popper.min.js"></script>
+  <script src="../../dist/js/bootstrap.min.js"></script>
 
-    <!-- Icons -->
-    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
-    <script>
-      feather.replace()
-    </script>
+  <!-- Icons -->
+  <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+  <script>
+    feather.replace()
+  </script>
 </body>
 
 </html>

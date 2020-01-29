@@ -13,6 +13,9 @@ var output;
 var startpoint;
 var WFSLayer;
 var marker;
+var flickrmarkergroup
+var tweetgroup
+
 
 /**
 *@desc function to set the dwd output into the variable output
@@ -100,16 +103,6 @@ function initMap() {
         }
     }
 
-    //TWITTERSEARCH
-    //is there a twittersearch in the URL?
-    if (urlParam.twittersearch !== undefined && urlParam.twittersearch !== "") {
-        try {
-            twittersearch = urlParam.twittersearch;
-        }
-        catch (err) {
-            giveError(err);
-        }
-    }
     map.on('load', function () {
         saveBboxtoCookies();
     });
@@ -122,6 +115,7 @@ function initMap() {
     history.pushState(stateObj, "init", "?" + justReq);
 
     map.setView(startpoint, zoomLevel)
+        //what happens if the user zoom in or out
         .on('zoomend', function () {
             //update the URL in browser
             var currentCenter = map.getCenter();
@@ -130,28 +124,67 @@ function initMap() {
             justReq = newURL.split("?")[1];
             stateObj = { foo: justReq };
             history.pushState(stateObj, "test", "?" + justReq);
-            saveBboxtoCookies();
+            
+            saveBboxtoCookies()
+            
+            var bboxSW_lng = getCookie("bboxsouthWest_lng")
+            var bboxSW_lat = getCookie("bboxsouthWest_lat")
+            var bboxNE_lng = getCookie("bboxnorthEast_lng")
+            var bboxNE_lat = getCookie("bboxnorthEast_lat")
+            
+            var group_id = getCookie("flickr_group")
+            var keyword = getCookie("flickr_keyword")
+
+
         })
+        //what happens if the user moves the map
         .on('moveend', function () {
-            //update the URL in browser
+            //update the URL in browserflickr_group
             var currentCenter = map.getCenter();
             newRequest = ["centerpoint=[" + currentCenter.lat + "," + currentCenter.lng + "]", "zoomlevel=" + map.getZoom()];
             newURL = buildUrl(newRequest);
             justReq = newURL.split("?")[1];
             stateObj = { foo: justReq };
             history.pushState(stateObj, "test", "?" + justReq);
-            saveBboxtoCookies();
-        });
+            saveBboxtoCookies()
+            var bboxSW_lng = getCookie("bboxsouthWest_lng")
+            var bboxSW_lat = getCookie("bboxsouthWest_lat")
+            var bboxNE_lng = getCookie("bboxnorthEast_lng")
+            var bboxNE_lat = getCookie("bboxnorthEast_lat")
 
-    /* $.ajax({
-        type: 'GET',
-        url: 'http://localhost:3000/api/v1/mapbox/dark/256/1',
-    }).done(function (data) {
-        console.log('Success: Tile from Mapbox received.');
-        console.log(typeof (data));
-    }).fail(function (xhr, status, error) {
-        console.log('Error: ' + error);
-    }); */
+            var group_id = getCookie("flickr_group")
+            var keyword = getCookie("flickr_keyword")
+            /*
+            var flickr_active = getCookie("flickr")
+            console.log('flickr_active:', flickr_active)
+            if (flickr_active!=false){
+                console.log("yewah")
+                axios.get('/api/v1/flickr')
+                .then(function (response) {
+                    console.log('response:', response)
+                    drawFlickrToMap(response)
+                    drawFlickrToUI(response)
+                })
+                .catch(function (error) {
+                    $(".flickr").delay(0).fadeOut(0)
+                    giveErrorMessage("An error with Flickr has been occured. Try again.")
+                    console.log(error)
+                })
+            }
+            var twitter_active = getCookie("twitter")
+            if (twitter_active=="true"){
+                axios.get('/api/v1/twitter/tweets?bbox=['+bboxSW_lat+','+bboxSW_lng+','+bboxNE_lat+','+bboxNE_lng+']')
+                .then(function (data) {
+                    filterTweets(data)
+                })
+            }
+            */
+
+
+            
+            
+
+        });
 
     const mapbox_accessToken = 'pk.eyJ1IjoibWdhZG8wMSIsImEiOiJjazQxaHZvZTcwMWdqM2RvYmF4eWRzZ2diIn0.z3YweqsFFX-KbTYMRmz_AA';
 
@@ -201,7 +234,6 @@ function initMap() {
             categories = ['Minor', 'Moderate', 'Severe', 'Extreme'];
 
         for (var i = 0; i < categories.length; i++) {
-            //console.log(getColor(categories[i] + 1));
             div.innerHTML += labels.push(
                 '<i style="background:' + getColor(categories[i]) + '; opacity:0.4"></i> ' +
                 categories[i]);
@@ -231,17 +263,19 @@ function initMap() {
     //TODO: diese vielleicht bei den cookies unter eingenen Werten speicher, dann kann man prüfen, obn diese auf 0 stehen oder nicht.
     //TODO: wenn das Polygon geläscht wird soll die BBOX dieser WErte dann auf 0 gesetzt werden und die aktuelle BBox des Ansichtsfensters aktualisiert werden
     map.on(L.Draw.Event.CREATED, function (e) {
-        drawnItems.clearLayers();
-        var layer = e.layer;
-        drawnItems.addLayer(layer);
-        map.addLayer(layer);
+        drawnItems.clearLayers()
+        var layer = e.layer
+        drawnItems.addLayer(layer)
+        map.addLayer(layer)
 
-        document.cookie = "bboxsouthWest_lat=" + e.layer._latlngs[0][0].lat;
-        document.cookie = "bboxsouthWest_lng=" + e.layer._latlngs[0][0].lng;
-        document.cookie = "bboxnorthEast_lat=" + e.layer._latlngs[0][2].lat;
-        document.cookie = "bboxnorthEast_lng=" + e.layer._latlngs[0][2].lng;
-    });
+        alert("We are not proud of this, but right now it has no effect to draw a Bounding Box, except you realy like to draw Bounding Boxes, then it may put a smile on your face.")
 
+        document.cookie = "bboxsouthWest_lat=" + e.layer._latlngs[0][0].lat
+        document.cookie = "bboxsouthWest_lng=" + e.layer._latlngs[0][0].lng
+        document.cookie = "bboxnorthEast_lat=" + e.layer._latlngs[0][2].lat
+        document.cookie = "bboxnorthEast_lng=" + e.layer._latlngs[0][2].lng
+
+    })
     var bbox;
     var poly;
 
@@ -250,9 +284,7 @@ function initMap() {
         defaultMarkGeocode: false
     })
         .on('markgeocode', function (e) {
-            //console.log(poly);
             if (poly != null) {
-                //console.log("if");
                 map.removeLayer(poly);
             }
             bbox = e.geocode.bbox;
@@ -297,8 +329,6 @@ function initMap() {
               filtered_response_nd=filter_severity_map(filter_feature, filtered_response_nd); //this function is described in dwd.js
             }
           }
-          console.log(filtered_response);
-          console.log(filtered_response_nd);
         }
 
           WFSLayer = L.geoJson(filtered_response_nd, {
@@ -321,7 +351,6 @@ function initMap() {
   }).fail(function (xhr, status, error) {
     console.log('Error: ' + error);
 });
-//.responseText;
 }
 
 /**
@@ -382,16 +411,105 @@ function saveBboxtoCookies() {
     }
 }
 
-//TODO: this does not work yet, the curser of the picture in the carousel should light up on the map
+//TODO: the curser of the picture in the carousel should light up on the map
 /**
  * @description change the activated element in map parallel to the shown element in the carousel
  * @private
  */
 function changeActive() {
-    "console.log('wokrs:', wokrs)"
     var lat = $(".active").attr("lat")
     var lon = $(".active").attr("lon")
-    //map.panTo(new L.LatLng(lat, lon))
     map.flyTo([lat, lon]) 
-    //console.log('id:', id)
 }
+
+
+/**
+ * @description this function draws the given Flickr pictures to the map
+ * @param {JSON} flickrpic
+ */
+function drawFlickrToMap(flickrpic) {
+    //TODO: this seems to not work
+
+    if (flickrmarkergroup != undefined){
+        flickrmarkergroup.clearLayers()
+        }
+
+    var flickrIcon = L.ExtraMarkers.icon({
+        markerColor: 'red',
+        prefix: 'fab',
+        icon: 'fa-flickr',
+        iconColor: 'white'
+    });
+
+    var flickrselectedIcon = L.ExtraMarkers.icon({
+        markerColor: 'yellow',
+        prefix: 'fab',
+        icon: 'fa-flickr',
+        iconColor: 'white'
+    });
+    flickrmarkergroup = L.featureGroup()
+        .addEventListener("click", (e) => {
+            flickrmarkergroup.eachLayer((marker) => {
+                marker.setIcon(flickrIcon)
+            });
+            e.layer.setIcon(flickrselectedIcon)
+            var id = e.layer.options.myCustomId
+            $(".active").removeClass("active")
+            $("#" + id).addClass("active")
+
+        })
+        .addTo(map)
+
+    flickrpic.data.forEach((t) => {
+        if (t.latitude != null && t.longitude) {
+            var cut = t.timestamp.indexOf('T', 0);
+            var date = t.timestamp.slice(0, cut);
+            var time = t.timestamp.slice(cut + 1, t.timestamp.indexOf('.', 0));
+            var marker = L.marker([t.latitude, t.longitude], { icon: flickrIcon, alt: "marker", myCustomId: t.photo_id })
+                .bindPopup("user_name: " + t.user_name + "<br><br>" + "URL: " + "<a href='" + t.url + "' target='_blank'>Link</a>" + '<br><br>' + "timestamp: " + date + ", " + time)
+            //marker.id = t.photo_id
+
+            flickrmarkergroup.addLayer(marker)
+        }
+    });
+
+};
+
+/**
+ * this draws a array of tweets to the map
+ * @param {JSON} tweets 
+ */
+function drawTweetsToMap(tweets) {
+    if (tweetgroup != undefined){
+        tweetgroup.clearLayers()
+        }   
+    var defaultIcon = L.ExtraMarkers.icon({
+        markerColor: 'cyan',
+        prefix: 'fab',
+        icon: 'fa-twitter',
+        iconColor: 'white'
+    });
+
+    var selectedIcon = L.ExtraMarkers.icon({
+        markerColor: 'yellow',
+        prefix: 'fab',
+        icon: 'fa-twitter',
+        iconColor: 'white'
+    });
+
+    tweetgroup = L.featureGroup()
+        .addEventListener("click", (e) => {
+            tweetgroup.eachLayer((marker) => {
+                marker.setIcon(defaultIcon);
+            });
+
+            e.layer.setIcon(selectedIcon);
+        })
+        .addTo(map);
+
+    tweets.forEach((t) => {
+        var latlng = [t.location.coordinates[1], t.location.coordinates[0]];
+        var marker = L.marker(latlng, { icon: defaultIcon, alt: "marker" });
+        tweetgroup.addLayer(marker);
+    });
+};
