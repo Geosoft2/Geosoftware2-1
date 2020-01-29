@@ -11,6 +11,7 @@ $(document).ready(() => {
     }, flickrInterval * 1000);
 
     initDWDWarnings();
+    clearUpTweets();
     initTweets();
     axios.get('/api/v1/flickr?group_id=14643952@N25&reload=true')
     axios.get('/api/v1/flickr?reload=true')
@@ -48,6 +49,15 @@ function getTweets() {
         }).fail(function (xhr, status, error) {
             console.log('Error: ' + error);
         });
+    });
+};
+
+function clearUpTweets() {
+    $.ajax({
+        type: 'POST',
+        url: 'http://localhost:3000/api/v1/twitter/clearup',
+    }).fail(function (xhr, status, error) {
+        console.log('Error: ' + error);
     });
 };
 
@@ -169,7 +179,9 @@ function drawTweetsToMap(tweets) {
 
     tweets.forEach((t) => {
         var latlng = [t.location.coordinates[1], t.location.coordinates[0]];
-        var marker = L.marker(latlng, { icon: defaultIcon, alt: "marker" });
+        var marker = L.marker(latlng, { icon: defaultIcon, alt: "marker", id: t.id });
+        var url = "https://twitter.com/Interior/status/" + t.id;
+        marker.bindPopup('<a href=' + url + '>Show Tweet</a>');
         markergroup.addLayer(marker);
     });
 };
