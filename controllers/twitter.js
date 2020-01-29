@@ -29,10 +29,8 @@ const TwitClient = new Twit({
  */
 exports.requestTweets = (req, res) => {
     TwitClient.get('search/tweets', Settings.twitter_query, (error, data, res) => {
-        //TODO: catch if there are no new tweets are incomming
-
         const raw = data.statuses; //Unfiltered tweets directly received from Twitter API
-        try{
+        try {
             if (raw.length == 0) { //If there are no tweets, do nothing
                 console.log("No new tweets available.");
             } else { //Else store tweets
@@ -64,8 +62,8 @@ exports.requestTweets = (req, res) => {
                     };
                 });
             };
-        }catch(err){
-            console.log(err)
+        } catch {
+            error => console.log(error)
         }
     });
     res.send({}); //TODO: Send appropriate response
@@ -139,3 +137,16 @@ exports.loadTweets = async (req, res) => {
         });
     }
 };
+
+
+exports.clearUpTweets = async (req, res) => {
+    try {
+        var older_than = moment().subtract(48, 'hours').toDate();
+        await TweetModel.find({ date: { $lt: older_than } }).deleteMany().exec();
+    } catch (err) {
+        console.error('Data could not be deleted. There has been an ERROR occured', err)
+        return err
+    }
+
+    res.send({});
+}

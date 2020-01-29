@@ -35,6 +35,7 @@ function get_output() {
 
 //start the functions needed to load the map, dwd data and
 var controlLayers;
+var drawnItems;
 initMap();
 extendMap();
 
@@ -52,6 +53,9 @@ function initMap() {
     //TODO: wenn diese false sind sind die beiden deaktiviert wenn auf true gesetzt wird dann aktiviert
     var twitter = false;
     var instagram = false;
+    // set drawItems;
+    drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
 
     //ZOOMLEVEL
     //check if there is a saved zoomlevel in the URL?
@@ -205,7 +209,7 @@ function initMap() {
         "Satellite": satellite
     };
 
-    // Warnungs-Layer vom DWD-Geoserver - betterWms fügt Möglichkeiten zur GetFeatureInfo hinzu
+    // set radarlayer and add to the map
     var radarlayer = L.tileLayer.betterWms("https://maps.dwd.de/geoserver/dwd/ows", {
         layers: 'dwd:FX-Produkt',
         request: 'GetMap',
@@ -240,9 +244,7 @@ function initMap() {
 
     legend.addTo(map);
 
-    var drawnItems = new L.FeatureGroup();
-    map.addLayer(drawnItems);
-
+// add draw functionality to the map
     var drawControl = new L.Control.Draw({
         draw: {
             polygon: false,
@@ -350,11 +352,12 @@ function initMap() {
     console.log('Error: ' + error);
 });
 }
+
 /**
- * function to save a personal default view in cookies
- */
+*@desc function to draw a button on the map that saves the current map view as a default view
+*
+*/
 function extendMap() {
-    //Button, to save personal default view
     var saveviewControl = L.Control.extend({
         options: {
             position: "topleft"
@@ -397,14 +400,16 @@ function getColor(d) {
 *
 */
 function saveBboxtoCookies() {
-    //TODO: if (wenn keine Bbox im Bbox Layer eingezeichnet wurde, dann soll der neue Ausschnitt hier als Bbox dienen)
-        var bbox = map.getBounds();
-        document.cookie = "bboxsouthWest_lat=" + bbox._southWest.lat;
-        document.cookie = "bboxsouthWest_lng=" + bbox._southWest.lng;
-        document.cookie = "bboxnorthEast_lat=" + bbox._northEast.lat;
-        document.cookie = "bboxnorthEast_lng=" + bbox._northEast.lng;
-    }
+  
+    if (drawnItems.layers==undefined) {
 
+    var bbox = map.getBounds();
+    document.cookie = "bboxsouthWest_lat=" + bbox._southWest.lat;
+    document.cookie = "bboxsouthWest_lng=" + bbox._southWest.lng;
+    document.cookie = "bboxnorthEast_lat=" + bbox._northEast.lat;
+    document.cookie = "bboxnorthEast_lng=" + bbox._northEast.lng;
+    }
+}
 
 //TODO: the curser of the picture in the carousel should light up on the map
 /**

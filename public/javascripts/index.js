@@ -11,6 +11,9 @@ $(document).ready(() => {
         axios.get('/api/v1/flickr?group_id=14643952@N25&reload=true')
         axios.get('/api/v1/flickr?reload=true')
     }, flickrInterval * 1000);
+
+    initDWDWarnings();
+    clearUpTweets();
     initTweets();
     axios.get('/api/v1/flickr?group_id=14643952@N25&reload=true')
     axios.get('/api/v1/flickr?reload=true')
@@ -64,9 +67,15 @@ function getTweets() {
     });
 };
 
-/**
- * @description load DWD warnings and cache them into our DB
- */
+function clearUpTweets() {
+    $.ajax({
+        type: 'POST',
+        url: 'http://localhost:3000/api/v1/twitter/clearup',
+    }).fail(function (xhr, status, error) {
+        console.log('Error: ' + error);
+    });
+};
+
 async function initDWDWarnings() {
     await $.ajax({
         type: 'POST',
@@ -98,7 +107,7 @@ function getDWDWarnings() {
 
 /**
  * @description filters the tweets for the given bbox
- * @param {JSON} tweets 
+ * @param {JSON} tweets
  */
 function filterTweets(tweets) {
     drawTweetsToMap(tweets)
@@ -123,7 +132,7 @@ function drawWarningsToMap(warnings) {
 
 /**
  * draws the given tweets to map with an twitter specified icon
- * @param {JSON} tweets 
+ * @param {JSON} tweets
  */
 function drawTweetsToUI(tweets) {
     tweets.forEach((tweet) => {
@@ -187,7 +196,7 @@ function flickrGetPublic(reload) {
 }
 /**
  * loads the flickr pictures to the carousel of flickr to show the results as a picture with information
- * @param {JSON} flickr 
+ * @param {JSON} flickr
  */
 function drawFlickrToUI(flickr) {
     $('.carousel').carousel('pause')

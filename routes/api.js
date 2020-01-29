@@ -22,6 +22,8 @@ router.post('/v1/twitter/init', TwitterController.requestTweets);
 
 router.get('/v1/twitter/tweets', TwitterController.loadTweets);
 
+router.post('/v1/twitter/clearup', TwitterController.clearUpTweets);
+
 router.post('/v1/dwd/events/init', DWDController.requestDWDWarnings);
 
 router.get('/v1/dwd/events/warnings', DWDController.loadDWDWarnings);

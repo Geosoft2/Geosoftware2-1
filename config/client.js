@@ -16,4 +16,6 @@ const widget_config = {
     theme: 'dark'    // Color scheme [light, dark]
 };
 
-const url_getTweets = 'http://localhost:3000/api/v1/twitter/tweets';
+const url_api = 'http://localhost:3000/api/v1/';
+const url_getTweets = url_api + 'twitter/tweets';
+const url_clearUpTweets = url_api + 'twitter/clearup';
