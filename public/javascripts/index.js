@@ -11,8 +11,6 @@ $(document).ready(() => {
         axios.get('/api/v1/flickr?group_id=14643952@N25&reload=true')
         axios.get('/api/v1/flickr?reload=true')
     }, flickrInterval * 1000);
-
-    initDWDWarnings();
     clearUpTweets();
     initTweets();
     axios.get('/api/v1/flickr?group_id=14643952@N25&reload=true')
@@ -22,8 +20,8 @@ $(document).ready(() => {
 
     document.cookie = 'flickr_keyword='
     document.cookie = 'flickr_group='
-    document.cookie = 'flickr=false'
-    document.cookie = 'twitter=false'
+    document.cookie = 'flickr=0'
+    document.cookie = 'twitter=0'
 });
 
 
@@ -48,22 +46,17 @@ function initTweets() {
  */
 function getTweets() {
     $("#btn_tweetrequest").on("click", () => {
-
+        var bboxSW_lng = +getCookie("bboxsouthWest_lng")
+        var bboxSW_lat = +getCookie("bboxsouthWest_lat")
+        var bboxNE_lng = +getCookie("bboxnorthEast_lng")
+        var bboxNE_lat = +getCookie("bboxnorthEast_lat")
         giveLoadMessage("Twitter is loading", "twitter-mess")
-        $.ajax({
-            type: 'GET',
-            url: url_getTweets,
-            dataType: 'json',
-            encode: true
-        }).done(function (data) { 
-                
-        
-            document.cookie = 'twitter=true'
+        axios.get('/api/v1/twitter/tweets?bbox=['+bboxSW_lng+','+bboxSW_lat+','+bboxNE_lng+','+bboxNE_lat+']')
+        .then(function (data) { 
+            document.cookie = 'twitter=1'
             $(".twitter-mess").delay(0).fadeOut(0)
             filterTweets(data)
-        }).fail(function (xhr, status, error) {
-            console.log('Error: ' + error);
-        });
+        })
     });
 };
 
@@ -121,6 +114,8 @@ function filterTweets(tweets) {
  * @param {*} warnings 
  */
 function drawWarningsToMap(warnings) {
+    if (tweetgroup!=undefined){
+        tweetgroup.clearLayers()}
     WFSLayer = L.geoJson(warnings, {
         style: setStyles,
         onEachFeature: function (feature, layer) {
@@ -135,7 +130,7 @@ function drawWarningsToMap(warnings) {
  * @param {JSON} tweets
  */
 function drawTweetsToUI(tweets) {
-    tweets.forEach((tweet) => {
+    tweets.data.forEach((tweet) => {
         var tweet_id = tweet.id;
         var tweet_html = '<div class="tweet carousel-item" id="' + tweet_id + '"></div>';
         $("#tweet_carousel_inner").append(tweet_html);
@@ -174,10 +169,13 @@ function flickrGetPublic(reload) {
     //if the user changes the map extend, the values will be needed for a new request
     document.cookie = 'flickr_keyword='+keyword
     document.cookie = 'flickr_group='+group_id
-    document.cookie = 'flickr="true"'
-
+    document.cookie = 'flickr=1'
+    var bboxSW_lng = +getCookie("bboxsouthWest_lng")
+    var bboxSW_lat = +getCookie("bboxsouthWest_lat")
+    var bboxNE_lng = +getCookie("bboxnorthEast_lng")
+    var bboxNE_lat = +getCookie("bboxnorthEast_lat")
     giveLoadMessage("Flickr is loading", "flickr")
-    axios.get('/api/v1/flickr?reload=' + reload+'&group_id='+group_id+'&keyword='+keyword)
+    axios.get('/api/v1/flickr?reload=' + reload+'&group_id='+group_id+'&keyword='+keyword+'&bbox=['+bboxSW_lng+','+bboxSW_lat+','+bboxNE_lng+','+bboxNE_lat+']')
         .then(function (response) {
             console.log("respomse",response)
             drawFlickrToMap(response)
@@ -200,13 +198,19 @@ function flickrGetPublic(reload) {
  */
 function drawFlickrToUI(flickr) {
     $('.carousel').carousel('pause')
+    $('#flickr-carousel-inner').empty()
+    //TODO: the carousel next and prev buttons does not work
     flickr.data.forEach((pic) => {
         var pic_id = pic.photo_id
         $("#flickr-carousel-inner").append('<div class="carousel-item flickr-carousel-elem" id="' + pic_id + '" lat="' + pic.latitude + '" lon="' + pic.longitude + '">'
+           // +'<button type="button" onclick="changeActive() class="middle-button btn btn-primary btn-sm">jump to</button>'
             + '<img src="https://farm' + pic.farm + '.staticflickr.com/' + pic.server + '/' + pic_id + '_' + pic.secret + '_q.jpg" alt="' + pic.title + '">'
+            +'</br>'
             +'<a href="' + pic.url + '" target="_blank">' + pic.title + '</a>'
-            + '<a class="flickr-link" onclick="changeActive()" ></a>'
-            + '</div>')
+            +'</div>'
+           // + '<a class="flickr-link" onclick="changeActive()" >jump to</a>'
+
+)
     });
     $(".carousel-item").first().addClass("active")
     //TODO: highlight point when the picture is active in the carousel

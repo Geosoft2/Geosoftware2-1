@@ -131,7 +131,7 @@ exports.loadTweets = async (req, res) => {
             },{location: {
                     $geoWithin: { $box:  [ [ bb[0], bb[1] ], [ bb[2], bb[3] ] ] }
                 }
-            }]}).exec().catch(error => console.log(error));
+            }]}).limit(1).exec().catch(error => console.log(error));
 
             resolve(query);
         });

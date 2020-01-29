@@ -126,40 +126,19 @@ function initMap() {
             history.pushState(stateObj, "test", "?" + justReq);
             
             saveBboxtoCookies()
-            
-            var bboxSW_lng = getCookie("bboxsouthWest_lng")
-            var bboxSW_lat = getCookie("bboxsouthWest_lat")
-            var bboxNE_lng = getCookie("bboxnorthEast_lng")
-            var bboxNE_lat = getCookie("bboxnorthEast_lat")
-            
-            var group_id = getCookie("flickr_group")
-            var keyword = getCookie("flickr_keyword")
-
-
-        })
-        //what happens if the user moves the map
-        .on('moveend', function () {
-            //update the URL in browserflickr_group
-            var currentCenter = map.getCenter();
-            newRequest = ["centerpoint=[" + currentCenter.lat + "," + currentCenter.lng + "]", "zoomlevel=" + map.getZoom()];
-            newURL = buildUrl(newRequest);
-            justReq = newURL.split("?")[1];
-            stateObj = { foo: justReq };
-            history.pushState(stateObj, "test", "?" + justReq);
-            saveBboxtoCookies()
-            var bboxSW_lng = getCookie("bboxsouthWest_lng")
-            var bboxSW_lat = getCookie("bboxsouthWest_lat")
-            var bboxNE_lng = getCookie("bboxnorthEast_lng")
-            var bboxNE_lat = getCookie("bboxnorthEast_lat")
+            var bboxSW_lng = +getCookie("bboxsouthWest_lng")
+            var bboxSW_lat = +getCookie("bboxsouthWest_lat")
+            var bboxNE_lng = +getCookie("bboxnorthEast_lng")
+            var bboxNE_lat = +getCookie("bboxnorthEast_lat")
 
             var group_id = getCookie("flickr_group")
             var keyword = getCookie("flickr_keyword")
-            /*
+
             var flickr_active = getCookie("flickr")
             console.log('flickr_active:', flickr_active)
-            if (flickr_active!=false){
+            if (flickr_active!=0){
                 console.log("yewah")
-                axios.get('/api/v1/flickr')
+                axios.get('/api/v1/flickr?grpu_id='+group_id+'&keyword='+keyword+'&bbox=['+bboxSW_lng+','+bboxSW_lat+','+bboxNE_lng+','+bboxNE_lat+']')
                 .then(function (response) {
                     console.log('response:', response)
                     drawFlickrToMap(response)
@@ -171,14 +150,57 @@ function initMap() {
                     console.log(error)
                 })
             }
+
             var twitter_active = getCookie("twitter")
-            if (twitter_active=="true"){
-                axios.get('/api/v1/twitter/tweets?bbox=['+bboxSW_lat+','+bboxSW_lng+','+bboxNE_lat+','+bboxNE_lng+']')
-                .then(function (data) {
+            if (twitter_active!=0){
+                axios.get('/api/v1/twitter/tweets?bbox=['+bboxSW_lng+','+bboxSW_lat+','+bboxNE_lng+','+bboxNE_lat+']')
+                .then(function (data) { 
                     filterTweets(data)
                 })
             }
-            */
+        })
+        //what happens if the user moves the map
+        .on('moveend', function () {
+            //update the URL in browserflickr_group
+            var currentCenter = map.getCenter();
+            newRequest = ["centerpoint=[" + currentCenter.lat + "," + currentCenter.lng + "]", "zoomlevel=" + map.getZoom()];
+            newURL = buildUrl(newRequest);
+            justReq = newURL.split("?")[1];
+            stateObj = { foo: justReq };
+            history.pushState(stateObj, "test", "?" + justReq);
+            saveBboxtoCookies()
+            var bboxSW_lng = +getCookie("bboxsouthWest_lng")
+            var bboxSW_lat = +getCookie("bboxsouthWest_lat")
+            var bboxNE_lng = +getCookie("bboxnorthEast_lng")
+            var bboxNE_lat = +getCookie("bboxnorthEast_lat")
+
+            var group_id = getCookie("flickr_group")
+            var keyword = getCookie("flickr_keyword")
+
+            var flickr_active = getCookie("flickr")
+            console.log('flickr_active:', flickr_active)
+            if (flickr_active!=0){
+                console.log("yewah")
+                axios.get('/api/v1/flickr?grpu_id='+group_id+'&keyword='+keyword+'&bbox=['+bboxSW_lng+','+bboxSW_lat+','+bboxNE_lng+','+bboxNE_lat+']')
+                .then(function (response) {
+                    console.log('response:', response)
+                    drawFlickrToMap(response)
+                    drawFlickrToUI(response)
+                })
+                .catch(function (error) {
+                    $(".flickr").delay(0).fadeOut(0)
+                    giveErrorMessage("An error with Flickr has been occured. Try again.")
+                    console.log(error)
+                })
+            }
+
+            var twitter_active = getCookie("twitter")
+            if (twitter_active!=0){
+                axios.get('/api/v1/twitter/tweets?bbox=['+bboxSW_lng+','+bboxSW_lat+','+bboxNE_lng+','+bboxNE_lat+']')
+                .then(function (data) { 
+                    filterTweets(data)
+                })
+            }
 
 
             
@@ -506,8 +528,8 @@ function drawTweetsToMap(tweets) {
             e.layer.setIcon(selectedIcon);
         })
         .addTo(map);
-
-    tweets.forEach((t) => {
+        console.log('tweets:', tweets)
+    tweets.data.forEach((t) => {
         var latlng = [t.location.coordinates[1], t.location.coordinates[0]];
         var marker = L.marker(latlng, { icon: defaultIcon, alt: "marker" });
         tweetgroup.addLayer(marker);

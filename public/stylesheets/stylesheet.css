@@ -51,10 +51,6 @@ main {
 }
 
 #dwd_change {
-<<<<<<< Updated upstream
-=======
-  
->>>>>>> Stashed changes
   margin-top: 10px;
 }
 
@@ -116,6 +112,7 @@ border-radius: 5px;
 }
 .flickr-carousel-elem{
   height: 200px;
+  width: 150px;
   margin-top: 5px;
 
   border-color: rgb(238, 208, 73);
@@ -124,4 +121,10 @@ border-radius: 5px;
 }
 .flickr-link{
   color: red;
+}
+
+middle-button{
+  margin-left:75px;
+  width: 50px;
+
 }
