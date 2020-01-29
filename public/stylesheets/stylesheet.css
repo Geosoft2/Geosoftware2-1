@@ -102,5 +102,16 @@ border-radius: 5px;
   margin-right: 10px;
 }
 .carousel-item{
-  background-color: yellow;
+  background-color: rgb(255, 255, 255);
+}
+.flickr-carousel-elem{
+  height: 200px;
+  margin-top: 5px;
+
+  border-color: rgb(238, 208, 73);
+  border-width: 2px;
+  border-style: solid;
+}
+.flickr-link{
+  color: red;
 }

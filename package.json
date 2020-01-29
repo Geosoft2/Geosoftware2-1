@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "author": "Lukas, Christin, Constantin, Max",
+  "author": "Lukas, Max, Constantin, Christin",
   "version": "1.0.0",
   "main": "app.js",
   "description": "this is the solution for the Geosoftware2 Projekt (check dependencies usage with npx depcheck)",
@@ -54,10 +54,7 @@
     "wfs": "^1.1.0"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "chai-http": "^4.3.0",
     "jsdoc": "^3.6.3",
-    "mocha": "^6.2.0",
     "newman": "^4.5.7",
     "nodemon": "^1.19.4"
   },

@@ -15,18 +15,7 @@ const DWDController = require('../controllers/dwd.js');
 //Define Variables
 const router = express.Router();
 
-/*
-router.get('/v1/instagram/alluser', instagramController.getV1instagram);
-*/
-/*
-router.get('/v1/instagram', (req, res) => {
-});
-*/
-/*
-router.delete("/v1/instagram/:user", (req, res) => {
-});
-*/
-
+//Version 1
 router.get('/v1/flickr', FlickrController.loadPhotos)
 
 router.post('/v1/twitter/init', TwitterController.requestTweets);
@@ -37,8 +26,14 @@ router.post('/v1/dwd/events/init', DWDController.requestDWDWarnings);
 
 router.get('/v1/dwd/events/warnings', DWDController.loadDWDWarnings);
 
-router.post('/v1/dwd/radar/init', DWDController.requestDWDPrecipitation);
+//router.post('/v1/dwd/radar/init', DWDController.requestDWDPrecipitation);
 
-router.get('/v1/dwd/radar/precipitation', DWDController.loadDWDPrecipitation);
+//router.get('/v1/dwd/radar/precipitation', DWDController.loadDWDPrecipitation);
+
+//router.get('/v1/instagram/alluser', instagramController.getV1instagram);
+
+//router.get('/v1/instagram', (req, res) => {});
+
+//router.delete("/v1/instagram/:user", (req, res) => {});
 
 module.exports = router;
