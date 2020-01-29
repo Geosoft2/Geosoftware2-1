@@ -169,7 +169,11 @@ function flickrGetPublic(reload){
     var group=document.getElementById('flickr_select').value;
     document.cookie = "flickr_groupID=" + "public"
     giveLoadMessage("Flickr is loading", "flickr")
+<<<<<<< Updated upstream
     axios.get('/api/v1/flickr?reload='+reload)
+=======
+    axios.get('/api/v1/flickr/public?'+reload)
+>>>>>>> Stashed changes
     .then(function (response) {
     drawFlickrToMap(response)
     drawFlickrToUI(response)

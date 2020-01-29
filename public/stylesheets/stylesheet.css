@@ -51,6 +51,10 @@ main {
 }
 
 #dwd_change {
+<<<<<<< Updated upstream
+=======
+  
+>>>>>>> Stashed changes
   margin-top: 10px;
 }
 
@@ -67,6 +71,12 @@ main {
 #exchange_filter {
   margin-bottom: 30px;
 }
+
+#flickr {
+  margin-top: 10px;
+}
+
+
 
 
 .info {
