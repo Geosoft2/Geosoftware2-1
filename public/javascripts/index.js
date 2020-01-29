@@ -92,7 +92,7 @@ function getDWDWarnings() {
 
 /**
  * @description filters the tweets for the given bbox
- * @param {JSON} tweets 
+ * @param {JSON} tweets
  */
 function filterTweets(tweets) {
     var bboxsouthWest_lat = parseFloat(getCookie("bboxsouthWest_lat"));
@@ -138,7 +138,7 @@ function drawWarningsToMap(warnings) {
 
 /**
  * draws the given tweets to map with an twitter specified icon
- * @param {JSON} tweets 
+ * @param {JSON} tweets
  */
 function drawTweetsToUI(tweets) {
     tweets.forEach((tweet) => {
@@ -245,7 +245,7 @@ function flickrGetGroup(reload) {
 
 /**
  * loads the flickr pictures to the carousel of flickr to show the results as a picture with information
- * @param {JSON} flickr 
+ * @param {JSON} flickr
  */
 function drawFlickrToUI(flickr) {
     $('.carousel').carousel('pause')
