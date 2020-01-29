@@ -197,7 +197,9 @@ function filter_dwdoutput_severity (response) {
 }
 
 
-
+/*
+*
+*/
 function filter_severity_map(feature, array) {
 
   if (array== null) {
