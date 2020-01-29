@@ -36,7 +36,7 @@ function getTweets() {
             dataType: 'json',
             encode: true
         }).done(function (data) {
-            $(".twitter-mess").delay(0).fadeOut(0) 
+            $(".twitter-mess").delay(0).fadeOut(0)
             giveSuccessMessage("Tweets found.")
             giveLoadMessage("processing Tweets", "twitter-mess-2")
             console.log('Success: Tweets loaded from MongoDB.')
@@ -77,7 +77,7 @@ function getDWDWarnings() {
 
 /**
  * @description filters the tweets for the given bbox
- * @param {JSON} tweets 
+ * @param {JSON} tweets
  */
 function filterTweets(tweets) {
     var bboxsouthWest_lat = parseFloat(getCookie("bboxsouthWest_lat"));
@@ -107,7 +107,7 @@ function filterTweets(tweets) {
 
     drawTweetsToMap(filteredTweets);
     //drawTweetsToUI(filteredTweets);
-    $(".twitter-mess-2").delay(0).fadeOut(0) 
+    $(".twitter-mess-2").delay(0).fadeOut(0)
     giveSuccessMessage("Tweets successfully loaded.")
 };
 
@@ -123,7 +123,7 @@ function drawWarningsToMap(warnings) {
 
 /**
  * draws the given tweets to map with an twitter specified icon
- * @param {JSON} tweets 
+ * @param {JSON} tweets
  */
 function drawTweetsToUI(tweets) {
     var first = tweets[0].id_str;
@@ -187,13 +187,17 @@ function flickrGetPublic(reload){
     var keyword=document.getElementById('keyword_input_flickr').value;
     var group=document.getElementById('flickr_select').value;
     document.cookie = "flickr_groupID=" + "public"
-    giveLoadMessage("Flickr is loading", "flickr")    
-    axios.get('/api/v1/flickr?reload='+reload+'')
+    giveLoadMessage("Flickr is loading", "flickr")
+<<<<<<< Updated upstream
+    axios.get('/api/v1/flickr?reload='+reload)
+=======
+    axios.get('/api/v1/flickr/public?'+reload)
+>>>>>>> master
     .then(function (response) {
     drawFlickrToMap(response)
     drawFlickrToUI(response)
 
-    $(".flickr").delay(0).fadeOut(0) 
+    $(".flickr").delay(0).fadeOut(0)
     giveSuccessMessage("Flickr photos have successfully been loaded.")
   })
   .catch(function (error) {
@@ -216,7 +220,7 @@ function flickrGetGroup(reload){
     .then(function (response) {
         drawFlickrToMap(response)
         drawFlickrToUI(response)
-        $(".flickr").delay(0).fadeOut(0) 
+        $(".flickr").delay(0).fadeOut(0)
         giveSuccessMessage("Flickr photos have successfully been loaded.")
         console.log("res", response)
       })
@@ -229,7 +233,7 @@ function flickrGetGroup(reload){
 
 /**
  * loads the flickr pictures to the carousel of flickr to show the results as a picture with information
- * @param {JSON} flickr 
+ * @param {JSON} flickr
  */
 function drawFlickrToUI(flickr) {
     $('.carousel').carousel('pause')
@@ -254,7 +258,7 @@ function drawFlickrToUI(flickr) {
  * @param {JSON} flickrpic
  */
 function drawFlickrToMap(flickrpic) {
-    
+
     var flickrIcon = L.ExtraMarkers.icon({
         markerColor: 'light-red',
         prefix: 'fab',
