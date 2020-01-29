@@ -13,6 +13,7 @@ $(document).ready(() => {
     }, flickrInterval * 1000);
     clearUpTweets();
     initTweets();
+    initDWDWarnings();
     axios.get('/api/v1/flickr?group_id=14643952@N25&reload=true')
     axios.get('/api/v1/flickr?reload=true')
     getTweets();
@@ -35,7 +36,7 @@ var host = arr[0] + "//" + arr[2];
 function initTweets() {
     $.ajax({
         type: 'POST',
-        url: 'http://localhost:3000/api/v1/twitter/init',
+        url: '/api/v1/twitter/init',
     }).fail(function (xhr, status, error) {
         console.log('Error: ' + error);
     });
@@ -63,7 +64,7 @@ function getTweets() {
 function clearUpTweets() {
     $.ajax({
         type: 'POST',
-        url: 'http://localhost:3000/api/v1/twitter/clearup',
+        url: '/api/v1/twitter/clearup',
     }).fail(function (xhr, status, error) {
         console.log('Error: ' + error);
     });
@@ -71,15 +72,11 @@ function clearUpTweets() {
 };
 
 async function initDWDWarnings() {
+    //axios.post('/api/v1/dwd/events/init')
     await $.ajax({
         type: 'POST',
-        url: 'http://localhost:3000/api/v1/dwd/events/init',
-    }).done(function () {
-        console.log("Warnings received.");
-        getDWDWarnings();
-    }).fail(function (xhr, status, error) {
-        console.log('Error: ' + error);
-    });
+        url: '/api/v1/dwd/events/init',
+    })
 };
 
 /**
@@ -88,7 +85,7 @@ async function initDWDWarnings() {
 function getDWDWarnings() {
     $.ajax({
         type: 'GET',
-        url: 'http://localhost:3000/api/v1/dwd/events/warnings',
+        url: '/api/v1/dwd/events/warnings',
         dataType: 'json',
         encode: true
     }).done(function (data) {

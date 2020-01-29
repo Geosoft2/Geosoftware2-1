@@ -328,7 +328,7 @@ function initMap() {
     WFSLayer = null;
     var ajax =  $.ajax({
         type: 'GET',
-        url: 'http://localhost:3000/api/v1/dwd/events/warnings',
+        url: '/api/v1/dwd/events/warnings',
         dataType: 'json',
         encode: true
     }).done(function (response) {
