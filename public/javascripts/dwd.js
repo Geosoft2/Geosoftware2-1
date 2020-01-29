@@ -1,10 +1,8 @@
-// Funktion um die einzelnen Landkreise farblich korrekt darzustellen. Die Farbe ist anhängig
-// vom Stärkegrad des Unwetters. Gelb steht für minor, orange für moderate, rot für severe
-// und violett für Extreme
+
 /**
 * function to fill all district layers with the right color depending on the severity of the
 * atmosphere disturbance
-* @param feature
+* @param feature this function needs each single warnlayer
 */
 function setStyles(feature) {
 
@@ -51,7 +49,11 @@ function setStyles(feature) {
 }
 
 
-
+/**
+*@desc function to get the fittung symbol and event for each warnlayer popup
+*@param each single warnlayers
+*@return the image and the event name
+*/
 function getSymbol (feature) {
     var array=new Array();
     //storm/wind
@@ -100,7 +102,10 @@ function getSymbol (feature) {
 
 }
 
-
+/**
+*@desc function to filter by the event of the dwd warnlayers.
+*@param response
+*/
 function filter_wfs_output (response) {
   var e=document.getElementById('wfs_selection_box');
   var selectedOption=e.options[e.selectedIndex].text;
